@@ -203,7 +203,7 @@ input[type=password].login__input {
   .login-alternative__item { width: 50%; }
 }
 
-@media screen and (min-width: 1010px) {
+@media screen and (min-width: 1000px) {
     .login {
       width: 70%;
       margin: 0 auto;
@@ -223,8 +223,8 @@ input[type=password].login__input {
     }
 
     .login__section--alternative {
-      display: table-cell;
-      padding-top: 25%;
+      display: table;
+      padding-top: 5%;
       vertical-align: middle;
     }
 }
