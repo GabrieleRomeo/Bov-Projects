@@ -119,6 +119,7 @@ body {
 input[type=text].login__input,
 input[type=password].login__input {
   display: block;
+  width: 100%;
   margin: 20px auto;
   padding-left: 46px;
   height: 3.5em;  
@@ -201,9 +202,14 @@ input[type=password].login__input {
 
 @media screen and (min-width: 700px) {
   .login-alternative__item { width: 50%; }
+
+  input[type=text].login__input,
+  input[type=password].login__input {
+    width: 70%;
+  }
 }
 
-@media screen and (min-width: 1010px) {
+@media screen and (min-width: 1000px) {
     .login {
       width: 70%;
       margin: 0 auto;
@@ -223,8 +229,8 @@ input[type=password].login__input {
     }
 
     .login__section--alternative {
-      display: table-cell;
-      padding-top: 25%;
+      display: table;
+      padding-top: 5%;
       vertical-align: middle;
     }
 }
