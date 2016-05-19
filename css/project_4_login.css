@@ -1,0 +1,236 @@
+body {
+  background-color: lightblue;
+}
+ 
+.login {
+  min-width: 320px;
+  padding-bottom: 50px;
+  overflow: auto;
+  background-color: aliceblue;
+}
+
+.login__section {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.login__section__header {
+  position: relative;
+}
+
+.section__header__img {
+  position: relative;
+  top: 11px;
+}
+
+.section__header__paragraph {
+  margin-bottom: 40px;
+  text-align: center;
+  font-size: 1.25em;
+}
+ 
+.membersSection {
+  width: 50%;
+  padding: 20px 35px;
+  border-right: 1px dashed #d6d6d6;
+  background-color: #fff;
+}
+ 
+.connectSection {
+  width: 37%;
+  margin-top: 21.7%;
+  text-align: center;
+  position: relative;
+}
+ 
+.login-alternative__list {
+  list-style-type: none;
+  font-size: 0.875em;
+  font-family: Arial, cursive;
+}
+
+.login-alternative__item {
+  position: relative;
+  width: 95%;
+  padding-left: 10px;
+  margin: 12px auto;
+  line-height: 5em;
+  height: 5em;
+  color: #fff;
+  border: 1px solid #000;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  cursor: pointer;
+}
+
+.login-alternative__item:hover,
+.login-alternative__item:focus {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 1.25);
+  -webkit-box-shadow: inset 0px -1px 29px 13px rgba(50, 50, 50, 0.2);
+  -moz-box-shadow:    inset 0px -1px 29px 13px rgba(50, 50, 50, 0.2);
+  box-shadow:         inset 0px -1px 29px 13px rgba(50, 50, 50, 0.2);
+}
+
+.login-alternative__item__text {
+  padding-left: calc(100% - (50% + 48px));
+}
+
+
+.login-alternative__img {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  border-right: 1px solid rgba(0, 0, 0, 0.23);
+}
+
+.login-alternative__item:hover .login-alternative__img {
+  -webkit-filter: invert(1);
+  -moz-filter: invert(1);
+  filter: invert(1);
+}
+
+.login-alternative--newAcc {
+  background-color: #009688;
+}
+
+.login-alternative--newAcc:active {
+  background-color: #3eb99b;
+}
+ 
+.login-alternative--fb {
+  background-color: #476199;
+}
+
+.login-alternative--fb:active {
+  background-color: #5079d0;
+}
+
+.login-alternative--tw {
+  background-color: #50acd9;
+}
+
+.login-alternative--tw:active {
+  background-color: #63ccff;
+}
+
+ 
+input[type=text].login__input,
+input[type=password].login__input {
+  display: block;
+  margin: 20px auto;
+  padding-left: 46px;
+  height: 3.5em;  
+  font-size: 0.9375em;
+  background-color: rgb(235, 235, 235);
+  border: 2px solid #ebebeb;
+  border-radius: 9px;
+  -moz-border-radius: 9px;
+  -webkit-border-radius: 9px;
+  -webkit-box-shadow: inset 0 -2px #dcdcdc;
+  box-shadow: inset 0 -2px #dcdcdc;
+}
+
+.login__input--password {
+  background-image: url("../images/passwd.png");
+  background-repeat: no-repeat;
+  background-position: 7px 7px;
+}
+ 
+.login__input--username {
+  background-image: url("../images/user.png");
+  background-repeat: no-repeat;
+  background-position: 7px 7px;
+}
+
+.login__input--submit {
+  position: relative;
+  display: block;
+  width: 50%;
+  height: 50px;
+  margin: 40px auto;
+  font-size: 0.9375em;
+  color: white;
+  text-transform: uppercase;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  background-color: #ff2e55;
+  border: 0px solid #000;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.login__label {
+  display: block;
+  margin: 20px 0;
+  font-size: 1.25em;
+  text-align: center;
+  cursor: pointer;
+}
+
+.login__form__forgot {
+  display: block;
+  margin: 0 20%;
+  color: #08c;
+  text-decoration: none;
+}
+ 
+.login__alternative {
+  display: block;
+  position: relative;
+  width: 3em;
+  margin: 0 auto;
+  padding: 10px;
+  margin-top: 30px;
+  font-size: 1em;
+  text-align: center;
+  background-color: #ebebeb;
+  border: 2px solid #d6d6d6;
+  border-radius: 40px;
+  -moz-border-radius: 40px;
+  -webkit-border-radius: 40px;
+  z-index: 1;
+}
+
+/* Move the switch to the center */
+.switch {
+  margin : 0 auto;
+}
+
+@media screen and (min-width: 700px) {
+  .login-alternative__item { width: 50%; }
+}
+
+@media screen and (min-width: 1010px) {
+    .login {
+      width: 70%;
+      margin: 0 auto;
+    }
+
+    .login-alternative__item { width: 70%; }
+
+    .section--member,
+    .login__section--alternative {
+      width: 50%;
+    }
+
+    .section--member {
+      float: left;
+      margin-top: 5%;
+      border-right: 1px dashed rgba(158, 158, 158, 0.57);
+    }
+
+    .login__section--alternative {
+      display: table-cell;
+      padding-top: 25%;
+      vertical-align: middle;
+    }
+}
+
+@media screen and (min-width: 2000px) {
+  .login {
+    width: 50%;
+  }
+}
