@@ -7,11 +7,26 @@ var Validators = (function(window) {
     var _map    = Array.prototype.map;
 
     var _constraints = {
-        firstName: 'The first name must have at least two characters',
-        lastName: 'The last name must have at least two characters',
-        email: 'Please provide a valid email address',
-        dateOfBirth: 'Please provide a valid birthday',
-        password: 'Password must be from six to eight characters in length'
+        firstName: {
+            value: 'The first name must have at least two characters',
+            check: null
+        },
+        lastName: {
+            value: 'The last name must have at least two characters',
+            check: null
+        },
+        email: {
+            value: 'Please provide a valid email address',
+            check: null
+        },
+        dateOfBirth: {
+            value: 'Please provide a valid birthday',
+            check: null
+        },
+        password: {
+            value: 'Password must be from six to eight characters in length',
+            check: null
+        }
     } 
 
     /**
@@ -33,7 +48,7 @@ var Validators = (function(window) {
         if (!node || node.nodeType != 1) return null;
 
         var id   = name || node.getAttribute("id") || node.getAttribute("name");
-        var cstr = _constraints[id];
+        var cstr = _constraints[id].value;
 
         return {
             node:   node,
@@ -49,7 +64,7 @@ var Validators = (function(window) {
      */ 
 
     validator.getConstraint = function(name) {
-        return _constraints[name] || 'Constraint (' + name + ') undefined';
+        return _constraints[name].value || 'Constraint (' + name + ') undefined';
     }
 
     /**
@@ -59,10 +74,12 @@ var Validators = (function(window) {
      * 
      * @param  {string} or {object} node The name of the constraint or a valid
      *                                   document node
+     * @param  {Func} optional      check A function used to validate the 
+     *                                    constraint
      * @returns {string} value The constraint's value
      */ 
 
-    validator.setConstraint = function(node, value) {
+    validator.setConstraint = function(node, value, check) {
 
         var name = undefined;
         
@@ -74,7 +91,35 @@ var Validators = (function(window) {
 
         if (!name) return false;
 
-        _constraints[name] = value;
+        _constraints[name].value = value;
+        _constraints[name].check = (typeof check === "function") ? check : null;
+    }
+
+    /**
+     * Creates a constraint for a particular node. If a constraint with the
+     * same name already exists, it set a new value for it otherwise a new
+     * constraint will be created for it.
+     * 
+     * @param  {string} or {object} node The name of the constraint or a valid
+     *                                   document node
+     * @param  {Func}               check A function used to validate the 
+     *                                    constraint
+     * @returns {string} value The constraint's value
+     */ 
+
+    validator.setConstraintCheck = function(node, check) {
+
+        var name = undefined;
+        
+        if(node.nodeType == 1) {
+            name = node.getAttribute("id") || node.getAttribute("name");
+        } else {
+            name = node;
+        }
+
+        if (!name) return false;
+
+        _constraints[name].check = (typeof check === "function") ? check : null;
     }
 
     /**
