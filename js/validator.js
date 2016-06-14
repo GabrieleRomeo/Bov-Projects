@@ -48,7 +48,7 @@ var Validators = (function(window) {
         if (!node || node.nodeType != 1) return null;
 
         var id   = name || node.getAttribute("id") || node.getAttribute("name");
-        var cstr = _constraints[id].value;
+        var cstr = _constraints[id];
 
         if (!_constraints[id][node]) {
             _constraints[id][node] = node
