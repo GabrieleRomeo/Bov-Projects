@@ -56,7 +56,8 @@ var Validators = (function(window) {
 
         return {
             node:   node,
-            constr: cstr || 'Constraint (' + cstr + ') undefined'
+            constr: cstr || 'Constraint (' + cstr + ') undefined',
+            checkConstraint : _constraints[id].check || null
         }
     }
 
@@ -111,7 +112,7 @@ var Validators = (function(window) {
      * @returns {string} value The constraint's value
      */ 
 
-    validator.setConstraintCheck = function(node, check) {
+    validator.setCheckConstraint = function(node, check) {
 
         var name = undefined;
         
