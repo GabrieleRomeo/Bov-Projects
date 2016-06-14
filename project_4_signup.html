@@ -42,31 +42,105 @@
     <!-- PROJECT CONTENT -->
 
 
-  <form class="sign-up">
+  <form class="sign-up" id="signup" name="signup">
     <h2 class="sign-up__header">Sign Up</h2>
       <label class="sign-up__label" for="firstName">
         First Name
       </label>
-      <input class="sign-up__input" type="text" id="firstName">
+      <input class="sign-up__input" id="firstName" name="firstName" type="text">
       <label class="sign-up__label" for="LastName">
         Last Name
       </label>
-      <input class="sign-up__input" type="text" id="LastName">
+      <input class="sign-up__input" id="lastName" name="lastName" type="text">
       <label class="sign-up__label" for="email">
         Email address
       </label>
-      <input class="sign-up__input" type="email" id="email">
+      <input class="sign-up__input" id="email" name="email" type="email">
       <label class="sign-up__label" for="birthD">
         Birth Date
       </label>
-      <input class="sign-up__input" type="text" id="birthD">
+      <input class="sign-up__input" id="birthD" name="birthD" type="text">
       <label class="sign-up__label" for="password">
         Password
       </label>
-      <input class="sign-up__input" type="password" id="password">
+      <input class="sign-up__input" 
+             id="password" name="password" type="password">
       <input class="sign-up__submit" type="submit" value="Submit">
   </form>
 
+  <script src="js/validator.js"></script>
+  <script>
+      var valid       = Validators;
+      var signupForm  = document.getElementById('signup');
+      var doc = document;
+
+      var inputs = {
+        firstName:  valid.getNode(doc.getElementById('firstName')),
+        lastName:   valid.getNode(doc.getElementById('lastName')),
+        email:      valid.getNode(doc.getElementById('email')),
+        birthD:     valid.getNode(doc.getElementById('birthD'), 'dateOfBirth'),
+        pwd:        valid.getNode(doc.getElementById('password'))
+      }
+
+      function resetCustomValidity(node) {
+        node.setCustomValidity('');
+      }
+
+      // Sets a custom validity for all the inputs by default
+      for (var input in inputs) {
+        if (inputs.hasOwnProperty(input)) {
+          inputs[input].node.setCustomValidity(inputs[input].constr);
+        }
+      }
+
+      // Defines a custom event listener
+      inputs.firstName.node.addEventListener('keyup', function (event) {
+          if (valid.isEmpty(this.value) || valid.isLength(this.value, 2)) {
+              this.setCustomValidity(inputs.firstName.constr);
+          } else {
+              resetCustomValidity(this);
+          }
+      });
+
+      inputs.lastName.node.addEventListener('keyup', function (event) {
+          if (valid.isEmpty(this.value) || valid.isLength(this.value, 2)) {
+              this.setCustomValidity(inputs.lastName.constr);
+          } else {
+              resetCustomValidity(this);
+          }
+      });
+
+      inputs.email.node.addEventListener('keyup', function (event) {
+          if (valid.isEmpty(this.value) || valid.isEmailAddress(this.value)) {
+              this.setCustomValidity(inputs.email.constr);
+          } else {
+              resetCustomValidity(this);
+          }
+      });
+
+      inputs.birthD.node.addEventListener('blur', function (event) {
+        try { 
+          if (!valid.isBeforeToday(this.value)) {
+              this.setCustomValidity(inputs.birthD.constr);
+          } else {
+              resetCustomValidity(this);
+          }
+        } catch (err) {}
+      });
+
+      signupForm.addEventListener('submit', function (event) {
+      // Check the inputs validity. If at least one input is invalid, stop
+      // the form
+      for (var input in inputs) {
+          if (inputs.hasOwnProperty(input)) {
+              if (!inputs[input].validity.valid) {
+                  event.preventDefault();
+              }
+          }
+      }
+
+      }, false);
+  </script>
 
 </body>
 </html>
