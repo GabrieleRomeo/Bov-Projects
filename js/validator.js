@@ -116,6 +116,23 @@ var Validators = (function(window) {
     }
 
     /**
+     *  Given two date it returns the difference between them in days
+     * 
+     * @param  {d1} Date The first date
+     * @param  {d2} Date The second date
+     *
+     * @returns {int} The difference in days
+     */ 
+
+    function _diffInDays(d1, d2){
+   
+      var diffInMilliSec = d1.getTime() - d2.getTime();
+      var milliSecInAday = 24 * 60 * 60 * 1000; //total milli-seconds in a day
+
+      return Math.ceil(diffInMilliSec/milliSecInAday);
+    }
+
+    /**
      * Checks if the provided input is a valid email address
      *
      * It checks for the presence of duplicated dots inside the local and domain 
@@ -419,19 +436,13 @@ var Validators = (function(window) {
 
         _checkForMissingArgs(arguments);
 
-        var d1          = new Date(input),
-            d2          = new Date(),
-            dateDiff_ms,
+        var d1 = new Date(input),
+            d2 = new Date(),
             days;
 
         if (!this.isDate(d1)) throw "input: Invalid Date";
 
-        dateDiff_ms = d1.getTime() - d2.getTime();
-
-        dateDiff_ms = dateDiff_ms / 1000; 
-        dateDiff_ms = dateDiff_ms / 3600;
-
-        days = Math.ceil(dateDiff_ms / 24);
+        days = _diffInDays(d1, d2);
 
         return days < 0;
     }    
@@ -452,19 +463,13 @@ var Validators = (function(window) {
 
         _checkForMissingArgs(arguments);
 
-        var d1          = new Date(input),
-            d2          = new Date(),
-            dateDiff_ms,
+        var d1 = new Date(input),
+            d2 = new Date(),
             days;
 
         if (!this.isDate(d1)) throw "input: Invalid Date";
 
-        dateDiff_ms = d1.getTime() - d2.getTime();
-
-        dateDiff_ms = dateDiff_ms / 1000; 
-        dateDiff_ms = dateDiff_ms / 3600;
-
-        days = Math.ceil(dateDiff_ms / 24);
+        days = _diffInDays(d1, d2);
 
         return days > 0;
     }
