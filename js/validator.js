@@ -8,23 +8,23 @@ var Validators = (function(window) {
 
     var _constraints = {
         firstName: {
-            value: 'The first name must have at least two characters',
+            constrValue: 'The first name must have at least two characters',
             check: null
         },
         lastName: {
-            value: 'The last name must have at least two characters',
+            constrValue: 'The last name must have at least two characters',
             check: null
         },
         email: {
-            value: 'Please provide a valid email address',
+            constrValue: 'Please provide a valid email address',
             check: null
         },
         dateOfBirth: {
-            value: 'Please provide a valid birthday',
+            constrValue: 'Please provide a valid birthday',
             check: null
         },
         password: {
-            value: 'Password must be from six to eight characters in length',
+            constrValue: 'Password must be from six to eight characters in length',
             check: null
         }
     } 
@@ -50,7 +50,7 @@ var Validators = (function(window) {
         var id   = name || node.getAttribute("id") || node.getAttribute("name");
         var cstr = _constraints[id];
 
-        if (!_constraints[id][node]) {
+        if (!_constraints[id]['node']) {
             _constraints[id]['node'] = node
         }
 
@@ -69,7 +69,7 @@ var Validators = (function(window) {
      */ 
 
     validator.getConstraint = function(name) {
-        return _constraints[name].value || 'Constraint (' + name + ') undefined';
+        return _constraints[name].constrValue || 'Constraint (' + name + ') undefined';
     }
 
     /**
@@ -96,7 +96,7 @@ var Validators = (function(window) {
 
         if (!name || !value) return false;
 
-        _constraints[name].value = value;
+        _constraints[name].constrValue = value;
         _constraints[name].check = (typeof check === "function") ? check : null;
     }
 
