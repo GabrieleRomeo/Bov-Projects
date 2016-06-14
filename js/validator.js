@@ -51,7 +51,7 @@ var Validators = (function(window) {
         var cstr = _constraints[id];
 
         if (!_constraints[id][node]) {
-            _constraints[id][node] = node
+            _constraints[id][name] = node
         }
 
         return {
