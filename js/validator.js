@@ -57,7 +57,7 @@ var Validators = (function(window) {
         return {
             node:   node,
             constr: cstr || 'Constraint (' + cstr + ') undefined',
-            checkConstraint : _constraints[id].check || null
+            setCheckConstraint: this.setCheckConstraint
         }
     }
 
