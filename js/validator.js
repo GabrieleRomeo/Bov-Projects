@@ -89,7 +89,7 @@ var Validators = (function(window) {
             name = node;
         }
 
-        if (!name) return false;
+        if (!name || !value) return false;
 
         _constraints[name].value = value;
         _constraints[name].check = (typeof check === "function") ? check : null;
