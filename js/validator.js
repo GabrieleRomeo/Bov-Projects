@@ -8,24 +8,19 @@ var Validators = (function(window) {
 
     var _constraints = {
         firstName: {
-            constrValue: 'The first name must have at least two characters',
-            check: null
+            constrValue: 'The First Name must be a nonempty string of length at least of 2 characters'
         },
         lastName: {
-            constrValue: 'The last name must have at least two characters',
-            check: null
+            constrValue: 'The Last Name must be a nonempty string of length at least of 2 characters'
         },
         email: {
-            constrValue: 'Please provide a valid email address',
-            check: null
+            constrValue: 'Please provide a valid Email address'
         },
         dateOfBirth: {
-            constrValue: 'Please provide a valid birthday',
-            check: null
+            constrValue: 'Please provide a valid Birthday'
         },
         password: {
-            constrValue: 'Password must be from six to eight characters in length',
-            check: null
+            constrValue: 'The Password must be from six to eight characters in length'
         }
     } 
 
@@ -37,9 +32,11 @@ var Validators = (function(window) {
      * @param  {string} name A custom name for the element's constraint
      *
      * @returns {object} An object with properties filled in 
-     *                   - 'node' the original Object node
-     *                   - 'constr' the constraint associated with the original 
-     *                              node's ID (Validation Rules)
+     *                   - 'node' a reference to the original Object node
+     *                   - 'constr' the constraint Object associated with 
+     *                              the original node (Validation Rules)
+     *                   - 'setConstraint' utility function
+     *                   - 'setCheckConstraint' utility function
      *          {null} If the provided node does not exist  
      */ 
 
@@ -50,14 +47,63 @@ var Validators = (function(window) {
         var id   = name || node.getAttribute("id") || node.getAttribute("name");
         var cstr = _constraints[id];
 
-        if (!_constraints[id]['node']) {
-            _constraints[id]['node'] = node
+        if (!id) return null;
+
+        // Creates a default constraint for undefined constraints
+        if (!cstr) {
+            _constraints[id] = {};
+            _constraints[id]['constrValue'] = "Please fill this field";            
+            cstr = _constraints[id];
+        } 
+
+        /* 
+         * Sets the node and default check function
+         */
+        cstr['node']  = node;
+        cstr['check'] = function() {};
+
+        /**
+         * Creates a constraint for a particular node. If a constraint with the
+         * same name already exists, it sets the new value otherwise a new
+         * constraint will be created.
+         * 
+         * @param {string} value The constraint's value
+         * @param  {Func} validator A validator used to validate the constraint 
+         * 
+         * @returns {void} 
+         */ 
+        var setConstraint = function(value, validator) {
+
+            if (!value) return false;
+
+            this.constr.constrValue = value;
+
+            if (typeof validator === "function") {
+                this.constr.check = validator;
+            }
+        }
+
+        /**
+         * Sets a constraint validator for a particular node. 
+         * 
+         * @param  {Func} validator A function used to validate the constraint
+         *                                       
+         * @returns {void} 
+         */ 
+
+        var setConstraintValidator = function(validator) {
+
+            if (typeof validator === "function") {
+                this.constr.check = validator;
+            }
+            
         }
 
         return {
-            node:   node,
-            constr: cstr || 'Constraint (' + cstr + ') undefined',
-            setCheckConstraint: this.setCheckConstraint
+            node:   cstr['node'], // reference to the node object
+            constr: cstr,
+            setConstraint: setConstraint,
+            setValidator: setConstraintValidator
         }
     }
 
@@ -65,66 +111,17 @@ var Validators = (function(window) {
      * Retrieve a constraint (if any)
      * 
      * @param  {string} name The name of the constraint
-     * @returns {string} The description of the constraint
+     *
+     * @returns {string} The description of the provided constraint
      */ 
 
     validator.getConstraint = function(name) {
-        return _constraints[name].constrValue || 'Constraint (' + name + ') undefined';
-    }
 
-    /**
-     * Creates a constraint for a particular node. If a constraint with the
-     * same name already exists, it set a new value for it otherwise a new
-     * constraint will be created for it.
-     * 
-     * @param  {string} or {object} node The name of the constraint or a valid
-     *                                   document node
-     * @param  {Func} optional      check A function used to validate the 
-     *                                    constraint
-     * @returns {string} value The constraint's value
-     */ 
-
-    validator.setConstraint = function(node, value, check) {
-
-        var name = undefined;
-        
-        if(node.nodeType == 1) {
-            name = node.getAttribute("id") || node.getAttribute("name");
-        } else {
-            name = node;
+        if (_constraints[name].constrValue) {
+            return _constraints[name].constrValue;
         }
-
-        if (!name || !value) return false;
-
-        _constraints[name].constrValue = value;
-        _constraints[name].check = (typeof check === "function") ? check : null;
-    }
-
-    /**
-     * Creates a constraint for a particular node. If a constraint with the
-     * same name already exists, it set a new value for it otherwise a new
-     * constraint will be created for it.
-     * 
-     * @param  {string} or {object} node The name of the constraint or a valid
-     *                                   document node
-     * @param  {Func}               check A function used to validate the 
-     *                                    constraint
-     * @returns {string} value The constraint's value
-     */ 
-
-    validator.setCheckConstraint = function(node, check) {
-
-        var name = undefined;
         
-        if(node.nodeType == 1) {
-            name = node.getAttribute("id") || node.getAttribute("name");
-        } else {
-            name = node;
-        }
-
-        if (!name) return false;
-
-        _constraints[name].check = (typeof check === "function") ? check : null;
+        return 'Constraint (' + name + ') undefined';
     }
 
     /**
