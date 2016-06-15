@@ -79,61 +79,145 @@
         lastName:   valid.getNode(doc.getElementById('lastName')),
         email:      valid.getNode(doc.getElementById('email')),
         birthD:     valid.getNode(doc.getElementById('birthD'), 'dateOfBirth'),
-        pwd:        valid.getNode(doc.getElementById('password'))
+        password:   valid.getNode(doc.getElementById('password'))
+      }
+
+      // ------ Helper functions ------ 
+
+      function calculateAge(date) {
+
+          if (!valid.isDate(date)) return false;
+
+          var birthDate = new Date(date);
+          var today     = new Date();
+
+          function diffInDays(d1, d2){
+
+            //the absolute difference of d1 and d2 in milli-seconds   
+            var diffInMilliSec = Math.abs(d1.getTime() - d2.getTime());
+            var milliSecInAday = 24 * 60 * 60 * 1000; //milli-seconds in a day
+
+            return Math.floor(diffInMilliSec/milliSecInAday);
+          }
+
+          return Math.floor(diffInDays(birthDate, today) / 365);
       }
 
       function resetCustomValidity(node) {
-        node.setCustomValidity('');
+          node.className = node.className.replace(/\binvalid\b/,'');
+          node.setCustomValidity('');
       }
 
-      // Sets a custom validity for all the inputs by default
+      function setInvalidClass(node) {
+          if (!valid.contains(node.className, ['invalid'])) {
+              node.className = node.className.trim() + ' invalid';
+          }
+      }
+
+      // ------ END helper functions ------ 
+
+
+      /*
+       * For each input, defines a particular Validator function that must 
+       * be satisfied to proceed further. 
+       */
+
+      inputs.firstName.setValidator(function(){
+
+        var node = this.node;
+
+        if (valid.isEmpty(node.value) || valid.isLength(node.value, 2)) {
+              node.setCustomValidity(this.constrValue);
+        } else {
+              resetCustomValidity(node);
+        }
+
+      });
+
+      inputs.lastName.setValidator(function(){
+
+        var node = this.node;
+
+        if (valid.isEmpty(node.value) || valid.isLength(node.value, 2)) {
+              node.setCustomValidity(this.constrValue);
+        } else {
+              resetCustomValidity(node);
+        }
+
+      });
+
+      inputs.email.setValidator(function(){
+
+          var node = this.node;
+
+          try {
+            if (valid.isEmpty(node.value) || !valid.isEmailAddress(node.value)) {
+                node.setCustomValidity(this.constrValue);
+            } else {
+                resetCustomValidity(node);
+            }
+          } catch (err) {}
+
+      });
+
+      inputs.birthD.setValidator(function(){
+
+          var node = this.node;
+
+          try { 
+
+            if (!valid.isBeforeToday(node.value)) {
+                node.setCustomValidity(this.constrValue);
+            } else if (calculateAge(node.value) < 16) {
+                node.setCustomValidity('The minimum age is 16');
+            } else {
+                resetCustomValidity(node);
+            }
+          } catch (err) {
+                node.setCustomValidity(this.constrValue);
+          }
+
+      });
+
+      inputs.password.setValidator(function(){
+
+          var node = this.node;
+
+          try {
+            if (valid.isEmpty(node.value) || valid.isLength(node.value, 6)) {
+                node.setCustomValidity(this.constrValue);
+            } else {
+                resetCustomValidity(node);
+            }
+          } catch (err) {
+                node.setCustomValidity(this.constrValue);
+          }
+
+      });
+
+
+      /* Sets an initial custom validity for every input 
+       * All the indicated inputs are not valid by default
+       */
+
       for (var input in inputs) {
         if (inputs.hasOwnProperty(input)) {
-          inputs[input].node.setCustomValidity(inputs[input].constr);
+          inputs[input].node.setCustomValidity(inputs[input].constr.constrValue);
+          // Defines custom event listeners
+          inputs[input].node.addEventListener('change', function (event) {
+            setInvalidClass(this); // Invalid by default
+            inputs[this.getAttribute("name")].constr.check();
+          });
         }
       }
 
-      // Defines a custom event listener
-      inputs.firstName.node.addEventListener('keyup', function (event) {
-          if (valid.isEmpty(this.value) || valid.isLength(this.value, 2)) {
-              this.setCustomValidity(inputs.firstName.constr);
-          } else {
-              resetCustomValidity(this);
-          }
-      });
-
-      inputs.lastName.node.addEventListener('keyup', function (event) {
-          if (valid.isEmpty(this.value) || valid.isLength(this.value, 2)) {
-              this.setCustomValidity(inputs.lastName.constr);
-          } else {
-              resetCustomValidity(this);
-          }
-      });
-
-      inputs.email.node.addEventListener('keyup', function (event) {
-          if (valid.isEmpty(this.value) || valid.isEmailAddress(this.value)) {
-              this.setCustomValidity(inputs.email.constr);
-          } else {
-              resetCustomValidity(this);
-          }
-      });
-
-      inputs.birthD.node.addEventListener('blur', function (event) {
-        try { 
-          if (!valid.isBeforeToday(this.value)) {
-              this.setCustomValidity(inputs.birthD.constr);
-          } else {
-              resetCustomValidity(this);
-          }
-        } catch (err) {}
-      });
-
       signupForm.addEventListener('submit', function (event) {
+
       // Check the inputs validity. If at least one input is invalid, stop
       // the form
       for (var input in inputs) {
           if (inputs.hasOwnProperty(input)) {
-              if (!inputs[input].validity.valid) {
+              if (!inputs[input].node.validity.valid) {
                   event.preventDefault();
               }
           }
