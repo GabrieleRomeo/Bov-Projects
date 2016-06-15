@@ -61,6 +61,21 @@ var Validators = (function(window) {
          */
         cstr['node']  = node;
         cstr['check'] = function() {};
+        cstr['resetCustomValidity'] = function(customClassName) {
+
+            var txt = customClassName || 'invalid';
+            var node = this.node;
+            var regExp = new RegExp(txt, 'ig'); 
+            node.className = node.className.replace(regExp,'');
+            node.setCustomValidity('');
+        }
+        cstr['setInvalidClass'] = function (customClassName) {
+              var node = this.node;
+              
+              if (!validator.contains(node.className, ['invalid'])) {
+                  node.className = node.className.trim() + ' invalid';
+              }
+        }
 
         /**
          * Creates a constraint for a particular node. If a constraint with the
@@ -98,6 +113,7 @@ var Validators = (function(window) {
             }
             
         }
+
 
         return {
             node:   cstr['node'], // reference to the node object
