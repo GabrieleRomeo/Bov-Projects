@@ -34,3 +34,7 @@ img { max-width: 100%; }
   line-height: 1.5;
   color: #333;
 }
+
+input.invalid {
+  border: 1px solid red;
+}
