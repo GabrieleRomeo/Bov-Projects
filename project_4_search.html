@@ -63,8 +63,67 @@
 
       var inputs = {
         searchTxt:  valid.getNode(doc.getElementById('searchTxt')),
-        category:   valid.getNode(doc.getElementById('lastName'))
+        category:   valid.getNode(doc.getElementById('category'))
       }
+
+      /*
+       * For each input, defines a particular Validator function that must 
+       * be satisfied to proceed further. 
+       */
+       inputs.searchTxt.setValidator(function() {
+
+          var node = this.node;
+
+          if (valid.isEmpty(node.value)) {
+                node.setCustomValidity(this.constrValue);
+          } else {
+                this.resetCustomValidity();
+          }
+
+       })
+
+       inputs.category.setConstraint('Please, select at least one Category');
+       inputs.category.setValidator(function() {
+
+          var node = this.node;
+          if (valid.isEmpty(node.options[node.selectedIndex].value)) {
+                node.setCustomValidity(this.constrValue);
+          } else {
+                this.resetCustomValidity();
+          }
+
+       })
+
+      /* Sets an initial custom validity for every input 
+       * All the indicated inputs are not valid by default
+       */
+
+      for (var input in inputs) {
+        if (inputs.hasOwnProperty(input)) {
+          inputs[input].node.setCustomValidity(inputs[input].constr.constrValue);
+          // Defines custom event listeners
+          inputs[input].node.addEventListener('change', function (event) {
+
+            var constr = inputs[this.getAttribute("name")].constr;
+            constr.setInvalidClass();
+            constr.check();
+          });
+        }
+      }
+
+      signupForm.addEventListener('submit', function (event) {
+
+      // Check the inputs validity. If at least one input is invalid, stop
+      // the form
+      for (var input in inputs) {
+          if (inputs.hasOwnProperty(input)) {
+              if (!inputs[input].node.validity.valid) {
+                  event.preventDefault();
+              }
+          }
+      }
+
+      }, false);
   </script>
 </body>
 </html>
