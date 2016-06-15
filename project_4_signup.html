@@ -82,7 +82,7 @@
         password:   valid.getNode(doc.getElementById('password'))
       }
 
-      // ------ Helper functions ------ 
+      // ------ Helper function ------ 
 
       function calculateAge(date) {
 
@@ -103,18 +103,7 @@
           return Math.floor(diffInDays(birthDate, today) / 365);
       }
 
-      function resetCustomValidity(node) {
-          node.className = node.className.replace(/\binvalid\b/,'');
-          node.setCustomValidity('');
-      }
-
-      function setInvalidClass(node) {
-          if (!valid.contains(node.className, ['invalid'])) {
-              node.className = node.className.trim() + ' invalid';
-          }
-      }
-
-      // ------ END helper functions ------ 
+      // ------ END helper function ------ 
 
 
       /*
@@ -129,7 +118,7 @@
         if (valid.isEmpty(node.value) || valid.isLength(node.value, 2)) {
               node.setCustomValidity(this.constrValue);
         } else {
-              resetCustomValidity(node);
+              this.resetCustomValidity();
         }
 
       });
@@ -141,7 +130,7 @@
         if (valid.isEmpty(node.value) || valid.isLength(node.value, 2)) {
               node.setCustomValidity(this.constrValue);
         } else {
-              resetCustomValidity(node);
+              this.resetCustomValidity();
         }
 
       });
@@ -154,7 +143,7 @@
             if (valid.isEmpty(node.value) || !valid.isEmailAddress(node.value)) {
                 node.setCustomValidity(this.constrValue);
             } else {
-                resetCustomValidity(node);
+                this.resetCustomValidity();
             }
           } catch (err) {}
 
@@ -171,7 +160,7 @@
             } else if (calculateAge(node.value) < 16) {
                 node.setCustomValidity('The minimum age is 16');
             } else {
-                resetCustomValidity(node);
+                this.resetCustomValidity();
             }
           } catch (err) {
                 node.setCustomValidity(this.constrValue);
@@ -187,7 +176,7 @@
             if (valid.isEmpty(node.value) || valid.isLength(node.value, 6)) {
                 node.setCustomValidity(this.constrValue);
             } else {
-                resetCustomValidity(node);
+                this.resetCustomValidity();
             }
           } catch (err) {
                 node.setCustomValidity(this.constrValue);
@@ -205,8 +194,9 @@
           inputs[input].node.setCustomValidity(inputs[input].constr.constrValue);
           // Defines custom event listeners
           inputs[input].node.addEventListener('change', function (event) {
-            setInvalidClass(this); // Invalid by default
-            inputs[this.getAttribute("name")].constr.check();
+            var constr = inputs[this.getAttribute("name")].constr;
+            constr.setInvalidClass();
+            constr.check();
           });
         }
       }
