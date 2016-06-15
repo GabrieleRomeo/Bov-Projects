@@ -40,7 +40,7 @@
     
     <!-- PROJECT CONTENT -->
 
-  <form class="search">
+  <form class="search" id="search" name="search">
     <label class="search__label" for="searchTxt">Search</label>
       <input class="search__input" id="searchTxt" name="searchTxt" type="text">
       <select class="search__select" id="category" name="category">
@@ -56,6 +56,15 @@
   </form>
 
   <script src="js/validator.js"></script>
+  <script>
+      var valid       = Validators;
+      var signupForm  = document.getElementById('search');
+      var doc         = document;
 
+      var inputs = {
+        searchTxt:  valid.getNode(doc.getElementById('searchTxt')),
+        category:   valid.getNode(doc.getElementById('lastName'))
+      }
+  </script>
 </body>
 </html>
