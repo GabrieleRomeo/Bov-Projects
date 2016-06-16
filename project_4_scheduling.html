@@ -74,18 +74,30 @@
     </header>
       <form class="schedule__form" action="" method="">
         <p id="evtNameBox">
-          <label class="schedule__label" for="evtName">Event Name</label>
+          <label class="schedule__label
+                        schedule__label--required" 
+                 for="evtName">Event Name
+          </label>
           <input class="schedule__input
                         schedule__input--evtName"
                  id="evtName"
                  name="evtName"
                  type="text">
         </p>
-        <label class="schedule__label" for="date">Date MM/GG/YY</label>
+        <label class="schedule__label 
+                      schedule__label--required" 
+               for="date">Date MM/GG/YY
+        </label>
         <input class="schedule__input" type="text" id="date" name="date">
-        <label class="schedule__label" for="time">Time HH:MM</label>
+        <label class="schedule__label
+                      schedule__label--required" 
+               for="time">Time HH:MM
+        </label>
         <input class="schedule__input" type="text" id="time" name="time">
-        <label class="schedule__label" for="timezone">Timezone</label>
+        <label class="schedule__label
+                      schedule__label--required"
+               for="timezone">Timezone
+        </label>
         <select class="schedule__select" name="timezone" id="timezone">
           <option value="">Select</option>
           <option value="1">Time Zone 1</option>

@@ -37,6 +37,11 @@ body {
   margin-bottom: 10px;
   font-weight: 100;
 }
+
+.schedule__label--required:after {
+  content: '*';
+  color: #FF2E55;
+}
  
 #evtNameBox {
   margin-top: 30px;
