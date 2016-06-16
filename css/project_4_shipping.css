@@ -77,7 +77,7 @@ input[type="checkbox"].shipping__input--billing-checkbox {
   font-weight: 100;
 }
 
-.shipping__label:after {
+.shipping__label--required:after {
   content: '*';
   color: #FF2E55;
 }
