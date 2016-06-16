@@ -57,7 +57,8 @@
                  id="F12Berlinetta"
                  name="option"
                  type="radio"   
-                 value="1">
+                 value="1"
+                 checked>
           <label class="item__label" for="F12Berlinetta">
             <span class="label__span">F12 Berlinetta</span>
           </label>
@@ -118,7 +119,7 @@
                  for="other">
                  Other
           </label>
-          <input  class="list__input"
+          <input  class="list__input list__input--hidden"
                   id="otherValue"
                   name="otherValue" 
                   type="text">
@@ -144,16 +145,21 @@
       // Sets the change event for all the radio buttons
       var newObject = Object.keys(options).map(function(elem) {
           options[elem].addEventListener('change', function (event) {
-            var input = inputs.otherValue;
+
+            var input     = inputs.otherValue;
+            var className = input.node.className.replace(/\s\w+--h\w+/,'');
             /* 
              * When the radio button with ID 'other' is selected we need 
              * to set the constraint for the otherValue textbox
              */
             if (this.getAttribute('id') === 'other' && this.checked) {
                 input.node.setCustomValidity(input.constr.defaultConstraint);
+                input.node.className = className;
             } else {
+                input.node.className += ' ' + input.node.className +'--hidden';
                 input.constr.resetCustomValidity();
             }
+
           });
       });
 
@@ -164,9 +170,9 @@
 
         if (valid.isEmpty(value)) {
               node.setCustomValidity(this.defaultConstraint);
-        } else if (!valid.isOfLength(value, 4)) {
+        } else if (!valid.isOfLength(value, 2)) {
           node.setCustomValidity('The length of this field should' + 
-                                 'not be lower than four characters');
+                                 'not be lower than two characters');
         }
           else {
               this.resetCustomValidity();
@@ -178,6 +184,7 @@
       inputs.otherValue.node.addEventListener('change', function (event) {
 
             var constr = inputs[this.getAttribute('id')].constr;
+
             constr.setInvalidClass();
             constr.check();
 
