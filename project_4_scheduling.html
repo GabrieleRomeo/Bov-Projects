@@ -74,33 +74,33 @@
     </header>
       <form class="schedule__form" action="" method="">
         <p id="evtNameBox">
-          <label class="shipping__label" for="evtName">Event Name</label>
-          <input class="shipping__input
-                        shipping__input--evtName"
+          <label class="schedule__label" for="evtName">Event Name</label>
+          <input class="schedule__input
+                        schedule__input--evtName"
                  id="evtName"
                  name="evtName"
                  type="text">
         </p>
-        <label class="shipping__label" for="date">Date MM/GG/YY</label>
-        <input class="shipping__input" type="text" id="date" name="date">
-        <label class="shipping__label" for="time">Time HH:MM</label>
-        <input class="shipping__input" type="text" id="time" name="time">
-        <label class="shipping__label" for="timezone">Timezone</label>
-        <select class="shipping__select" name="timezone" id="timezone">
+        <label class="schedule__label" for="date">Date MM/GG/YY</label>
+        <input class="schedule__input" type="text" id="date" name="date">
+        <label class="schedule__label" for="time">Time HH:MM</label>
+        <input class="schedule__input" type="text" id="time" name="time">
+        <label class="schedule__label" for="timezone">Timezone</label>
+        <select class="schedule__select" name="timezone" id="timezone">
           <option value="">Select</option>
           <option value="1">Time Zone 1</option>
           <option value="2">Time Zone 2</option>
         </select>
-        <label class="shipping__label" for="message">Message</label>
-        <textarea class="shipping__textarea" 
+        <label class="schedule__label" for="message">Message</label>
+        <textarea class="schedule__textarea" 
                   id="message" 
                   name="message">
         </textarea>
-        <label class="shipping__label" for="contact">Contact Number</label>
-        <input class="shipping__input" type="text" id="contact" name="contact">
-        <label class="shipping__label" for="email">Email Address</label>
-        <input class="shipping__input" type="text" id="email" name="email">
-        <input class="shipping__submit" type="submit" value="next">
+        <label class="schedule__label" for="contact">Contact Number</label>
+        <input class="schedule__input" type="text" id="contact" name="contact">
+        <label class="schedule__label" for="email">Email Address</label>
+        <input class="schedule__input" type="text" id="email" name="email">
+        <input class="schedule__submit" type="submit" value="next">
       </form>
     </section>
 </div>
@@ -109,7 +109,7 @@
   <script>
       var valid = Validators;
       var doc   = document;
-      var form  = doc.getElementById('shippingForm');
+      var form  = doc.getElementById('scheduleForm');
       var same  = doc.getElementById('use_B_address');
 
 
@@ -148,7 +148,7 @@
         }
 
       });
-      inputs.S_address.setConstraint('Please specify a valid Shipping Address');
+      inputs.S_address.setConstraint('Please specify a valid schedule Address');
       inputs.S_address.setValidator(function(){
 
           var node = this.node;
@@ -219,7 +219,7 @@
             constr.setInvalidClass();
             constr.check();
             // every time the checkbox is checked, it copies the value of
-            // the current 'billing' input into the corresponding shipping input
+            // the current 'billing' input into the corresponding schedule input
             if (same.checked) {
               doc.getElementById(billInp).value = constr.node.value;
             }
@@ -228,7 +228,7 @@
         }
       }
 
-      // Copies the billing info into the corresponding shipping inputs
+      // Copies the billing info into the corresponding schedule inputs
       same.addEventListener('change', function (event) {
 
         var _self = this;
