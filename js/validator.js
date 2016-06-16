@@ -7,6 +7,7 @@ var Validators = (function(window) {
     var _map    = Array.prototype.map;
 
     var _constraints = {
+        default: 'Please fill this field.',
         firstName: {
             constrValue: 'The First Name must be a nonempty string of length at least of 2 characters'
         },
@@ -76,6 +77,7 @@ var Validators = (function(window) {
                   node.className = node.className.trim() + ' invalid';
               }
         }
+        cstr['defaultConstraint'] = _constraints.default;
 
         /**
          * Creates a constraint for a particular node. If a constraint with the
@@ -116,10 +118,10 @@ var Validators = (function(window) {
 
 
         return {
-            node:   cstr['node'], // reference to the node object
-            constr: cstr,
-            setConstraint: setConstraint,
-            setValidator: setConstraintValidator
+            node:               cstr['node'], // reference to the node object
+            constr:             cstr,
+            setConstraint:      setConstraint,
+            setValidator:       setConstraintValidator
         }
     }
 
