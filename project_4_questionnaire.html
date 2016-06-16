@@ -39,7 +39,7 @@
   </header>
     
   <!-- PROJECT CONTENT -->
-  <section class="questionnaire">
+  <section class="questionnaire" id="questionnaire">
     <header>
       <picture>
         <img class="questionnaire__logo"
@@ -131,6 +131,72 @@
   </section>
 
   <script src="js/validator.js"></script>
+  <script>
+      var valid       = Validators;
+      var signupForm  = document.getElementById('questionnaire');
+      var doc         = document;
+      var options     = doc.getElementsByName('option');
 
+      var inputs = {
+        otherValue: valid.getNode(doc.getElementById('otherValue'))
+      }
+
+      // Sets the change event for all the radio buttons
+      var newObject = Object.keys(options).map(function(elem) {
+          options[elem].addEventListener('change', function (event) {
+            var input = inputs.otherValue;
+            /* 
+             * When the radio button with ID 'other' is selected we need 
+             * to set the constraint for the otherValue textbox
+             */
+            if (this.getAttribute('id') === 'other' && this.checked) {
+                input.node.setCustomValidity(input.constr.defaultConstraint);
+            } else {
+                input.constr.resetCustomValidity();
+            }
+          });
+      });
+
+      inputs.otherValue.setValidator(function() {
+
+        var node  = this.node;
+        var value = node.value;
+
+        if (valid.isEmpty(value)) {
+              node.setCustomValidity(this.defaultConstraint);
+        } else if (!valid.isOfLength(value, 4)) {
+          node.setCustomValidity('The length of this field should' + 
+                                 'not be lower than four characters');
+        }
+          else {
+              this.resetCustomValidity();
+        }
+
+      })
+
+
+      inputs.otherValue.node.addEventListener('change', function (event) {
+
+            var constr = inputs[this.getAttribute('id')].constr;
+            constr.setInvalidClass();
+            constr.check();
+
+      });
+
+
+      signupForm.addEventListener('submit', function (event) {
+
+      // Check the validity. If at least one input is invalid, stop
+      // the submit event
+      for (var input in inputs) {
+          if (inputs.hasOwnProperty(input)) {
+              if (!inputs[input].node.validity.valid) {
+                  event.preventDefault();
+              }
+          }
+      }
+
+      }, false);
+  </script>
 </body>
 </html>
