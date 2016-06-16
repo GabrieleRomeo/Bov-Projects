@@ -58,7 +58,7 @@
   <script src="js/validator.js"></script>
   <script>
       var valid       = Validators;
-      var signupForm  = document.getElementById('search');
+      var searchForm  = document.getElementById('search');
       var doc         = document;
 
       var inputs = {
@@ -86,6 +86,7 @@
        inputs.category.setValidator(function() {
 
           var node = this.node;
+          
           if (valid.isEmpty(node.options[node.selectedIndex].value)) {
                 node.setCustomValidity(this.constrValue);
           } else {
@@ -111,7 +112,7 @@
         }
       }
 
-      signupForm.addEventListener('submit', function (event) {
+      searchForm.addEventListener('submit', function (event) {
 
       // Check the inputs validity. If at least one input is invalid, stop
       // the form
