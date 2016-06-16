@@ -55,7 +55,7 @@
           </p>
         </div>
       </header>
-      <form class="login__form">
+      <form class="login__form" id="loginForm" name="loginForm">
         <input class="login__input 
                       login__input--username" 
                id="username" 
@@ -123,6 +123,79 @@
   </article>
 
   <script src="js/validator.js"></script>
+  <script>
+      var valid       = Validators;
+      var loginForm   = document.getElementById('loginForm');
+      var doc         = document;
+
+      var inputs = {
+        username:  valid.getNode(doc.getElementById('username')),
+        password:  valid.getNode(doc.getElementById('password'))
+      }
+
+      /*
+       * For each input, defines a particular Validator function that must 
+       * be satisfied to proceed further. 
+       */
+
+       inputs.username.setConstraint('Please, provide a valid username \n' +
+        'The username must be a nonempty string and should be at least 3 ' +
+        'characters in length.');
+
+       inputs.username.setValidator(function() {
+
+          var node = this.node;
+
+          if (valid.isEmpty(node.value) || valid.isLength(node.value, 2)) {
+                node.setCustomValidity(this.constrValue);
+          } else {
+                this.resetCustomValidity();
+          }
+
+       })
+
+       inputs.password.setValidator(function() {
+
+          var node = this.node;
+          if (valid.isEmpty(node.value) || valid.isLength(node.value, 5)) {
+                node.setCustomValidity(this.constrValue);
+          } else {
+                this.resetCustomValidity();
+          }
+
+       })
+
+      /* Sets an initial custom validity for every input 
+       * All the indicated inputs are not valid by default
+       */
+
+      for (var input in inputs) {
+        if (inputs.hasOwnProperty(input)) {
+          inputs[input].node.setCustomValidity(inputs[input].constr.constrValue);
+          // Defines custom event listeners
+          inputs[input].node.addEventListener('change', function (event) {
+
+            var constr = inputs[this.getAttribute('id')].constr;
+            constr.setInvalidClass();
+            constr.check();
+          });
+        }
+      }
+
+      loginForm.addEventListener('submit', function (event) {
+
+      // Check the inputs validity. If at least one input is invalid, stop
+      // the form
+      for (var input in inputs) {
+          if (inputs.hasOwnProperty(input)) {
+              if (!inputs[input].node.validity.valid) {
+                  event.preventDefault();
+              }
+          }
+      }
+
+      }, false);
+  </script>
 
 </body>
 </html>
