@@ -42,8 +42,12 @@
 
   <form class="search" id="search" name="search">
     <label class="search__label" for="searchTxt">Search</label>
-      <input class="search__input" id="searchTxt" name="searchTxt" type="text">
-      <select class="search__select" id="category" name="category">
+      <input class="search__input" 
+             id="searchTxt" 
+             name="searchTxt" 
+             type="text"
+             required>
+      <select class="search__select" id="category" name="category" required>
         <option value="">Select</option>
         <option value="1">Category one</option>
         <option value="2">Category two</option>
@@ -70,27 +74,28 @@
        * For each input, defines a particular Validator function that must 
        * be satisfied to proceed further. 
        */
-       inputs.searchTxt.setValidator(function() {
+       inputs.searchTxt.setValidator(function(elem) {
 
-          var node = this.node;
+          var constr = elem.constr;
+          var value  = elem.node.value;
 
-          if (valid.isEmpty(node.value)) {
-                node.setCustomValidity(this.constrValue);
+          if (valid.isEmpty(value)) {
+              elem.node.setCustomValidity(constr.value);
           } else {
-                this.resetCustomValidity();
+              elem.resetCustomValidity();
           }
 
        })
 
        inputs.category.setConstraint('Please, select at least one Category');
-       inputs.category.setValidator(function() {
+       inputs.category.setValidator(function(elem) {
 
-          var node = this.node;
+          var node = elem.node;
           
           if (valid.isEmpty(node.options[node.selectedIndex].value)) {
-                node.setCustomValidity(this.constrValue);
+              node.setCustomValidity(this.constrValue);
           } else {
-                this.resetCustomValidity();
+              elem.resetCustomValidity();
           }
 
        })
@@ -101,14 +106,21 @@
 
       for (var input in inputs) {
         if (inputs.hasOwnProperty(input)) {
-          inputs[input].node.setCustomValidity(inputs[input].constr.constrValue);
-          // Defines custom event listeners
-          inputs[input].node.addEventListener('change', function (event) {
-
-            var constr = inputs[this.getAttribute("name")].constr;
-            constr.setInvalidClass();
-            constr.check();
-          });
+          if (inputs[input].constr.isRequired) {
+            inputs[input].node.setCustomValidity(
+                                              inputs[input].constr.constrValue);
+          }
+          
+          // Using a closure, it defines a custom event listener for every
+          // single inputs object
+          (function(input) {
+            input.node.addEventListener('change', function (event) {
+              
+                var constr  = input.constr;
+                input.setInvalidClass();
+                constr.check();
+            })
+          })(inputs[input]);
         }
       }
 
