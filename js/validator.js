@@ -58,7 +58,7 @@ var Validators = (function(window) {
         } 
 
         /* 
-         * Sets the node and default check function
+         * Sets default methods and properties for the constr object 
          */
         cstr['node']  = node;
         cstr['check'] = function() {};
@@ -94,9 +94,13 @@ var Validators = (function(window) {
             if (!value) return false;
 
             this.constr.constrValue = value;
+            // Changes Custom Validity for inputs with the attribute required 
+            if (typeof this.node.getAttribute('required') === "string") {
+                this.node.setCustomValidity(value);
+            }
 
             if (typeof validator === "function") {
-                this.constr.check = validator;
+                setConstraintValidator(validator);
             }
         }
 
@@ -109,9 +113,21 @@ var Validators = (function(window) {
          */ 
 
         var setConstraintValidator = function(validator) {
-
             if (typeof validator === "function") {
-                this.constr.check = validator;
+                this.constr.check = function() {
+                    /*
+                     * If this input does not have the 'required' attribute and
+                     * it does not have currently any content, reset its 
+                     * validity to restore previous problems (if any) and skip 
+                     * the validator function
+                     */
+                    if(typeof this.node.getAttribute('required') !== "string" && 
+                              this.node.value === '') {
+                        this.resetCustomValidity();
+                    } else {
+                        validator(this);
+                    }
+                };
             }
             
         }
@@ -319,8 +335,7 @@ var Validators = (function(window) {
         }
 
         if (parts.length !== 2) {
-            _errorMsg  = 'Unexpected Error\n';
-            _errorMsg +=  'Invalid Phone Number\n';
+            _errorMsg  =  'Invalid Phone Number\n';
             _errorMsg +=  'The prefix must be indicated with the - character\n';  
             _errorMsg +=  'Valid examples:\n';
             _errorMsg +=  'Landlines:\n';
@@ -340,21 +355,19 @@ var Validators = (function(window) {
         type  = prefix.charAt(startAt - 1);
         zone  = prefix.charAt(startAt);
 
-        if (!_isNumeric(number)) {
+        if (!typeof number === "number") {
             return false;
         }
 
         if ( intPrefix && (!isContryC) ) {
-            _errorMsg  = 'Unexpected Error\n';
-            _errorMsg +=  'Invalid International prefix (';
+            _errorMsg  =  'Invalid International prefix (';
             _errorMsg +=  INTERNATIONAL_PRFX + ')';
             _errorMsg += ' OR country code (+' + COUNTRY_CODE + ')';
             throw _errorMsg;
         }
 
         if ( prefix.indexOf('+') !== -1 && (!isContryC) ) {
-            _errorMsg  = 'Unexpected Error\n';
-            _errorMsg += 'Invalid country code.\n'
+            _errorMsg  = 'Invalid country code.\n'
             _errorMsg += 'Italy Contry Code (+' + COUNTRY_CODE +')';
             throw _errorMsg;
         }
