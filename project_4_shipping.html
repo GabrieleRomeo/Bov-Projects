@@ -59,7 +59,8 @@
           <input class="shipping__input"
                  type="text"
                  id="S_firstName"
-                 name="S_firstName">
+                 name="S_firstName"
+                 required>
           <label class="shipping__label shipping__label--required" 
                  for="S_lastName">
             Last Name
@@ -67,7 +68,8 @@
           <input class="shipping__input"
                  type="text"
                  id="S_lastName"
-                 name="S_lastName">
+                 name="S_lastName"
+                 required>
           <label class="shipping__label shipping__label--required" 
                  for="S_address">
             Address
@@ -75,7 +77,8 @@
           <input class="shipping__input"
                  type="text"
                  id="S_address"
-                 name="S_address">
+                 name="S_address"
+                 required>
           <label class="shipping__label shipping__label--required" 
                  for="S_city">
             City
@@ -83,7 +86,8 @@
           <input class="shipping__input"
                  type="text"
                  id="S_city"
-                 name="S_city">
+                 name="S_city"
+                 required>
           <label class="shipping__label shipping__label--required" 
                  for="S_country">
             Country
@@ -91,7 +95,8 @@
           <input class="shipping__input"
                  type="text"
                  id="S_country"
-                 name="S_country">
+                 name="S_country"
+                 required>
       </section>
       <section class="shipping__section section--billing">
         <header>
@@ -159,91 +164,105 @@
         S_lastName:  valid.getNode(doc.getElementById('S_lastName'), 'lastName'),
         S_address:   valid.getNode(doc.getElementById('S_address')),
         S_city:      valid.getNode(doc.getElementById('S_city')),
-        S_country:   valid.getNode(doc.getElementById('S_country'))
+        S_country:   valid.getNode(doc.getElementById('S_country')),
+        B_firstName: valid.getNode(doc.getElementById('B_firstName'), 'first1Name'),
+        B_lastName:  valid.getNode(doc.getElementById('B_lastName'), 'last1Name'),
+        B_address:   valid.getNode(doc.getElementById('B_address')),
+        B_city:      valid.getNode(doc.getElementById('B_city')),
+        B_country:   valid.getNode(doc.getElementById('B_country'))
       }
+
+      var firstNameValidator = (function(elem){
+
+          var value = elem.node.value;
+
+          if (valid.isLength(value, 1)) {
+                elem.node.setCustomValidity(elem.constrValue);
+          } else {
+                elem.resetCustomValidity();
+          }
+
+      });
+
+      var lastNameValidator = (function(elem){
+
+          var value = elem.node.value;
+
+          if (valid.isLength(value, 1)) {
+                elem.node.setCustomValidity(elem.constrValue);
+          } else {
+                elem.resetCustomValidity();
+          }
+
+      });
+
+      var addressValidator = (function(elem){
+
+          var value = elem.node.value;
+
+          try {
+              if (!valid.moreWordsThan(value, 2)) {
+                  elem.node.setCustomValidity('A valid address is composed at least ' +
+                                         'two words');
+              } else {
+                  elem.resetCustomValidity();
+              }
+          } catch (err) {}
+
+      });
+
+      var cityValidator = (function(elem){
+
+          var value = elem.node.value;
+
+          try { 
+              if (valid.isLength(value, 2)) {
+                  elem.node.setCustomValidity('The minimum length of this field is 3');
+              } else {
+                  elem.resetCustomValidity();
+              }
+          } catch (err) {
+                elem.node.setCustomValidity(this.constrValue);
+          }
+
+      });
+
+      var countryValidator = (function(elem){
+
+          var value = elem.node.value;
+
+          try {
+            if (valid.isLength(value, 2)) {
+                elem.node.setCustomValidity('The minimum length of this field is 3');
+            } else {
+                elem.resetCustomValidity();
+            }
+          } catch (err) {
+                elem.node.setCustomValidity(this.constrValue);
+          }
+
+      });
 
       /*
        * For each input, defines a particular Validator function that must 
        * be satisfied to proceed further. 
        */
 
-      inputs.S_firstName.setValidator(function(){
+      inputs.S_firstName.setValidator(firstNameValidator);
+      inputs.B_firstName.setValidator(firstNameValidator);
+      
+      inputs.S_lastName.setValidator(lastNameValidator);
+      inputs.B_lastName.setValidator(lastNameValidator);
 
-        var node = this.node;
-
-        if (valid.isEmpty(node.value) && !valid.isLength(node.value, 2)) {
-              node.setCustomValidity(this.constrValue);
-        } else {
-              this.resetCustomValidity();
-        }
-
-      });
-
-      inputs.S_lastName.setValidator(function(){
-
-        var node = this.node;
-
-        if (valid.isEmpty(node.value) && !valid.isLength(node.value, 2)) {
-              node.setCustomValidity(this.constrValue);
-        } else {
-              this.resetCustomValidity();
-        }
-
-      });
       inputs.S_address.setConstraint('Please specify a valid Shipping Address');
-      inputs.S_address.setValidator(function(){
+      inputs.S_address.setValidator(addressValidator);
+      inputs.B_address.setValidator(addressValidator);
 
-          var node = this.node;
+      inputs.S_city.setValidator(cityValidator);
+      inputs.B_city.setValidator(cityValidator);
 
-          try {
-            if (valid.isEmpty(node.value)) {
-                node.setCustomValidity(this.constrValue);
-            } else if (!valid.moreWordsThan(node.value, 2)) {
-                node.setCustomValidity('A valid address is composed at least ' +
-                                       'two words');
-            } else {
-                this.resetCustomValidity();
-            }
-          } catch (err) {}
-
-      });
-
-      inputs.S_city.setValidator(function(){
-
-          var node = this.node;
-
-          try { 
-
-            if (valid.isEmpty(node.value)) {
-                node.setCustomValidity(this.constrValue);
-            } else if (valid.isLength(node.value, 2)) {
-                node.setCustomValidity('The minimum length of this field is 3');
-            } else {
-                this.resetCustomValidity();
-            }
-          } catch (err) {
-                node.setCustomValidity(this.constrValue);
-          }
-
-      });
-
-      inputs.S_country.setValidator(function(){
-
-          var node = this.node;
-
-          try {
-            if (valid.isEmpty(node.value)) {
-                node.setCustomValidity(this.constrValue);
-            } else if (valid.isLength(node.value, 2)) {
-                node.setCustomValidity('The minimum length of this field is 3');
-            } else {
-                this.resetCustomValidity();
-            }
-          } catch (err) {
-                node.setCustomValidity(this.constrValue);
-          }
-
-      });
+      inputs.S_country.setValidator(countryValidator);
+      inputs.B_country.setValidator(countryValidator);
 
 
       /* Sets an initial custom validity for every input 
@@ -252,21 +271,26 @@
 
       for (var input in inputs) {
         if (inputs.hasOwnProperty(input)) {
-          inputs[input].node.setCustomValidity(inputs[input].constr.constrValue);
-          // Defines custom event listeners
-          inputs[input].node.addEventListener('change', function (event) {
-
-            var constr  = inputs[this.getAttribute('id')].constr;
-            var billInp = this.getAttribute('id').replace(/S/,'B');
-            constr.setInvalidClass();
-            constr.check();
-            // every time the checkbox is checked, it copies the value of
-            // the current 'billing' input into the corresponding shipping input
-            if (same.checked) {
-              doc.getElementById(billInp).value = constr.node.value;
-            }
-
-          });
+          if (inputs[input].constr.isRequired) {
+            inputs[input].node.setCustomValidity(
+                                              inputs[input].constr.constrValue);
+          }
+          // Using a closure, it defines a custom event listener for every
+          // single inputs object
+          (function(input) {
+            input.node.addEventListener('change', function (event) {
+                var constr  = input.constr;
+                var billInp = input.node.getAttribute('id').replace(/S/,'B');
+                constr.setInvalidClass();
+                constr.check();
+                // every time the checkbox is checked, it copies the value of
+                // the current 'billing' input into the corresponding shipping 
+                // input
+                if (same.checked) {
+                  doc.getElementById(billInp).value = constr.node.value;
+                }
+            })
+          })(inputs[input]);
         }
       }
 
