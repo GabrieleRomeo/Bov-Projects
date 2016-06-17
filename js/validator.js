@@ -7,12 +7,13 @@ var Validators = (function(window) {
     var _map    = Array.prototype.map;
 
     var _constraints = {
-        default: 'Please fill this field.',
         firstName: {
-            constrValue: 'The First Name must be a nonempty string of length at least of 2 characters'
+            constrValue: 'The First Name must be a nonempty string of length ' +
+                         'at least of 2 characters'
         },
         lastName: {
-            constrValue: 'The Last Name must be a nonempty string of length at least of 2 characters'
+            constrValue: 'The Last Name must be a nonempty string of length ' +
+                         'at least of 2 characters'
         },
         email: {
             constrValue: 'Please provide a valid Email address'
@@ -21,7 +22,8 @@ var Validators = (function(window) {
             constrValue: 'Please provide a valid Birthday'
         },
         password: {
-            constrValue: 'The Password must be from six to eight characters in length'
+            constrValue: 'The Password must be from six to eight characters ' +
+                         ' in length'
         }
     } 
 
@@ -77,7 +79,6 @@ var Validators = (function(window) {
                   node.className = node.className.trim() + ' invalid';
               }
         }
-        cstr['defaultConstraint'] = _constraints.default;
 
         /**
          * Creates a constraint for a particular node. If a constraint with the
@@ -129,7 +130,6 @@ var Validators = (function(window) {
                     }
                 };
             }
-            
         }
 
 
