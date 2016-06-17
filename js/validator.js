@@ -658,7 +658,7 @@ var Validators = (function(window) {
 
     validator.isLength = function isLength(input, n) {
         
-        if (_isMissing(arguments)) return false;
+        if (_isMissing(arguments)) return true;
         
         return input.length <= n;
     }
