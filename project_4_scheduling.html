@@ -88,17 +88,12 @@
         </p>
         <label class="schedule__label 
                       schedule__label--required" 
-               for="date">Date MM/GG/YY
+               for="date">Date & Time
         </label>
         <input class="schedule__input" 
                id="date"
                name="date"
                type="text" required>
-        <label class="schedule__label
-                      schedule__label--required" 
-               for="time">Time HH:MM
-        </label>
-        <input class="schedule__input" type="text" id="time" name="time">
         <label class="schedule__label
                       schedule__label--required"
                for="timezone">Timezone
@@ -164,13 +159,13 @@
           var value = elem.node.value;
 
           try {
-            if (!valid.isDate(value)) {
-                elem.node.setCustomValidity('Please provide a valid date');
-            } else if (valid.isBeforeToday(value)) {
-                elem.node.setCustomValidity('The specified date is before today');
-            } else {
-                elem.resetCustomValidity();
-            }
+              if (!valid.isDate(value)) {
+                  elem.node.setCustomValidity('Please provide a valid date');
+              } else if (valid.isBeforeToday(value)) {
+                  elem.node.setCustomValidity('The specified date is before today');
+              } else {
+                  elem.resetCustomValidity();
+              }
           } catch (err) {
               elem.node.setCustomValidity(elem.constrValue);
           }
@@ -196,11 +191,11 @@
           var value = elem.node.value;
 
           try {
-            if (!valid.isPhoneNumber(value)) {
-                elem.node.setCustomValidity(elem.constrValue);
-            } else {
-                elem.resetCustomValidity();
-            }
+              if (!valid.isPhoneNumber(value)) {
+                  elem.node.setCustomValidity(elem.constrValue);
+              } else {
+                  elem.resetCustomValidity();
+              }
           } catch (err) {
               elem.node.setCustomValidity(err);
           }
@@ -209,13 +204,15 @@
 
       inputs.email.setConstraint('Please provide a valid email');
       inputs.email.setValidator(function(elem){
-        console.log(elem);
+        
           var value = elem.node.value;
 
-          try {
-            if (!valid.isEmailAddress(value)) {
-                elem.node.setCustomValidity(elem.constrValue);
-            }
+          try {            
+              if (!valid.isEmailAddress(value)) {
+                  elem.node.setCustomValidity(elem.constrValue);
+              } else {
+                  elem.resetCustomValidity();
+              }
           } catch (err) {
               elem.node.setCustomValidity(err);
           }
@@ -230,14 +227,14 @@
       for (var input in inputs) {
         if (inputs.hasOwnProperty(input)) {
           if (inputs[input].constr.isRequired) {
-            inputs[input].node.setCustomValidity(inputs[input].constr.constrValue);
+            inputs[input].node.setCustomValidity(
+                                              inputs[input].constr.constrValue);
           }
           
           // Defines custom event listeners
           inputs[input].node.addEventListener('change', function (event) {
 
             var constr  = inputs[this.getAttribute('id')].constr;
-
             constr.setInvalidClass();
             constr.check();
 
@@ -249,7 +246,7 @@
       form.addEventListener('submit', function (event) {
 
       // Check the inputs validity. If at least one input is invalid, stop
-      // the form
+      // the event propagation
       for (var input in inputs) {
           if (inputs.hasOwnProperty(input)) {
               if (!inputs[input].node.validity.valid) {
