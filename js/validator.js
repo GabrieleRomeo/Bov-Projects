@@ -8,21 +8,21 @@ var Validators = (function(window) {
 
     var _constraints = {
         firstName: {
-            constrValue: 'The First Name must be a non-empty string of at ' +
+            value: 'The First Name must be a non-empty string of at ' +
                          'least two characters'
         },
         lastName: {
-            constrValue: 'The Last Name must be a non-empty string of at ' +
+            value: 'The Last Name must be a non-empty string of at ' +
                          'least two characters'
         },
         email: {
-            constrValue: 'Please provide a valid Email Address'
+            value: 'Please provide a valid Email Address'
         },
         dateOfBirth: {
-            constrValue: 'Please provide a valid Birthday'
+            value: 'Please provide a valid Birthday'
         },
         password: {
-            constrValue: 'The Password must contain from six to eight ' +
+            value: 'The Password must contain from six to eight ' +
                          'characters'
         }
     } 
@@ -34,20 +34,25 @@ var Validators = (function(window) {
      * @param  {object} node A document Object node
      * @param  {string} name A custom name for the element's constraint
      *
-     * @returns {object} An object with properties filled in 
-     *                   - 'node' a reference to the original Object node
+     * @returns {object} A custom Node object with properties and methods useful
+     *                   to manage it
+     *                   - 'node' a reference to the original node Object
      *                   - 'constr' the constraint Object associated with 
-     *                              the original node (Validation Rules)
-     *                   - 'setConstraint' utility function
-     *                   - 'setCheckConstraint' utility function
-     *          {null} If the provided node does not exist  
+     *                              the original node 
+     *                   - 'setConstraint'          utility function
+     *                   - 'setValidator'           utility function
+     *                   - 'setInvalidClass'        utility function
+     *                   - 'resetCustomValidity'    utility function
+     *                   - 'setCheckConstraint'     utility function
+     *
+     * @returns {null} If the provided node does not exist  
      */ 
 
     validator.getNode = function(node, name) {
 
         if (!node || node.nodeType != 1) return null;
 
-        var id   = name || node.getAttribute("id") || node.getAttribute("name");
+        var id   =  node.getAttribute("id") || node.getAttribute("name");
         var cstr = _constraints[id];
 
         if (!id) return null;
@@ -55,30 +60,22 @@ var Validators = (function(window) {
         // Creates a default constraint for undefined constraints
         if (!cstr) {
             _constraints[id] = {};
-            _constraints[id]['constrValue'] = "Please fill this field";            
+
+            if (_constraints[name]) {
+                _constraints[id]['value'] = _constraints[name]['value'];
+            } else {
+                _constraints[id]['value'] =  "Please fill this field";
+            }
+                                             
             cstr = _constraints[id];
         } 
 
         /* 
          * Sets default methods and properties for the constr object 
          */
-        cstr['node']  = node;
+        //cstr['node']  = node;
         cstr['check'] = function() {};
-        cstr['resetCustomValidity'] = function(customClassName) {
 
-            var txt = customClassName || 'invalid';
-            var node = this.node;
-            var regExp = new RegExp(txt, 'ig'); 
-            node.className = node.className.replace(regExp,'');
-            node.setCustomValidity('');
-        }
-        cstr['setInvalidClass'] = function (customClassName) {
-
-              var node = this.node;
-              if (!validator.contains(node.className, ['invalid'])) {
-                  node.className = node.className.trim() + ' invalid';
-              }
-        }
 
         /**
          * Creates a constraint for a particular node. If a constraint with the
@@ -114,32 +111,73 @@ var Validators = (function(window) {
          */ 
 
         var setConstraintValidator = function(validator) {
+
+            var _self = this;
+
             if (typeof validator === "function") {
-                this.constr.check = function() {
+                _self.constr.check = function() {
                     /*
                      * If this input does not have the 'required' attribute and
                      * it does not have currently any content, reset its 
                      * validity to restore previous problems (if any) and skip 
                      * the validator function
                      */
-                    if(typeof this.node.getAttribute('required') !== "string" && 
-                              this.node.value === '') {
-                        this.resetCustomValidity();
+                    if(typeof _self.node.getAttribute('required') !== "string" && 
+                              _self.node.value === '') {
+                        _self.resetCustomValidity();
                     } else {
-                        validator(this);
+                        validator(_self);
                     }
                 };
             }
         }
 
+        /**
+         * Reset a custom validity and removes the class 'invalid' from
+         * the original DOM node
+         *
+         * @param {string} customClassName An optional class name
+         *                                       
+         * @returns {void} 
+         */ 
+
+        var resetCustomValidity = function(customClassName) {
+
+            var txt = customClassName || 'invalid';
+            var node = this.node;
+            var regExp = new RegExp(txt, 'ig'); 
+            node.className = node.className.replace(regExp,'');
+            node.setCustomValidity('');
+        }
+
+        /**
+         * Sets a custom validity and adds the class 'invalid' 
+         * the original DOM node
+         *
+         * @param {string} customClassName An optional class name
+         *                                       
+         * @returns {void} 
+         */ 
+
+        var setInvalidClass = function (customClassName) {
+
+              var node = this.node;
+              
+              if (!validator.contains(node.className, ['invalid'])) {
+                  node.className = node.className.trim() + ' invalid';
+              }
+        }
 
         return {
-            node:               cstr['node'], // reference to the node object
-            constr:             cstr,
-            setConstraint:      setConstraint,
-            setValidator:       setConstraintValidator
+            node:                node, // reference to the node object
+            constr:              cstr,
+            setConstraint:       setConstraint,
+            setValidator:        setConstraintValidator,
+            setInvalidClass:     setInvalidClass,
+            resetCustomValidity: resetCustomValidity
         }
-    }
+
+    };
 
     /**
      * Retrieve a constraint (if any)

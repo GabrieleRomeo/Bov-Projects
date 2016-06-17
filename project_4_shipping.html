@@ -160,13 +160,17 @@
 
 
       var inputs = {
-        S_firstName: valid.getNode(doc.getElementById('S_firstName'), 'firstName'),
-        S_lastName:  valid.getNode(doc.getElementById('S_lastName'), 'lastName'),
+        S_firstName: valid.getNode(doc.getElementById('S_firstName'),
+                                   'firstName'),
+        S_lastName:  valid.getNode(doc.getElementById('S_lastName'),
+                                   'lastName'),
         S_address:   valid.getNode(doc.getElementById('S_address')),
         S_city:      valid.getNode(doc.getElementById('S_city')),
         S_country:   valid.getNode(doc.getElementById('S_country')),
-        B_firstName: valid.getNode(doc.getElementById('B_firstName'), 'first1Name'),
-        B_lastName:  valid.getNode(doc.getElementById('B_lastName'), 'last1Name'),
+        B_firstName: valid.getNode(doc.getElementById('B_firstName'),
+                                   'firstName'),
+        B_lastName:  valid.getNode(doc.getElementById('B_lastName'), 
+                                   'lastName'),
         B_address:   valid.getNode(doc.getElementById('B_address')),
         B_city:      valid.getNode(doc.getElementById('B_city')),
         B_country:   valid.getNode(doc.getElementById('B_country'))
@@ -174,10 +178,11 @@
 
       var firstNameValidator = (function(elem){
 
-          var value = elem.node.value;
+          var constr = elem.constr;
+          var value  = elem.node.value;
 
           if (valid.isLength(value, 1)) {
-                elem.node.setCustomValidity(elem.constrValue);
+                elem.node.setCustomValidity(constr.value);
           } else {
                 elem.resetCustomValidity();
           }
@@ -186,10 +191,11 @@
 
       var lastNameValidator = (function(elem){
 
-          var value = elem.node.value;
+          var constr = elem.constr;
+          var value  = elem.node.value;
 
           if (valid.isLength(value, 1)) {
-                elem.node.setCustomValidity(elem.constrValue);
+                elem.node.setCustomValidity(constr.value);
           } else {
                 elem.resetCustomValidity();
           }
@@ -198,12 +204,13 @@
 
       var addressValidator = (function(elem){
 
-          var value = elem.node.value;
+          var constr = elem.constr;
+          var value  = elem.node.value;
 
           try {
               if (!valid.moreWordsThan(value, 2)) {
-                  elem.node.setCustomValidity('A valid address is composed at least ' +
-                                         'two words');
+                  elem.node.setCustomValidity('A valid address is composed ' + 
+                                              'at least two words');
               } else {
                   elem.resetCustomValidity();
               }
@@ -213,32 +220,38 @@
 
       var cityValidator = (function(elem){
 
-          var value = elem.node.value;
+          var constr = elem.constr;
+          var value  = elem.node.value;
 
           try { 
               if (valid.isLength(value, 2)) {
-                  elem.node.setCustomValidity('The minimum length of this field is 3');
+                  elem.node.setCustomValidity('The minimum length of this ' + 
+                                              'field should be at least of ' + 
+                                              ' three characters');
               } else {
                   elem.resetCustomValidity();
               }
           } catch (err) {
-                elem.node.setCustomValidity(this.constrValue);
+                elem.node.setCustomValidity(constr.value);
           }
 
       });
 
       var countryValidator = (function(elem){
 
-          var value = elem.node.value;
+          var constr = elem.constr;
+          var value  = elem.node.value;
 
           try {
             if (valid.isLength(value, 2)) {
-                elem.node.setCustomValidity('The minimum length of this field is 3');
+                  elem.node.setCustomValidity('The minimum length of this ' + 
+                                              'field should be at least of ' + 
+                                              ' three characters');
             } else {
                 elem.resetCustomValidity();
             }
           } catch (err) {
-                elem.node.setCustomValidity(this.constrValue);
+                elem.node.setCustomValidity(constr.value);
           }
 
       });
@@ -250,16 +263,17 @@
 
       inputs.S_firstName.setValidator(firstNameValidator);
       inputs.B_firstName.setValidator(firstNameValidator);
-      
+
       inputs.S_lastName.setValidator(lastNameValidator);
       inputs.B_lastName.setValidator(lastNameValidator);
 
-      inputs.S_address.setConstraint('Please specify a valid Shipping Address');
+
       inputs.S_address.setValidator(addressValidator);
       inputs.B_address.setValidator(addressValidator);
 
       inputs.S_city.setValidator(cityValidator);
       inputs.B_city.setValidator(cityValidator);
+
 
       inputs.S_country.setValidator(countryValidator);
       inputs.B_country.setValidator(countryValidator);
@@ -275,19 +289,27 @@
             inputs[input].node.setCustomValidity(
                                               inputs[input].constr.constrValue);
           }
+
           // Using a closure, it defines a custom event listener for every
           // single inputs object
           (function(input) {
             input.node.addEventListener('change', function (event) {
+
                 var constr  = input.constr;
-                var billInp = input.node.getAttribute('id').replace(/S/,'B');
-                constr.setInvalidClass();
+                var id      = input.node.getAttribute('id');
+                var billInp = id.replace(/S/,'B');
+
+                input.setInvalidClass();
                 constr.check();
-                // every time the checkbox is checked, it copies the value of
-                // the current 'billing' input into the corresponding shipping 
-                // input
-                if (same.checked) {
-                  doc.getElementById(billInp).value = constr.node.value;
+
+                if (id.indexOf('S_') === 0) { 
+                    /* Every time the checkbox is checked, it copies the value 
+                     * of the current 'shipping' input into the corresponding 
+                     * billing input
+                     */
+                    if (same.checked) {
+                      doc.getElementById(billInp).value = input.node.value;
+                    }
                 }
             })
           })(inputs[input]);
