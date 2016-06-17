@@ -62,15 +62,16 @@
           <div id="card-info">
             <ul class="form-list">
               <li>
-                <label for="cardnumber">Card Number</label>
-                <input id="cardnumber" 
+                <label for="cardNumber">Card Number</label>
+                <input id="cardNumber" 
                        type="text" 
-                       name="cardnumber"  
-                       maxlength="19">
+                       name="cardNumber"  
+                       maxlength="19"
+                       required>
               </li>
               <li>
                 <label for="expirationMonth">Card expiration</label>
-                <select name="expirationMonth" id="expirationMonth">
+                <select name="expirationMonth" id="expirationMonth" required>
                     <option value="">Month</option>
                     <option value="1">01 - January</option>
                     <option value="2">02 - February</option>
@@ -85,7 +86,7 @@
                     <option value="11">11 - November</option>
                     <option value="12">12 - December</option>
                 </select>
-                <select name="expirationYear" id="expirationYear">
+                <select name="expirationYear" id="expirationYear" required>
                     <option value="">Year</option>
                     <option value="0">2016</option>
                     <option value="1">2017</option>
@@ -105,8 +106,8 @@
                 </select>                               
               </li>
               <li>
-                <label for="fullname">Full Name</label>
-                <input type="text" name="fullname" id="fullname">
+                <label for="fullName">Full Name</label>
+                <input name="fullName" id="fullName" type="text" required>
               </li>
             </ul>
           </div>
@@ -115,11 +116,12 @@
             <div id="right">
               <ul class="form-list">
                 <li>
-                  <label for="csvnumber">CVC / CCV</label>
-                  <input id="csvnumber"
-                         name="csvnumber"
+                  <label for="csvNumber">CVC / CCV</label>
+                  <input id="csvNumber"
+                         name="csvNumber"
                          type="text" 
-                         maxlength="3">   
+                         maxlength="3"
+                         required>   
                   <span>The last 3 digits on back of the card</span>
                 </li>
               </ul>
@@ -132,6 +134,145 @@
   </div>
 
   <script src="js/validator.js"></script>
+  <script>
+      var valid = Validators;
+      var doc   = document;
+      var form  = doc.getElementById('cardForm');
 
+      var inputs = {
+          cardNumber:   valid.getNode(doc.getElementById('cardNumber')),
+          expM:         valid.getNode(doc.getElementById('expirationMonth'),
+                                                         'expirationMonth'),
+          expY:         valid.getNode(doc.getElementById('expirationYear'),
+                                                         'expirationYear'),
+          fullName:     valid.getNode(doc.getElementById('fullName')),
+          csv:          valid.getNode(doc.getElementById('csvNumber'),
+                                                         'csvNumber')
+      }
+
+      /*
+       * For each input, defines a particular Validator function that must 
+       * be satisfied to proceed further. 
+       */
+
+      inputs.cardNumber.setConstraint('The Card Number must be a non-empty ' +
+                                   'string of sixteen alphanumeric characters');
+      inputs.cardNumber.setValidator(function(elem){
+
+          var value = elem.node.value;
+
+          try { 
+              if (!valid.isCreditCard(value)) {
+                    elem.node.setCustomValidity(elem.constrValue);
+              } else {
+                    elem.resetCustomValidity();
+              }
+          } catch (err) {
+            console.log(err);
+                  elem.node.setCustomValidity(elem.constrValue);
+          }
+
+      });
+
+      inputs.expM.setConstraint('Please select the Expiration Month');
+      inputs.expM.setValidator(function(elem) {
+
+          var node = elem.node;
+          
+          if (valid.isEmpty(node.options[node.selectedIndex].value)) {
+                node.setCustomValidity(elem.constrValue);
+          } else {
+                elem.resetCustomValidity();
+          }
+
+      });
+
+      inputs.expY.setConstraint('Please select the Expiration Year');
+      inputs.expY.setValidator(function(elem) {
+
+          var node = elem.node;
+          
+          if (valid.isEmpty(node.options[node.selectedIndex].value)) {
+                node.setCustomValidity(elem.constrValue);
+          } else {
+                elem.resetCustomValidity();
+          }
+
+      });
+
+      inputs.fullName.setConstraint('The Full Name must be a non-empty ' +
+                                   'string of at least two words');
+      inputs.fullName.setValidator(function(elem){
+
+          var value = elem.node.value;
+
+          try { 
+              if (valid.lessWordsThan(value, 1)) {
+                    elem.node.setCustomValidity(elem.constrValue);
+              } else {
+                    elem.resetCustomValidity();
+              }
+          } catch (err) {
+                  elem.node.setCustomValidity(elem.constrValue);
+          }
+
+      });
+
+      inputs.csv.setConstraint('Please provide a valid CVC/CCV number \n' +
+                               'The last 3 digits on back of the card');
+      inputs.csv.setValidator(function(elem){
+
+          var value = elem.node.value;
+
+          try { 
+              if (valid.isLength(value, 2) || isNaN(value)) {
+                    elem.node.setCustomValidity(elem.constrValue);
+              } else {
+                    elem.resetCustomValidity();
+              }
+          } catch (err) {
+                  elem.node.setCustomValidity(elem.constrValue);
+          }
+
+      });
+
+      /* Sets an initial custom validity for every input 
+       * All the indicated inputs are not valid by default
+       */
+
+      for (var input in inputs) {
+        if (inputs.hasOwnProperty(input)) {
+          if (inputs[input].constr.isRequired) {
+            inputs[input].node.setCustomValidity(
+                                              inputs[input].constr.constrValue);
+          }
+          
+          // Using a closure, it defines a custom event listener for every
+          // single inputs object
+          (function(input) {
+            input.node.addEventListener('change', function (event) {
+                var constr  = input.constr;
+                constr.setInvalidClass();
+                constr.check();
+            })
+          })(inputs[input]);
+        }
+      }
+
+
+      form.addEventListener('submit', function (event) {
+
+      // Check the inputs validity. If at least one input is invalid, stop
+      // the event propagation
+      for (var input in inputs) {
+          if (inputs.hasOwnProperty(input)) {
+              if (!inputs[input].node.validity.valid) {
+                  event.preventDefault();
+              }
+          }
+      }
+
+      }, false);
+  </script>
 </body>
 </html>
