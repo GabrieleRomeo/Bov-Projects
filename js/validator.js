@@ -8,22 +8,22 @@ var Validators = (function(window) {
 
     var _constraints = {
         firstName: {
-            constrValue: 'The First Name must be a nonempty string of length ' +
-                         'at least of 2 characters'
+            constrValue: 'The First Name must be a non-empty string of at ' +
+                         'least two characters'
         },
         lastName: {
-            constrValue: 'The Last Name must be a nonempty string of length ' +
-                         'at least of 2 characters'
+            constrValue: 'The Last Name must be a non-empty string of at ' +
+                         'least two characters'
         },
         email: {
-            constrValue: 'Please provide a valid Email address'
+            constrValue: 'Please provide a valid Email Address'
         },
         dateOfBirth: {
             constrValue: 'Please provide a valid Birthday'
         },
         password: {
-            constrValue: 'The Password must be from six to eight characters ' +
-                         ' in length'
+            constrValue: 'The Password must contain from six to eight ' +
+                         'characters'
         }
     } 
 
