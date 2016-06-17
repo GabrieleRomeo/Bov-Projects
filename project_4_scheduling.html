@@ -219,7 +219,6 @@
 
       });
 
-
       /* Sets an initial custom validity for every input 
        * All the indicated inputs are not valid by default
        */
@@ -231,14 +230,15 @@
                                               inputs[input].constr.constrValue);
           }
           
-          // Defines custom event listeners
-          inputs[input].node.addEventListener('change', function (event) {
-
-            var constr  = inputs[this.getAttribute('id')].constr;
-            constr.setInvalidClass();
-            constr.check();
-
-          });
+          // Using a closure, it defines a custom event listener for every
+          // single inputs object
+          (function(input) {
+            input.node.addEventListener('change', function (event) {
+                var constr  = input.constr;
+                constr.setInvalidClass();
+                constr.check();
+            })
+          })(inputs[input]);
         }
       }
 
