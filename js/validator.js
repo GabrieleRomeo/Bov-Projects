@@ -212,7 +212,7 @@ var Validators = (function(window) {
       var diffInMilliSec = d1.getTime() - d2.getTime();
       var milliSecInAday = 24 * 60 * 60 * 1000; //total milli-seconds in a day
 
-      return Math.ceil(diffInMilliSec/milliSecInAday);
+      return Math.floor(diffInMilliSec/milliSecInAday);
     }
 
     /**
