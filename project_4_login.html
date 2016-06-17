@@ -60,12 +60,14 @@
                       login__input--username" 
                id="username" 
                type="text"
-               placeholder="Insert your username">
+               placeholder="Insert your username"
+               required>
         <input class="login__input
                       login__input--password" 
                id="password" 
                type="password" 
-               placeholder="Insert your password">
+               placeholder="Insert your password"
+               required>
         <label class="login__label" for="remember" id="rem">
           Remember me
         </label>
@@ -142,25 +144,28 @@
         'The username must be a nonempty string and should be at least 3 ' +
         'characters in length.');
 
-       inputs.username.setValidator(function() {
+       inputs.username.setValidator(function(elem) {
 
-          var node = this.node;
+          var constr = elem.constr;
+          var value  = elem.node.value;
 
-          if (valid.isEmpty(node.value) || valid.isLength(node.value, 2)) {
-                node.setCustomValidity(this.constrValue);
+          if (valid.isLength(value, 2)) {
+              elem.node.setCustomValidity(constr.value);
           } else {
-                this.resetCustomValidity();
+              elem.resetCustomValidity();
           }
 
        })
 
-       inputs.password.setValidator(function() {
+       inputs.password.setValidator(function(elem) {
 
-          var node = this.node;
-          if (valid.isEmpty(node.value) || valid.isLength(node.value, 5)) {
-                node.setCustomValidity(this.constrValue);
+          var constr = elem.constr;
+          var value  = elem.node.value;
+
+          if (valid.isLength(value, 5)) {
+              elem.node.setCustomValidity(constr.value);
           } else {
-                this.resetCustomValidity();
+              elem.resetCustomValidity();
           }
 
        })
@@ -171,14 +176,21 @@
 
       for (var input in inputs) {
         if (inputs.hasOwnProperty(input)) {
-          inputs[input].node.setCustomValidity(inputs[input].constr.constrValue);
-          // Defines custom event listeners
-          inputs[input].node.addEventListener('change', function (event) {
-
-            var constr = inputs[this.getAttribute('id')].constr;
-            constr.setInvalidClass();
-            constr.check();
-          });
+          if (inputs[input].constr.isRequired) {
+            inputs[input].node.setCustomValidity(
+                                              inputs[input].constr.constrValue);
+          }
+          
+          // Using a closure, it defines a custom event listener for every
+          // single inputs object
+          (function(input) {
+            input.node.addEventListener('change', function (event) {
+              
+                var constr  = input.constr;
+                input.setInvalidClass();
+                constr.check();
+            })
+          })(inputs[input]);
         }
       }
 
