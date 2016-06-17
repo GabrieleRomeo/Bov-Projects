@@ -42,16 +42,78 @@
     <!-- PROJECT CONTENT -->
     
   <article class="shipping">
-    <section class="shipping__section section--billing">
-      <header>
-        <picture>
-          <img class="shipping__header__picture"
-               src="images/billing.png"
-               alt="Billing Information">
-        </picture>
-        <h2 class="shipping__header--title">Billing Address</h2>
-      </header>
-      <form class="shipping__form" id="shippingForm" name="shippingForm">
+    <form class="shipping__form" id="shippingForm" name="shippingForm">
+      <section class="shipping__section section--shipping">
+        <header>
+          <picture>
+            <img class="shipping__header__picture"
+                 src="images/shipping.png"
+                 alt="Shipping Information">
+          </picture>
+          <h2 class="shipping__header--title">Shipping Address</h2>
+        </header>
+          <label class="shipping__label shipping__label--required" 
+                 for="S_firstName">
+            First Name
+          </label>
+          <input class="shipping__input"
+                 type="text"
+                 id="S_firstName"
+                 name="S_firstName">
+          <label class="shipping__label shipping__label--required" 
+                 for="S_lastName">
+            Last Name
+          </label>
+          <input class="shipping__input"
+                 type="text"
+                 id="S_lastName"
+                 name="S_lastName">
+          <label class="shipping__label shipping__label--required" 
+                 for="S_address">
+            Address
+          </label>
+          <input class="shipping__input"
+                 type="text"
+                 id="S_address"
+                 name="S_address">
+          <label class="shipping__label shipping__label--required" 
+                 for="S_city">
+            City
+          </label>
+          <input class="shipping__input"
+                 type="text"
+                 id="S_city"
+                 name="S_city">
+          <label class="shipping__label shipping__label--required" 
+                 for="S_country">
+            Country
+          </label>
+          <input class="shipping__input"
+                 type="text"
+                 id="S_country"
+                 name="S_country">
+      </section>
+      <section class="shipping__section section--billing">
+        <header>
+          <picture>
+            <img class="shipping__header__picture"
+                 src="images/billing.png"
+                 alt="Billing Information">
+          </picture>
+          <h2 class="shipping__header--title">Billing Address</h2>
+        </header>
+        <div class="shipping__use-billing">
+        <label class="shipping__label
+                      shipping__label--use-billing"
+                for="use_B_address">
+          Use the following information for Billing
+        </label>
+        <input class="shipping__input
+                      shipping__input--billing-checkbox"
+               type="checkbox"
+               id="use_B_address"
+               name="use_B_address" value="1">
+        </div>
         <label class="shipping__label" for="B_firstName">First Name</label>
         <input class="shipping__input"
                type="text"
@@ -76,74 +138,12 @@
         <input class="shipping__input"
                type="text"
                id="B_country"
-               name="B_country">          
-    </section>
-    <section class="shipping__section section--shipping">
-      <header>
-        <picture>
-          <img class="shipping__header__picture"
-               src="images/shipping.png"
-               alt="Shipping Information">
-        </picture>
-        <h2 class="shipping__header--title">Shipping Address</h2>
-      </header>
-      <div class="shipping__use-billing">
-        <label class="shipping__label
-                      shipping__label--use-billing"
-                for="use_B_address">
-          Use the following information for Billing
-        </label>
-        <input class="shipping__input
-                      shipping__input--billing-checkbox"
-               type="checkbox"
-               id="use_B_address"
-               name="use_B_address" value="1">
-      </div>
-        <label class="shipping__label shipping__label--required" 
-               for="S_firstName">
-          First Name
-        </label>
-        <input class="shipping__input"
-               type="text"
-               id="S_firstName"
-               name="S_firstName">
-        <label class="shipping__label shipping__label--required" 
-               for="S_lastName">
-          Last Name
-        </label>
-        <input class="shipping__input"
-               type="text"
-               id="S_lastName"
-               name="S_lastName">
-        <label class="shipping__label shipping__label--required" 
-               for="S_address">
-          Address
-        </label>
-        <input class="shipping__input"
-               type="text"
-               id="S_address"
-               name="S_address">
-        <label class="shipping__label shipping__label--required" 
-               for="S_city">
-          City
-        </label>
-        <input class="shipping__input"
-               type="text"
-               id="S_city"
-               name="S_city">
-        <label class="shipping__label shipping__label--required" 
-               for="S_country">
-          Country
-        </label>
-        <input class="shipping__input"
-               type="text"
-               id="S_country"
-               name="S_country">
+               name="B_country">
         <input class="shipping__input
                       shipping__input--submit"
                type="submit" value="submit">
-      </form>
-    </section>
+      </section>
+    </form>
   </article>
 
   <script src="js/validator.js"></script>
