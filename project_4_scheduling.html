@@ -148,7 +148,7 @@
           var value = elem.node.value;
 
           try { 
-              if (value === 'abc') {
+              if (valid.isLength(value, 3)) {
                     elem.node.setCustomValidity(elem.constrValue);
               } else {
                     elem.resetCustomValidity();
@@ -209,7 +209,7 @@
 
       inputs.email.setConstraint('Please provide a valid email');
       inputs.email.setValidator(function(elem){
-
+        console.log(elem);
           var value = elem.node.value;
 
           try {
