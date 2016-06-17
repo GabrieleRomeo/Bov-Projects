@@ -47,24 +47,43 @@
       <label class="sign-up__label" for="firstName">
         First Name
       </label>
-      <input class="sign-up__input" id="firstName" name="firstName" type="text">
+      <input class="sign-up__input" 
+             id="firstName" 
+             name="firstName" 
+             type="text"
+             required>
       <label class="sign-up__label" for="LastName">
         Last Name
       </label>
-      <input class="sign-up__input" id="lastName" name="lastName" type="text">
+      <input class="sign-up__input" 
+             id="lastName" 
+             name="lastName" 
+             type="text"
+             required>
       <label class="sign-up__label" for="email">
         Email address
       </label>
-      <input class="sign-up__input" id="email" name="email" type="email">
+      <input class="sign-up__input"
+             id="email" 
+             name="email" 
+             type="email"
+             required>
       <label class="sign-up__label" for="birthD">
         Birth Date
       </label>
-      <input class="sign-up__input" id="birthD" name="birthD" type="text">
+      <input class="sign-up__input"
+             id="birthD" 
+             name="birthD" 
+             type="text"
+             required>
       <label class="sign-up__label" for="password">
         Password
       </label>
       <input class="sign-up__input" 
-             id="password" name="password" type="password">
+             id="password"
+             name="password"
+             type="password"
+             required>
       <input class="sign-up__submit" type="submit" value="Submit">
   </form>
 
@@ -75,11 +94,11 @@
       var doc = document;
 
       var inputs = {
-        firstName:  valid.getNode(doc.getElementById('firstName')),
-        lastName:   valid.getNode(doc.getElementById('lastName')),
+        firstName:  valid.getNode(doc.getElementById('firstName'),'firstName'),
+        lastName:   valid.getNode(doc.getElementById('lastName'),'LastName'),
         email:      valid.getNode(doc.getElementById('email')),
         birthD:     valid.getNode(doc.getElementById('birthD'), 'dateOfBirth'),
-        password:   valid.getNode(doc.getElementById('password'))
+        password:   valid.getNode(doc.getElementById('password', 'password'))
       }
 
       // ------ Helper function ------ 
@@ -111,75 +130,79 @@
        * be satisfied to proceed further. 
        */
 
-      inputs.firstName.setValidator(function(){
+      inputs.firstName.setValidator(function(elem){
 
-        var node = this.node;
+          var constr = elem.constr;
+          var value  = elem.node.value;
 
-        if (valid.isEmpty(node.value) || valid.isLength(node.value, 2)) {
-              node.setCustomValidity(this.constrValue);
-        } else {
-              this.resetCustomValidity();
-        }
-
-      });
-
-      inputs.lastName.setValidator(function(){
-
-        var node = this.node;
-
-        if (valid.isEmpty(node.value) || valid.isLength(node.value, 2)) {
-              node.setCustomValidity(this.constrValue);
-        } else {
-              this.resetCustomValidity();
-        }
-
-      });
-
-      inputs.email.setValidator(function(){
-
-          var node = this.node;
-
-          try {
-            if (valid.isEmpty(node.value) || !valid.isEmailAddress(node.value)) {
-                node.setCustomValidity(this.constrValue);
-            } else {
-                this.resetCustomValidity();
-            }
-          } catch (err) {}
-
-      });
-
-      inputs.birthD.setValidator(function(){
-
-          var node = this.node;
-
-          try { 
-
-            if (!valid.isBeforeToday(node.value)) {
-                node.setCustomValidity(this.constrValue);
-            } else if (calculateAge(node.value) < 16) {
-                node.setCustomValidity('The minimum age is 16');
-            } else {
-                this.resetCustomValidity();
-            }
-          } catch (err) {
-                node.setCustomValidity(this.constrValue);
+          if (valid.isLength(value, 2)) {
+              elem.node.setCustomValidity(constr.value);
+          } else {
+              elem.resetCustomValidity();
           }
 
       });
 
-      inputs.password.setValidator(function(){
+      inputs.lastName.setValidator(function(elem){
 
-          var node = this.node;
+          var constr = elem.constr;
+          var value  = elem.node.value;
+
+          if (valid.isLength(value, 2)) {
+              elem.node.setCustomValidity(constr.value);
+          } else {
+              elem.resetCustomValidity();
+          }
+
+      });
+
+      inputs.email.setValidator(function(elem){
+
+          var constr = elem.constr;
+          var value  = elem.node.value;
 
           try {
-            if (valid.isEmpty(node.value) || valid.isLength(node.value, 6)) {
-                node.setCustomValidity(this.constrValue);
-            } else {
-                this.resetCustomValidity();
-            }
+              if (!valid.isEmailAddress(value)) {
+                  elem.node.setCustomValidity(constr.value);
+              } else {
+                  elem.resetCustomValidity();
+              }
+          } catch (err) {}
+
+      });
+
+      inputs.birthD.setValidator(function(elem){
+
+          var constr = elem.constr;
+          var value  = elem.node.value;
+
+          try { 
+              if (!valid.isBeforeToday(value)) {
+                  elem.node.setCustomValidity(constr.value);
+              } else if (calculateAge(value) < 16) {
+                  elem.node.setCustomValidity('The minimum age is 16');
+              } else {
+                  elem.resetCustomValidity();
+              }
           } catch (err) {
-                node.setCustomValidity(this.constrValue);
+                elem.node.setCustomValidity(constr.value);
+          }
+
+      });
+
+      inputs.password.setValidator(function(elem){
+
+          var constr = elem.constr;
+          var value  = elem.node.value;
+
+          try {
+              if (valid.isLength(value, 6)) {
+                  elem.node.setCustomValidity(constr.value);
+              } else {
+                  elem.resetCustomValidity();
+              }
+          } catch (err) {
+                elem.node.setCustomValidity(constr.value);
           }
 
       });
@@ -191,13 +214,21 @@
 
       for (var input in inputs) {
         if (inputs.hasOwnProperty(input)) {
-          inputs[input].node.setCustomValidity(inputs[input].constr.constrValue);
-          // Defines custom event listeners
-          inputs[input].node.addEventListener('change', function (event) {
-            var constr = inputs[this.getAttribute("name")].constr;
-            constr.setInvalidClass();
-            constr.check();
-          });
+          if (inputs[input].constr.isRequired) {
+            inputs[input].elem.node.setCustomValidity(
+                                              inputs[input].constr.constrValue);
+          }
+          
+          // Using a closure, it defines a custom event listener for every
+          // single inputs object
+          (function(input) {
+            input.node.addEventListener('change', function (event) {
+              
+                var constr  = input.constr;
+                input.setInvalidClass();
+                constr.check();
+            })
+          })(inputs[input]);
         }
       }
 

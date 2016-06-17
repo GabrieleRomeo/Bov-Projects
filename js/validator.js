@@ -9,11 +9,11 @@ var Validators = (function(window) {
     var _constraints = {
         firstName: {
             value: 'The First Name must be a non-empty string of at ' +
-                         'least two characters'
+                    'least three characters'
         },
         lastName: {
             value: 'The Last Name must be a non-empty string of at ' +
-                         'least two characters'
+                    'least three characters'
         },
         email: {
             value: 'Please provide a valid Email Address'
@@ -23,7 +23,7 @@ var Validators = (function(window) {
         },
         password: {
             value: 'The Password must contain from six to eight ' +
-                         'characters'
+                   'characters'
         }
     } 
 
@@ -57,10 +57,9 @@ var Validators = (function(window) {
 
         if (!id) return null;
 
-        // Creates a default constraint for undefined constraints
         if (!cstr) {
             _constraints[id] = {};
-
+            // If the constraint provided exists, use it
             if (_constraints[name]) {
                 _constraints[id]['value'] = _constraints[name]['value'];
             } else {
@@ -73,7 +72,7 @@ var Validators = (function(window) {
         /* 
          * Sets default methods and properties for the constr object 
          */
-        //cstr['node']  = node;
+
         cstr['check'] = function() {};
 
 
@@ -87,11 +86,12 @@ var Validators = (function(window) {
          * 
          * @returns {void} 
          */ 
+
         var setConstraint = function(value, validator) {
 
             if (!value) return false;
 
-            // set constraint's value
+            // Set constraint's value
             this.constr.value = value;
 
             // Changes Custom Validity for inputs with the attribute required 
@@ -117,20 +117,27 @@ var Validators = (function(window) {
             var _self = this;
 
             if (typeof validator === "function") {
+
                 _self.constr.check = function() {
+
+                    var _node = _self.node;
+
                     /*
                      * If this input does not have the 'required' attribute and
-                     * it does not have currently any content, reset its 
-                     * validity to restore previous problems (if any) and skip 
+                     * it does not contain any content, reset its validity
+                     * so that it restores previous problems (if any) and skips 
                      * the validator function
                      */
-                    if(typeof _self.node.getAttribute('required') !== "string" && 
-                              _self.node.value === '') {
+
+                    if (typeof _node.getAttribute('required') !== "string" && 
+                               _node.value === '') {
                         _self.resetCustomValidity();
                     } else {
                         validator(_self);
                     }
+
                 };
+
             }
         }
 
