@@ -147,17 +147,23 @@
           options[elem].addEventListener('change', function (event) {
 
             var input     = inputs.otherValue;
-            var className = input.node.className.replace(/\s\w+--h\w+/,'');
+            var classHidd = 'list__input--hidden';
+            var re        = new RegExp(classHidd);
+            var className = input.node.className.replace(re,'');
+            
             /* 
              * When the radio button with ID 'other' is selected we need 
              * to set the constraint for the otherValue textbox
              */
             if (this.getAttribute('id') === 'other' && this.checked) {
-                input.node.setCustomValidity(input.constr.defaultConstraint);
+                input.node.setCustomValidity(input.constr.value);
                 input.node.className = className;
             } else {
-                input.node.className += ' ' + input.node.className +'--hidden';
-                input.constr.resetCustomValidity();
+                if (!valid.contains(input.node.className, ['hidden'])) {
+                    input.node.className += ' ' + classHidd;
+                    inputs.otherValue.node.value = '';
+                    input.resetCustomValidity();
+                }
             }
 
           });
