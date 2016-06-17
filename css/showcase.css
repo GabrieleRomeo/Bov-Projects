@@ -36,5 +36,5 @@ img { max-width: 100%; }
 }
 
 input.invalid {
-  border: 1px solid red;
+  border: 1px solid red !important;
 }
