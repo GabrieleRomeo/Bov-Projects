@@ -140,34 +140,37 @@
                                    'string of at least four characters');
       inputs.evtName.setValidator(function(elem){
 
-          var value = elem.node.value;
+          var constr = elem.constr;
+          var value  = elem.node.value;
 
           try { 
               if (valid.isLength(value, 3)) {
-                    elem.node.setCustomValidity(elem.constrValue);
+                    elem.node.setCustomValidity(constr.value);
               } else {
                     elem.resetCustomValidity();
               }
           } catch (err) {
-                  elem.node.setCustomValidity(elem.constrValue);
+                  elem.node.setCustomValidity(constr.value);
           }
 
       });
 
       inputs.date.setValidator(function(elem){
 
-          var value = elem.node.value;
+          var constr = elem.constr;
+          var value  = elem.node.value;
 
           try {
               if (!valid.isDate(value)) {
                   elem.node.setCustomValidity('Please provide a valid date');
               } else if (valid.isBeforeToday(value)) {
-                  elem.node.setCustomValidity('The specified date is before today');
+                  elem.node.setCustomValidity('The specified date is before ' +
+                                              'today');
               } else {
                   elem.resetCustomValidity();
               }
           } catch (err) {
-              elem.node.setCustomValidity(elem.constrValue);
+              elem.node.setCustomValidity(constr.value);
           }
 
       });
@@ -175,10 +178,11 @@
       inputs.timezone.setConstraint('Please, select at least one Time-zone');
       inputs.timezone.setValidator(function(elem) {
 
-          var node = elem.node;
+          var constr = elem.constr;
+          var node   = elem.node;
           
           if (valid.isEmpty(node.options[node.selectedIndex].value)) {
-                node.setCustomValidity(elem.constrValue);
+                node.setCustomValidity(constr.value);
           } else {
                 elem.resetCustomValidity();
           }
@@ -188,11 +192,12 @@
       inputs.contact.setConstraint('Please provide a valid Italian phone number');
       inputs.contact.setValidator(function(elem){
 
-          var value = elem.node.value;
+          var constr = elem.constr;
+          var value  = elem.node.value;
 
           try {
               if (!valid.isPhoneNumber(value)) {
-                  elem.node.setCustomValidity(elem.constrValue);
+                  elem.node.setCustomValidity(constr.value);
               } else {
                   elem.resetCustomValidity();
               }
@@ -205,11 +210,12 @@
       inputs.email.setConstraint('Please provide a valid email');
       inputs.email.setValidator(function(elem){
         
-          var value = elem.node.value;
+          var constr = elem.constr;
+          var value  = elem.node.value;
 
           try {            
               if (!valid.isEmailAddress(value)) {
-                  elem.node.setCustomValidity(elem.constrValue);
+                  elem.node.setCustomValidity(constr.value);
               } else {
                   elem.resetCustomValidity();
               }
@@ -235,7 +241,7 @@
           (function(input) {
             input.node.addEventListener('change', function (event) {
                 var constr  = input.constr;
-                constr.setInvalidClass();
+                input.setInvalidClass();
                 constr.check();
             })
           })(inputs[input]);

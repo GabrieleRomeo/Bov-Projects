@@ -91,7 +91,9 @@ var Validators = (function(window) {
 
             if (!value) return false;
 
-            this.constr.constrValue = value;
+            // set constraint's value
+            this.constr.value = value;
+
             // Changes Custom Validity for inputs with the attribute required 
             if (typeof this.node.getAttribute('required') === "string") {
                 this.node.setCustomValidity(value);
