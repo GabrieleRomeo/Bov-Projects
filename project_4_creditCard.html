@@ -159,17 +159,18 @@
                                    'string of sixteen alphanumeric characters');
       inputs.cardNumber.setValidator(function(elem){
 
-          var value = elem.node.value;
+          var constr = elem.constr;
+          var value  = elem.node.value;
 
           try { 
               if (!valid.isCreditCard(value)) {
-                    elem.node.setCustomValidity(elem.constrValue);
+                    elem.node.setCustomValidity(constr.value);
               } else {
                     elem.resetCustomValidity();
               }
           } catch (err) {
             console.log(err);
-                  elem.node.setCustomValidity(elem.constrValue);
+                  elem.node.setCustomValidity(constr.value);
           }
 
       });
@@ -177,10 +178,11 @@
       inputs.expM.setConstraint('Please select the Expiration Month');
       inputs.expM.setValidator(function(elem) {
 
-          var node = elem.node;
+          var constr = elem.constr;
+          var node   = elem.node;
           
           if (valid.isEmpty(node.options[node.selectedIndex].value)) {
-                node.setCustomValidity(elem.constrValue);
+                node.setCustomValidity(constr.value);
           } else {
                 elem.resetCustomValidity();
           }
@@ -193,7 +195,7 @@
           var node = elem.node;
           
           if (valid.isEmpty(node.options[node.selectedIndex].value)) {
-                node.setCustomValidity(elem.constrValue);
+                node.setCustomValidity(constr.value);
           } else {
                 elem.resetCustomValidity();
           }
@@ -204,16 +206,17 @@
                                    'string of at least two words');
       inputs.fullName.setValidator(function(elem){
 
-          var value = elem.node.value;
+          var constr = elem.constr;
+          var value  = elem.node.value;
 
           try { 
               if (valid.lessWordsThan(value, 1)) {
-                    elem.node.setCustomValidity(elem.constrValue);
+                    elem.node.setCustomValidity(constr.value);
               } else {
                     elem.resetCustomValidity();
               }
           } catch (err) {
-                  elem.node.setCustomValidity(elem.constrValue);
+                  elem.node.setCustomValidity(constr.value);
           }
 
       });
@@ -222,16 +225,17 @@
                                'The last 3 digits on back of the card');
       inputs.csv.setValidator(function(elem){
 
-          var value = elem.node.value;
+          var constr = elem.constr;
+          var value  = elem.node.value;
 
           try { 
               if (valid.isLength(value, 2) || isNaN(value)) {
-                    elem.node.setCustomValidity(elem.constrValue);
+                    elem.node.setCustomValidity(constr.value);
               } else {
                     elem.resetCustomValidity();
               }
           } catch (err) {
-                  elem.node.setCustomValidity(elem.constrValue);
+                  elem.node.setCustomValidity(constr.value);
           }
 
       });
@@ -251,8 +255,9 @@
           // single inputs object
           (function(input) {
             input.node.addEventListener('change', function (event) {
+              
                 var constr  = input.constr;
-                constr.setInvalidClass();
+                input.setInvalidClass();
                 constr.check();
             })
           })(inputs[input]);
