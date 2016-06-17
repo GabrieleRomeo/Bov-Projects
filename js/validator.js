@@ -73,8 +73,8 @@ var Validators = (function(window) {
             node.setCustomValidity('');
         }
         cstr['setInvalidClass'] = function (customClassName) {
+
               var node = this.node;
-              
               if (!validator.contains(node.className, ['invalid'])) {
                   node.className = node.className.trim() + ' invalid';
               }
@@ -160,23 +160,25 @@ var Validators = (function(window) {
 
     /**
      *  Check for missing arguments.
-     *  It throws an exception if one or more arguments are missing
+     *  It returns True if an argument is missing, False otherwise
      * 
      * @param  {object} arguments The native arguments object.
      *
-     * @returns void
+     * @returns {boolean} true if an argument is missing
      */ 
 
-    function _checkForMissingArgs(arguments) {
+    function _isMissing(arguments) {
 
         var fn = arguments.callee.toString();
         fn = (fn.substr(0, fn.indexOf('{') - 1));
 
         for (var a in arguments) {
           if (!arguments[a]) {
-            throw "Missing argument " + a + " in [ " + fn + " ]";
+            return true;
           }
         }
+
+        return false;
     }
 
     /**
@@ -227,7 +229,7 @@ var Validators = (function(window) {
 
     validator.isEmailAddress = function isEmailAddress(input) {
 
-        _checkForMissingArgs(arguments);
+        if (_isMissing(arguments)) return false;
 
         var parts     = input.split('@');
         var minLength = parts.length === 2 || false;
@@ -264,7 +266,7 @@ var Validators = (function(window) {
 
     validator.isPhoneNumber = function isPhoneNumber(input) {
 
-        _checkForMissingArgs(arguments);
+        if (_isMissing(arguments)) return false;
 
         var _errorMsg;
 
@@ -417,8 +419,6 @@ var Validators = (function(window) {
 
     validator.withoutSymbols = function withoutSymbols(input) {
 
-        _checkForMissingArgs(arguments);
-
         return _map.call(input.split(''), function(item) {
             item = item.toLowerCase();
             return ((_ALPHA.indexOf(item) === -1) && item !== ' ') ? '' : item;
@@ -438,7 +438,7 @@ var Validators = (function(window) {
 
     validator.isDate = function isDate(input) {
 
-        _checkForMissingArgs(arguments);
+        if (_isMissing(arguments)) return false;
 
         var date = new Date(input);
         return !isNaN(date.getDate());
@@ -460,13 +460,13 @@ var Validators = (function(window) {
 
     validator.isBeforeDate = function isBeforeDate(input, reference) {
 
-        _checkForMissingArgs(arguments);
+        if (_isMissing(arguments)) throw "Please provide two dates";
 
         var d1 = new Date(input),
             d2 = new Date(reference);
 
-        if (!this.isDate(d1)) throw "input: Invalid Date";
-        if (!this.isDate(d2)) throw "reference: Invalid Date";
+        if (!this.isDate(d1)) throw "Invalid Date";
+        if (!this.isDate(d2)) throw "Invalid Reference Date";
 
         return d1 < d2;
     }    
@@ -487,13 +487,13 @@ var Validators = (function(window) {
 
     validator.isAfterDate = function isAfterDate(input, reference) {
 
-        _checkForMissingArgs(arguments);
+        if (_isMissing(arguments)) throw "Please provide two dates";
 
         var d1 = new Date(input),
             d2 = new Date(reference);
 
-        if (!this.isDate(d1)) throw "input: Invalid Date";
-        if (!this.isDate(d2)) throw "reference: Invalid Date";
+        if (!this.isDate(d1)) throw "Invalid Date";
+        if (!this.isDate(d2)) throw "Invalid Reference Date";
 
         return d1 > d2;
     }
@@ -512,13 +512,13 @@ var Validators = (function(window) {
 
     validator.isBeforeToday = function isBeforeToday(input) {
 
-        _checkForMissingArgs(arguments);
+        if (_isMissing(arguments)) throw "Please proide a valid date";
 
         var d1 = new Date(input),
             d2 = new Date(),
             days;
 
-        if (!this.isDate(d1)) throw "input: Invalid Date";
+        if (!this.isDate(d1)) throw "Invalid Date";
 
         days = _diffInDays(d1, d2);
 
@@ -539,13 +539,13 @@ var Validators = (function(window) {
 
     validator.isAfterToday = function isAfterToday(input) {
 
-        _checkForMissingArgs(arguments);
+        if (_isMissing(arguments)) throw "Please proide a valid date";
 
         var d1 = new Date(input),
             d2 = new Date(),
             days;
 
-        if (!this.isDate(d1)) throw "input: Invalid Date";
+        if (!this.isDate(d1)) throw "Invalid Date";
 
         days = _diffInDays(d1, d2);
 
@@ -579,8 +579,6 @@ var Validators = (function(window) {
      */
 
     validator.contains = function contains(input, words) {
-        
-        _checkForMissingArgs(arguments);
 
         var result = false;
 
@@ -611,8 +609,6 @@ var Validators = (function(window) {
      */
 
     validator.lacks = function lacks(input, words) {
-        
-        _checkForMissingArgs(arguments);
 
         var result = true;
         var list   = this.withoutSymbols(input.toLowerCase()).split(' ');
@@ -645,8 +641,6 @@ var Validators = (function(window) {
 
     validator.isComposedOf = function isComposedOf(input, strings) {
         
-        _checkForMissingArgs(arguments);
-        
         return strings.reduce(function(prev, curr) {
             return prev.split(curr).join('');
         }, input) === '';
@@ -664,7 +658,7 @@ var Validators = (function(window) {
 
     validator.isLength = function isLength(input, n) {
         
-        _checkForMissingArgs(arguments);
+        if (_isMissing(arguments)) return false;
         
         return input.length <= n;
     }
@@ -681,7 +675,7 @@ var Validators = (function(window) {
 
     validator.isOfLength = function isOfLength(input, n) {
         
-        _checkForMissingArgs(arguments);
+        if (_isMissing(arguments)) return false;
         
         return input.length >= n;
     }    
@@ -696,7 +690,7 @@ var Validators = (function(window) {
 
     validator.countWords = function countWords(input) {
         
-        if (!input) return 0;
+        if (_isMissing(arguments)) return 0;
 
         return _map.call(input.split(''), function(item) {
             return (_ALPHA.indexOf(item.toLowerCase()) === -1) ? ' ' : item;
@@ -746,7 +740,7 @@ var Validators = (function(window) {
 
     validator.isBetween = function isBetween(input, floor, ceil) {
 
-        _checkForMissingArgs(arguments);
+        if (_isMissing(arguments)) return false;
 
         return (input >= floor && input <= ceil);
     }    
@@ -764,7 +758,7 @@ var Validators = (function(window) {
 
     validator.isAlphanumeric = function isAlphanumeric(input) {
 
-        if (!input) return true;
+        if (_isMissing(arguments)) return false;
 
         return _reduce.call(input.split(''), function(prev, curr) {
             return (_ALPHA.indexOf(curr.toLowerCase()) === -1) ? false : prev;
@@ -784,7 +778,7 @@ var Validators = (function(window) {
 
     validator.isCreditCard = function isCreditCard(input) {
 
-        _checkForMissingArgs(arguments);
+        if (_isMissing(arguments)) return false;
 
         var firstT = this.countWords(input) === 4 && this.contains(input, ["-"]);
       
@@ -814,7 +808,7 @@ var Validators = (function(window) {
 
     validator.isHex = function isHex(input) {
 
-        _checkForMissingArgs(arguments);
+        if (_isMissing(arguments)) return false;
 
         var len = input.length;
         var chars = input.substr(1).split('');
@@ -845,7 +839,7 @@ var Validators = (function(window) {
 
     validator.isRGB = function isRGB(input) {
 
-        _checkForMissingArgs(arguments);
+        if (_isMissing(arguments)) return false;
 
         var sanitize = input.split('rgb(').join('').split(')').join('');
         var values   = sanitize.split(',');
@@ -875,7 +869,7 @@ var Validators = (function(window) {
 
     validator.isHSL = function isHSL(input) {
 
-        _checkForMissingArgs(arguments);
+        if (_isMissing(arguments)) return false;
 
         var sanitize = input.split('hsl(').join('').split(')').join('');
         var values   = sanitize.split(',');
@@ -898,7 +892,7 @@ var Validators = (function(window) {
 
     validator.isColor = function isColor(input) {
 
-        _checkForMissingArgs(arguments);
+        if (_isMissing(arguments)) return false;
 
         return this.isHex(input) || this.isRGB(input) || this.isHSL(input);
     }    
@@ -916,8 +910,6 @@ var Validators = (function(window) {
      */ 
 
     validator.isTrimmed = function isTrimmed(input) {
-
-        _checkForMissingArgs(arguments);
 
         var chars = input.split(' ');
 
