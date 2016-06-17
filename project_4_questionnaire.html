@@ -163,29 +163,31 @@
           });
       });
 
-      inputs.otherValue.setValidator(function() {
+      inputs.otherValue.setValidator(function(elem) {
 
-        var node  = this.node;
-        var value = node.value;
+          var node   = elem.node,
+              constr = elem.constr,
+              value  = node.value;
 
-        if (valid.isEmpty(value)) {
-              node.setCustomValidity(this.defaultConstraint);
-        } else if (!valid.isOfLength(value, 2)) {
-          node.setCustomValidity('The length of this field should' + 
-                                 'not be lower than two characters');
-        }
-          else {
-              this.resetCustomValidity();
-        }
+          if (valid.isEmpty(value)) {
+                node.setCustomValidity(constr.value);
+          } else if (!valid.isOfLength(value, 2)) {
+            node.setCustomValidity('The length of this field should ' + 
+                                   'not be lower than two characters');
+          }
+            else {
+                elem.resetCustomValidity();
+          }
 
       })
 
 
       inputs.otherValue.node.addEventListener('change', function (event) {
 
-            var constr = inputs[this.getAttribute('id')].constr;
+            var node   = inputs[this.getAttribute('id')],
+                constr = node.constr;
 
-            constr.setInvalidClass();
+            node.setInvalidClass();
             constr.check();
 
       });
