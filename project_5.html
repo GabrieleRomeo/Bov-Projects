@@ -167,8 +167,17 @@
   })
 
   eql.addEventListener('click', function(event) {
+
+      var partial;
+
       if (isLastCharNum()) {
-          updateResult((function() { return eval(result).toString() ; })());
+          partial = (function() { return eval(result).toString() ; })();
+          
+          if (partial.toString().indexOf('.') !== -1) {
+            isDecimal = true;
+          } 
+
+          updateResult(partial);
       }
 
   })
@@ -195,8 +204,10 @@
         controlButtons[item].addEventListener('click', function (event) {
           if (!isLastCharNum()) return;
 
-          isDecimal = false;
+          
           updateResult(result += this.value.replace('÷','/'));
+          isDecimal = false;
+          console.log(isDecimal);
         })
   })
 
@@ -213,14 +224,10 @@
       if (!value) {
           result = '';
           isDecimal = false;
-      } else if (value === "Infinity") {
-        result ='';
-        resultInput.value = '0';
-        return;
       }
 
-      result = value;
-      resultInput.value = result;
+      result = (value === "Infinity") ? '' : value;
+      resultInput.value = (result === '') ? 0 : result;
   }
 
 </script>  
