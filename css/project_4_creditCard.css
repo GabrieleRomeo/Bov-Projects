@@ -77,7 +77,7 @@ ul#list-card  li a.cirrus:hover {
 }
 
 .active {
-    background-position: 0 0 !important;
+    background-position-x: 0 !important;
 }
 
 .mastercard {   
