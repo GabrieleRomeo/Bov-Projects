@@ -153,17 +153,14 @@
   var clr = document.getElementById('clear');
   var eql = document.getElementById('equal');
   var com = document.getElementById('comma');
-  var isDecimal = false;
+
 
   del.addEventListener('click', function(event) {
       updateResult('');
   })
 
   clr.addEventListener('click', function(event) {
-      if (getLastChar() === '.') {
-        isDecimal = false;
-      }
-      updateResult(result.substr(0, result.length - 1));
+      updateResult(result.substr(0, result.length - 1), "clear");
   })
 
   eql.addEventListener('click', function(event) {
@@ -172,21 +169,23 @@
 
       if (isLastCharNum()) {
           partial = (function() { return eval(result).toString() ; })();
-          
-          if (partial.toString().indexOf('.') !== -1) {
-            isDecimal = true;
-          } 
-
-          updateResult(partial);
+          updateResult(partial, "=");
       }
 
   })
 
   com.addEventListener('click', function(event) {
-      if (isLastCharNum() && !isDecimal) {
-          isDecimal = true;
-          updateResult(result += '.');
-      }
+
+      /* When the current result is already a decimal or the result
+       * contains only 0, skip
+       */
+      if (isDecimal(result) || result.split(0).join(' ').trim() === '') {
+        return;
+      } 
+
+      result += '.';
+      resultInput.value = result;
+
   })
 
   // Numbers 0 - 9
@@ -194,22 +193,40 @@
 
       if (!isNaN(numberButtons[item].id)) {
         numberButtons[item].addEventListener('click', function (event) {
-            updateResult(result += this.value);
+            updateResult(this.value);
         })
       }
   })
 
   // Controls + - / *
-  Object.keys(controlButtons).map(function(item) {
-        controlButtons[item].addEventListener('click', function (event) {
-          if (!isLastCharNum()) return;
+  Object.keys(controlButtons).map(function(item) {    
+      controlButtons[item].addEventListener('click', function (event) {
 
-          
-          updateResult(result += this.value.replace('÷','/'));
-          isDecimal = false;
-          console.log(isDecimal);
-        })
+        /*
+         * When last char is not a number, skip
+         */
+        if (!isLastCharNum()) {
+            return;
+        }
+
+        updateResult(this.value.replace('÷','/'));
+      })
   })
+
+  function isDecimal(value) {
+
+      if (!value) return true;
+
+      var len = (value.length - 1) || 0;
+      var partial = '';
+
+      while (len > 0 && !(isNaN(value.charAt(len)) && value.charAt(len) !== '.')) {
+          partial = partial + value.charAt(len);
+          len--;
+      };
+
+     return (partial.indexOf('.') > -1);
+  }
 
   function isLastCharNum() {
     return result.length > 0 ? !isNaN(result.charAt(result.length - 1)) : false;
@@ -219,15 +236,25 @@
     return result.charAt(result.length - 1);
   }
 
-  function updateResult(value) {
+  function updateResult(value, opt) {
 
       if (!value) {
           result = '';
-          isDecimal = false;
       }
 
-      result = (value === "Infinity") ? '' : value;
-      resultInput.value = (result === '') ? 0 : result;
+      switch(opt) {
+        case '=':
+        case 'clear':
+          result = (value === "Infinity") ? 'Division by 0' : value;
+        break;
+
+        default:
+          result += value;
+      }
+
+      resultInput.value = result;
+
+      if (result === 'Division by 0') result = '';
   }
 
 </script>  
