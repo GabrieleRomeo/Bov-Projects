@@ -143,18 +143,21 @@
     </div>
 
 <script>
-  var resultInput = document.getElementById('result');
+
+  var resultInput     = document.getElementById('result');
+  var numbersLayer    = document.getElementById('numbers');
+  var controlsLayer   = document.getElementById('controls');
+  var numberButtons   = numbersLayer.childNodes;
+  var controlButtons  = controlsLayer.childNodes;
+
+  var del = document.getElementById('del'),
+      clr = document.getElementById('clear'),
+      eql = document.getElementById('equal'),
+      com = document.getElementById('comma');
+
   var result = '';
-  var numbersLayer = document.getElementById('numbers');
-  var controlsLayer = document.getElementById('controls');
-  var numberButtons = numbersLayer.childNodes;
-  var controlButtons = controlsLayer.childNodes;
-  var del = document.getElementById('del');
-  var clr = document.getElementById('clear');
-  var eql = document.getElementById('equal');
-  var com = document.getElementById('comma');
 
-
+  // Event Listeners DEL, CLEAR, EQUAL, COMMA
   del.addEventListener('click', function(event) {
       updateResult('');
   })
@@ -188,7 +191,7 @@
 
   })
 
-  // Numbers 0 - 9
+  // Event Listeners Numbers 0 - 9
   Object.keys(numberButtons).map(function(item) {
 
       if (!isNaN(numberButtons[item].id)) {
@@ -198,7 +201,7 @@
       }
   })
 
-  // Controls + - / *
+  // Event Listeners Operations [+ - / *]
   Object.keys(controlButtons).map(function(item) {    
       controlButtons[item].addEventListener('click', function (event) {
 
@@ -220,7 +223,9 @@
       var len = (value.length - 1) || 0;
       var partial = '';
 
-      while (len > 0 && !(isNaN(value.charAt(len)) && value.charAt(len) !== '.')) {
+      while (len > 0 && 
+            !(isNaN(value.charAt(len)) && value.charAt(len) !== '.')) {
+          
           partial = partial + value.charAt(len);
           len--;
       };
