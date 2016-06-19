@@ -181,7 +181,7 @@
           var constr = elem.constr;
           var value  = elem.node.value;
 
-          if (valid.isLength(value, 1)) {
+          if (valid.isLength(value, 2)) {
                 elem.node.setCustomValidity(constr.value);
           } else {
                 elem.resetCustomValidity();
@@ -194,7 +194,7 @@
           var constr = elem.constr;
           var value  = elem.node.value;
 
-          if (valid.isLength(value, 1)) {
+          if (valid.isLength(value, 2)) {
                 elem.node.setCustomValidity(constr.value);
           } else {
                 elem.resetCustomValidity();

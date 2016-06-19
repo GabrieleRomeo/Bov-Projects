@@ -76,6 +76,25 @@ var Validators = (function(window) {
         cstr['check'] = function() {};
 
 
+
+        /**
+         * Retrieve the text of a constraint (if any)
+         * 
+         * @param  {string} name The name of the constraint
+         *
+         * @returns {string} The description of the provided constraint
+         */ 
+
+        var getConstraint = function(name) {
+
+            if (_constraints[name].value) {
+                return _constraints[name].value;
+            }
+            
+            return 'Constraint (' + name + ') undefined';
+        }
+
+
         /**
          * Creates a constraint for a particular node. If a constraint with the
          * same name already exists, it sets the new value otherwise a new
@@ -180,6 +199,7 @@ var Validators = (function(window) {
         return {
             node:                node, // reference to the node object
             constr:              cstr,
+            getConstraint:       getConstraint,
             setConstraint:       setConstraint,
             setValidator:        setConstraintValidator,
             setInvalidClass:     setInvalidClass,
@@ -188,79 +208,7 @@ var Validators = (function(window) {
 
     };
 
-    /**
-     * Retrieve a constraint (if any)
-     * 
-     * @param  {string} name The name of the constraint
-     *
-     * @returns {string} The description of the provided constraint
-     */ 
 
-    validator.getConstraint = function(name) {
-
-        if (_constraints[name].constrValue) {
-            return _constraints[name].constrValue;
-        }
-        
-        return 'Constraint (' + name + ') undefined';
-    }
-
-    /**
-     *  Check for missing arguments.
-     *  It returns True if an argument is missing, False otherwise
-     * 
-     * @param  {object} arguments The native arguments object.
-     *
-     * @returns {boolean} true if an argument is missing
-     */ 
-
-    function _isMissing(arguments) {
-
-        var fn = arguments.callee.toString();
-        fn = (fn.substr(0, fn.indexOf('{') - 1));
-
-        for (var a in arguments) {
-          if (!arguments[a]) {
-            return true;
-          }
-        }
-
-        return false;
-    }
-
-    /**
-     *  Check if the word arg is repeated within string
-     * 
-     * @param  {string} string The string where you want to search for
-     * @param  {string} word The character or word you are looking for
-     *
-     * @returns {boolean} True if word is consecutive, False otherwise
-     */ 
-    function _isConsecutive(string, word) {
-
-        var substrings = string.split(word);
-        for(var item in substrings) {
-            if (!substrings[item]) return true;
-        }
-        return false;
-    }
-
-    /**
-     *  Given two date it returns the difference between them in days
-     * 
-     * @param  {d1} Date The first date
-     * @param  {d2} Date The second date
-     *
-     * @returns {int} The difference in days
-     */ 
-
-    function _diffInDays(d1, d2){
-   
-      var diffInMilliSec = d1.getTime() - d2.getTime();
-      var milliSecInAday = 24 * 60 * 60 * 1000; //total milli-seconds in a day
-
-      return Math.floor(diffInMilliSec/milliSecInAday);
-    }
 
     /**
      * Checks if the provided input is a valid email address
@@ -274,9 +222,9 @@ var Validators = (function(window) {
      * @returns {boolean} True or False
      */ 
 
-    validator.isEmailAddress = function isEmailAddress(input) {
+    validator.isEmailAddress = function(input) {
 
-        if (_isMissing(arguments)) return false;
+        if (!input) return false;
 
         var parts     = input.split('@');
         var minLength = parts.length === 2 || false;
@@ -286,7 +234,7 @@ var Validators = (function(window) {
 
 
         return minLength && local && domain;
-    }
+    };
 
     /**
      * Checks if the provided input is a valid italian phone number
@@ -311,9 +259,9 @@ var Validators = (function(window) {
      * @returns {boolean} True or False
      */ 
 
-    validator.isPhoneNumber = function isPhoneNumber(input) {
+    validator.isPhoneNumber = function(input) {
 
-        if (_isMissing(arguments)) return false;
+        if (!input) return false;
 
         var _errorMsg;
 
@@ -451,7 +399,7 @@ var Validators = (function(window) {
         }
 
         return true;
-    }
+    };
 
     /**
      * Returns the input parameter text with all symbols removed. 
@@ -464,13 +412,13 @@ var Validators = (function(window) {
      * @returns {string} The input parameter text with all symbols removed
      */
 
-    validator.withoutSymbols = function withoutSymbols(input) {
+    validator.withoutSymbols = perhaps(function(input) {
 
         return _map.call(input.split(''), function(item) {
             item = item.toLowerCase();
             return ((_ALPHA.indexOf(item) === -1) && item !== ' ') ? '' : item;
         }).join('');
-    }
+    });
 
     /**
      * Checks if the input parameter text is a valid date.   
@@ -485,11 +433,10 @@ var Validators = (function(window) {
 
     validator.isDate = function isDate(input) {
 
-        if (_isMissing(arguments)) return false;
-
         var date = new Date(input);
+
         return !isNaN(date.getDate());
-    }    
+    }
   
     /**
      * Checks if the input parameter is a date that comes after the reference 
@@ -507,8 +454,6 @@ var Validators = (function(window) {
 
     validator.isBeforeDate = function isBeforeDate(input, reference) {
 
-        if (_isMissing(arguments)) throw "Please provide two dates";
-
         var d1 = new Date(input),
             d2 = new Date(reference);
 
@@ -516,7 +461,7 @@ var Validators = (function(window) {
         if (!this.isDate(d2)) throw "Invalid Reference Date";
 
         return d1 < d2;
-    }    
+    }
 
     /**
      * Checks if the input parameter is a date that comes before the reference 
@@ -533,8 +478,6 @@ var Validators = (function(window) {
      */
 
     validator.isAfterDate = function isAfterDate(input, reference) {
-
-        if (_isMissing(arguments)) throw "Please provide two dates";
 
         var d1 = new Date(input),
             d2 = new Date(reference);
@@ -559,8 +502,6 @@ var Validators = (function(window) {
 
     validator.isBeforeToday = function isBeforeToday(input) {
 
-        if (_isMissing(arguments)) throw "Please proide a valid date";
-
         var d1 = new Date(input),
             d2 = new Date(),
             days;
@@ -570,7 +511,7 @@ var Validators = (function(window) {
         days = _diffInDays(d1, d2);
 
         return days < 0;
-    }    
+    }
 
     /**
      * Checks if the input parameter is a date that comes after today. 
@@ -585,8 +526,6 @@ var Validators = (function(window) {
      */
 
     validator.isAfterToday = function isAfterToday(input) {
-
-        if (_isMissing(arguments)) throw "Please proide a valid date";
 
         var d1 = new Date(input),
             d2 = new Date(),
@@ -610,7 +549,10 @@ var Validators = (function(window) {
      */
 
     validator.isEmpty = function isEmpty(input) {
-        return input.trim().length === 0;
+
+        if (!input) return true;
+
+        return false;
     }
   
     /**
@@ -625,22 +567,29 @@ var Validators = (function(window) {
      * @returns {boolean} True or False
      */
 
-    validator.contains = function contains(input, words) {
+    validator.contains = perhaps(function(input, words) {
 
-        var result = false;
+        var wlen;
+        var i;
 
-        var len = words.length,
-            i;
+        // When the words list is not provided return false by default
+        if (!__isArray(words)) return false; 
 
-        for (i = 0; i < len; i++) {
-            if (input.split(words[i].toLowerCase()).length > 1) {
-                result = true;
-                break;
+        input = input.toLowerCase();
+        wlen  = words.length;
+
+        inputList = _map.call(input.split(''), function(item) {
+            return ((_ALPHA.indexOf(item) === -1) && item !== ' ') ? ' ' : item;
+        }).join('').split(' ');
+
+        for (i = 0; i < wlen; i++) {
+            if (inputList.indexOf(words[i].toLowerCase()) > -1) {
+                return true;
             }
         }
-        
-        return result;
-    }    
+
+        return false;
+    });
 
     /**
      * Checks if the input text parameter does not contain any of the words
@@ -655,23 +604,26 @@ var Validators = (function(window) {
      * @returns {boolean} True or False
      */
 
-    validator.lacks = function lacks(input, words) {
+    validator.lacks = perhaps(function(input, words) {
 
-        var result = true;
-        var list   = this.withoutSymbols(input.toLowerCase()).split(' ');
-
-        var len = words.length,
+        var list;
+        var len,
             i;
+
+        // When the words list is not provided return undefined by default
+        if (!__isArray(words)) return void 0; 
+
+        list = this.withoutSymbols(input.toLowerCase()).split(' ')
+        len  = words.length;
 
         for (i = 0; i < len; i++) {
             if (list.indexOf(words[i].toLowerCase()) > -1) {
-                result = false;
-                break;
+                return false;
             }
         }
         
-        return result;
-    }    
+        return true;
+    });
 
     /**
      * Checks that the input text parameter contains only strings found
@@ -686,12 +638,22 @@ var Validators = (function(window) {
      * @returns {boolean} True or False
      */
 
-    validator.isComposedOf = function isComposedOf(input, strings) {
-        
-        return strings.reduce(function(prev, curr) {
-            return prev.split(curr).join('');
-        }, input) === '';
-    }    
+    validator.isComposedOf = perhaps(function(input, strings) {
+
+        var result;
+
+        // When the strings list is not provided return undefined by default
+        if (!__isArray(strings)) return void 0;
+
+        result = _map.call(strings, function(item) {
+                    return item.toLowerCase();
+                }).reduce(function(prev, curr) {
+                    return prev.toLowerCase().split(curr).join("");
+                }, input).trim();
+
+        return result.length === 0;
+
+    });
 
     /**
      * Checks if the input parameter’s character count is less than or 
@@ -703,12 +665,10 @@ var Validators = (function(window) {
      * @returns {boolean} True or False
      */
 
-    validator.isLength = function isLength(input, n) {
-        
-        if (_isMissing(arguments)) return true;
-        
+    validator.isLength = perhaps(function(input, n) {
+
         return input.length <= n;
-    }
+    });
 
     /**
      * Checks if the input parameter’s character count is greater than or 
@@ -720,12 +680,10 @@ var Validators = (function(window) {
      * @returns {boolean} True or False
      */ 
 
-    validator.isOfLength = function isOfLength(input, n) {
-        
-        if (_isMissing(arguments)) return false;
-        
+    validator.isOfLength = perhaps(function(input, n) {
+
         return input.length >= n;
-    }    
+    });
 
     /**
      * Counts the number of words in the input parameter. 
@@ -735,14 +693,14 @@ var Validators = (function(window) {
      * @returns {integer} The number of contained words
      */ 
 
-    validator.countWords = function countWords(input) {
-        
-        if (_isMissing(arguments)) return 0;
+    validator.countWords = function(input) {
+
+        if (!input) return 0;
 
         return _map.call(input.split(''), function(item) {
             return (_ALPHA.indexOf(item.toLowerCase()) === -1) ? ' ' : item;
         }).join('').trim().split(' ').length;
-    }
+    };
 
     /**
      * Checks if the input parameter has a word count less than or equal
@@ -785,12 +743,10 @@ var Validators = (function(window) {
      * @returns {boolean} True or False
      */ 
 
-    validator.isBetween = function isBetween(input, floor, ceil) {
-
-        if (_isMissing(arguments)) return false;
+    validator.isBetween = perhaps(function(input, floor, ceil) {
 
         return (input >= floor && input <= ceil);
-    }    
+    });
    
     /**
      * Checks that the input parameter string is only composed of the following 
@@ -803,9 +759,9 @@ var Validators = (function(window) {
      * @returns {boolean} True or False
      */ 
 
-    validator.isAlphanumeric = function isAlphanumeric(input) {
+    validator.isAlphanumeric = function(input) {
 
-        if (_isMissing(arguments)) return false;
+        if (!input) return true;
 
         return _reduce.call(input.split(''), function(prev, curr) {
             return (_ALPHA.indexOf(curr.toLowerCase()) === -1) ? false : prev;
@@ -825,13 +781,12 @@ var Validators = (function(window) {
 
     validator.isCreditCard = function isCreditCard(input) {
 
-        if (_isMissing(arguments)) return false;
+        if (!input) return false;
 
-        var firstT = this.countWords(input) === 4 && this.contains(input, ["-"]);
+        var firstT = this.countWords(input) === 4 && input.indexOf('-') !== -1;
       
         if (firstT) {
             input = this.withoutSymbols(input);
-
         } 
 
         if (!this.isAlphanumeric(input) || input.length !== 16) {
@@ -855,7 +810,7 @@ var Validators = (function(window) {
 
     validator.isHex = function isHex(input) {
 
-        if (_isMissing(arguments)) return false;
+        if (!input) return false;
 
         var len = input.length;
         var chars = input.substr(1).split('');
@@ -870,7 +825,7 @@ var Validators = (function(window) {
             return (chk1 || chk2) ? prev : false;
         }, true);
 
-    }    
+    }
 
     /**
      * Checks if the input string is an RGB color, such as rgb(200, 26, 131).
@@ -886,7 +841,7 @@ var Validators = (function(window) {
 
     validator.isRGB = function isRGB(input) {
 
-        if (_isMissing(arguments)) return false;
+        if (!input) return false;
 
         var sanitize = input.split('rgb(').join('').split(')').join('');
         var values   = sanitize.split(',');
@@ -897,7 +852,7 @@ var Validators = (function(window) {
         return values.reduce(function(prev, curr) { 
             return (that.isBetween(curr.trim(), '0', '255')) ? prev : false;
         }, true);
-    }    
+    }
 
     /**
      * Checks if the input string is an HSL color, such as hsl(122, 1, 1). 
@@ -916,7 +871,7 @@ var Validators = (function(window) {
 
     validator.isHSL = function isHSL(input) {
 
-        if (_isMissing(arguments)) return false;
+        if (!input) return false;
 
         var sanitize = input.split('hsl(').join('').split(')').join('');
         var values   = sanitize.split(',');
@@ -927,7 +882,7 @@ var Validators = (function(window) {
         if (!(this.isBetween(values[2].trim(), '0', '1'))) return false;
 
         return true;
-    }    
+    }
 
     /**
      * Checks if the input parameter is a hex, RGB, or HSL color type.
@@ -939,10 +894,10 @@ var Validators = (function(window) {
 
     validator.isColor = function isColor(input) {
 
-        if (_isMissing(arguments)) return false;
+        if (!input) return false;
 
         return this.isHex(input) || this.isRGB(input) || this.isHSL(input);
-    }    
+    }
   
     /**
      * Checks if the input parameter has leading or trailing whitespaces or too
@@ -963,6 +918,101 @@ var Validators = (function(window) {
         return chars.reduce(function(prev, curr) { 
             return (curr !=='') ? prev : false;
         }, true);
+    }
+
+
+    // ****** PRIVATE UTILITY FUNCTIONS ***********
+
+    /**
+     * It calls the fn function if and only if the provided parameters 
+     * are neither null nor undefined
+     * 
+     * @param {Object} fn The function that could be applied
+     * 
+     * @returns {value | void} The evalutation of fn or nothing
+     */ 
+
+    function perhaps(fn) {
+        return function() {
+
+            var i;
+            var len = arguments.length;
+
+            if (arguments.length === 0) {
+                return;
+            } else {
+
+                for (i = 0; i < len; i++) {
+                    if (!arguments[i]) return;
+                }
+
+                return fn.apply(this, arguments);
+            }
+        }
+    }
+
+    /**
+     * Checks if the provided parameter is an Array
+     *
+     * @param {Array} arr An Array
+     * 
+     * @returns {Boolean} True | False
+     *                  
+     */ 
+
+    var __isArray = Array.isArray || function(arr) {
+
+        return Object.prototype.toString.call(arr) === '[object Array]';
+
+    };
+
+    /**
+     * Checks if the provided parameter is a Function
+     *
+     * @param {Fun} fn A Function
+     * 
+     * @returns {Boolean} True | False
+     *                  
+     */ 
+
+    var __isFunc = function(fn) {
+
+        return (typeof fn === "function");
+
+    };  
+
+    /**
+     *  Check if the word arg is repeated within string
+     * 
+     * @param  {string} string The string where you want to search for
+     * @param  {string} word The character or word you are looking for
+     *
+     * @returns {boolean} True if word is consecutive, False otherwise
+     */ 
+    function _isConsecutive(string, word) {
+
+        var substrings = string.split(word);
+        for(var item in substrings) {
+            if (!substrings[item]) return true;
+        }
+        return false;
+    }
+
+    /**
+     *  Given two date it returns the difference between them in days
+     * 
+     * @param  {d1} Date The first date
+     * @param  {d2} Date The second date
+     *
+     * @returns {int} The difference in days
+     */ 
+
+    function _diffInDays(d1, d2){
+   
+      var diffInMilliSec = d1.getTime() - d2.getTime();
+      var milliSecInAday = 24 * 60 * 60 * 1000; //total milli-seconds in a day
+
+      return Math.floor(diffInMilliSec/milliSecInAday);
     }
 
 
