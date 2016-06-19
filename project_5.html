@@ -179,10 +179,14 @@
 
   com.addEventListener('click', function(event) {
 
-      /* When the current result is already a decimal or the result
-       * contains only 0, skip
+      /* 
+       * Skip if:
+       * - The last char is not a number 
+       * - The current result is already a decimal number
+       * - The current result contains only 0
        */
-      if (isDecimal(result) || result.split(0).join(' ').trim() === '') {
+      if (!isLastCharNum()   || 
+           isDecimal(result) || result.split(0).join(' ').trim() === '') {
         return;
       } 
 
