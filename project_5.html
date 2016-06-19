@@ -112,7 +112,7 @@
                 type="button"
                 value="&#44;">
         <input  class="button equal hover-controls"
-                name="equal"
+                id="equal"
                 name="equal"
                 type="button"
                 value="=">
@@ -143,6 +143,85 @@
     </div>
 
 <script>
+  var resultInput = document.getElementById('result');
+  var result = '';
+  var numbersLayer = document.getElementById('numbers');
+  var controlsLayer = document.getElementById('controls');
+  var numberButtons = numbersLayer.childNodes;
+  var controlButtons = controlsLayer.childNodes;
+  var del = document.getElementById('del');
+  var clr = document.getElementById('clear');
+  var eql = document.getElementById('equal');
+  var com = document.getElementById('comma');
+  var isDecimal = false;
+
+  del.addEventListener('click', function(event) {
+      updateResult('');
+  })
+
+  clr.addEventListener('click', function(event) {
+      if (getLastChar() === '.') {
+        isDecimal = false;
+      }
+      updateResult(result.substr(0, result.length - 1));
+  })
+
+  eql.addEventListener('click', function(event) {
+      if (isLastCharNum()) {
+          updateResult((function() { return eval(result).toString() ; })());
+      }
+
+  })
+
+  com.addEventListener('click', function(event) {
+      if (isLastCharNum() && !isDecimal) {
+          isDecimal = true;
+          updateResult(result += '.');
+      }
+  })
+
+  // Numbers 0 - 9
+  Object.keys(numberButtons).map(function(item) {
+
+      if (!isNaN(numberButtons[item].id)) {
+        numberButtons[item].addEventListener('click', function (event) {
+            updateResult(result += this.value);
+        })
+      }
+  })
+
+  // Controls + - / *
+  Object.keys(controlButtons).map(function(item) {
+        controlButtons[item].addEventListener('click', function (event) {
+          if (!isLastCharNum()) return;
+
+          isDecimal = false;
+          updateResult(result += this.value.replace('÷','/'));
+        })
+  })
+
+  function isLastCharNum() {
+    return result.length > 0 ? !isNaN(result.charAt(result.length - 1)) : false;
+  } 
+
+  function getLastChar() {
+    return result.charAt(result.length - 1);
+  }
+
+  function updateResult(value) {
+
+      if (!value) {
+          result = '';
+          isDecimal = false;
+      } else if (value === "Infinity") {
+        result ='';
+        resultInput.value = '0';
+        return;
+      }
+
+      result = value;
+      resultInput.value = result;
+  }
 
 </script>  
   
