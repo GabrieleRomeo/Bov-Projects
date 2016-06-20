@@ -54,35 +54,28 @@
             <ul id="list-card">
                 <li>
                   <span class="list-card__card mastercard active" 
-                        id="mastercard" 
-                        title="Mastercard" 
-                        href="#">
+                        id="mastercard">
                   </span>
                 </li>
                 <li>
                   <span class="list-card__card visa" 
-                        id="visa" 
-                        title="Visa" 
-                        href="#">
+                        id="visa">
                   </span>
                 </li>
                 <li>
                   <span class="list-card__card maestro" 
-                        id="maestro" 
-                        title="Maestro" 
-                        href="#">
+                        id="maestro">
                   </span>
                 </li>
                 <li>
                   <span class="list-card__card cirrus" 
-                        id="cirrus" 
-                        title="Cirrus" 
-                        href="#">
+                        id="cirrus">
                   </span>
                 </li>
             </ul>
           </div>
         <form id="cardForm" name="cardForm" action="#" method="#">
+          <input id="selectedCard" value="mastercard" type="hidden">
           <div id="card-info">
             <ul class="form-list">
               <li>
@@ -159,11 +152,11 @@
 
   <script src="js/validator.js"></script>
   <script>
-    var valid     = Validators;
-    var doc       = document;
-    var cardList  = doc.getElementById('list-card').children;
-    var selected  = null;
-    var form      = doc.getElementById('cardForm');
+    var valid         = Validators;
+    var doc           = document;
+    var cardList      = doc.getElementById('list-card').children;
+    var selectedCard  = doc.getElementById('selectedCard');
+    var form          = doc.getElementById('cardForm');
 
     var inputs = {
         cardNumber:   valid.getNode(doc.getElementById('cardNumber')),
@@ -202,13 +195,12 @@
 
         try { 
             if (!valid.isCreditCard(value)) {
-                  elem.node.setCustomValidity(constr.value);
+                elem.node.setCustomValidity(constr.value);
             } else {
-                  elem.resetCustomValidity();
+                elem.resetCustomValidity();
             }
         } catch (err) {
-          console.log(err);
-                elem.node.setCustomValidity(constr.value);
+              elem.node.setCustomValidity(constr.value);
         }
 
     });
@@ -249,9 +241,9 @@
 
         try { 
             if (valid.lessWordsThan(value, 1)) {
-                  elem.node.setCustomValidity(constr.value);
+                elem.node.setCustomValidity(constr.value);
             } else {
-                  elem.resetCustomValidity();
+                elem.resetCustomValidity();
             }
         } catch (err) {
                 elem.node.setCustomValidity(constr.value);
@@ -268,12 +260,12 @@
 
         try { 
             if (valid.isLength(value, 2) || isNaN(value)) {
-                  elem.node.setCustomValidity(constr.value);
+                elem.node.setCustomValidity(constr.value);
             } else {
-                  elem.resetCustomValidity();
+                elem.resetCustomValidity();
             }
         } catch (err) {
-                elem.node.setCustomValidity(constr.value);
+              elem.node.setCustomValidity(constr.value);
         }
 
     });
@@ -327,25 +319,18 @@
       }
 
       node.className = node.className + ' ' + className;
-      selected = node;
+      //selected = node;
+      selectedCard.value = node.getAttribute('id');
     }
 
     function resetClass(className) {
 
-        var node;
+        var node = doc.getElementById(selectedCard.value);
 
-        // use the selected node (if any) without performing the for-loop
-        if (selected) {
-            toggleClass(selected, className);
+        if (node) {
+            toggleClass(node, className);
             return;
         } 
-
-        for (var c in cardList) {
-            if (cardList.hasOwnProperty(c)) {
-              node = cardList[c].firstElementChild;
-              node.className = node.className.split(className).join('').trim();
-            }
-        }
     }
 
   </script>
