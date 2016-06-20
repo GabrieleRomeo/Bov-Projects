@@ -240,7 +240,11 @@ body {
   padding-top: 11px;
   padding-bottom: 11px;
 }
- 
+
+#cart {
+  display: none;
+}
+
 #cart-details-table {
   position: relative;
   margin: 0 auto;
