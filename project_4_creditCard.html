@@ -159,25 +159,29 @@
     var form          = doc.getElementById('cardForm');
 
     var inputs = {
-        cardNumber:   valid.getNode(doc.getElementById('cardNumber')),
-        expM:         valid.getNode(doc.getElementById('expirationMonth'),
-                                                       'expirationMonth'),
-        expY:         valid.getNode(doc.getElementById('expirationYear'),
-                                                       'expirationYear'),
-        fullName:     valid.getNode(doc.getElementById('fullName')),
-        csv:          valid.getNode(doc.getElementById('csvNumber'),
-                                                       'csvNumber')
+        cardNumber: valid.getNode(doc.getElementById('cardNumber')),
+        expM:       valid.getNode(doc.getElementById('expirationMonth'),
+                                                     'expirationMonth'),
+        expY:       valid.getNode(doc.getElementById('expirationYear'),
+                                                     'expirationYear'),
+        fullName:   valid.getNode(doc.getElementById('fullName')),
+        csv:        valid.getNode(doc.getElementById('csvNumber'),
+                                                     'csvNumber')
     }
 
+    /*
+     * For each card type, defines an Event Listener which will be triggered
+     * at every click.
+     */
 
     for (var c in cardList) {
         if (cardList.hasOwnProperty(c)) {
           (function(node){
               node.addEventListener('click', function(event) {
-                resetClass('active');
-                toggleClass(this, 'active');
+                  resetClass('active');
+                  toggleClass(this, 'active');
            });
-          })(cardList[c].firstElementChild)
+          })(cardList[c].firstElementChild);
         }
     }
 
@@ -195,9 +199,9 @@
 
         try { 
             if (!valid.isCreditCard(value)) {
-                elem.node.setCustomValidity(constr.value);
+              elem.node.setCustomValidity(constr.value);
             } else {
-                elem.resetCustomValidity();
+              elem.resetCustomValidity();
             }
         } catch (err) {
               elem.node.setCustomValidity(constr.value);
@@ -212,9 +216,9 @@
         var node   = elem.node;
         
         if (valid.isEmpty(node.options[node.selectedIndex].value)) {
-              node.setCustomValidity(constr.value);
+            node.setCustomValidity(constr.value);
         } else {
-              elem.resetCustomValidity();
+            elem.resetCustomValidity();
         }
 
     });
@@ -294,7 +298,6 @@
       }
     }
 
-
     form.addEventListener('submit', function (event) {
 
     // Check the inputs validity. If at least one input is invalid, stop
@@ -319,7 +322,6 @@
       }
 
       node.className = node.className + ' ' + className;
-      //selected = node;
       selectedCard.value = node.getAttribute('id');
     }
 
