@@ -76,6 +76,13 @@ ul#list-card  li a.cirrus:hover {
     background-position: 0 -120px !important;
 }
 
+.list-card__card {
+  display: block;
+  width: 64px;
+  height: 40px;
+  cursor: pointer;
+}
+
 .active {
     background-position-x: 0 !important;
 }
