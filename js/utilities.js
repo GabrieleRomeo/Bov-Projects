@@ -339,9 +339,9 @@ var Utilities = (function(window){
      *                  
      */ 
 
-    utilities.replaceAll = perhaps(function(text, search, replace) {
+    utilities.replaceAll = function(text, search, replace) {
         return text.split(search).join(replace);
-    });
+    };
 
     // ****** PRIVATE UTILITY FUNCTIONS ***********
 
