@@ -50,6 +50,7 @@
       </header>
       <div id="products-wrapper">
           <div class="section">
+            <a name="Product-1"></a>
             <span class="thumb">
               <img src="images/278x278.png">
             </span>
@@ -75,6 +76,7 @@
             </div>
           </div>
           <div class="section">
+            <a name="Product-2"></a>
             <span class="thumb">
               <img src="images/278x278.png">
             </span>
@@ -100,6 +102,7 @@
             </div>
           </div>
           <div class="section rightMostSection">
+            <a name="Product-3"></a>
             <span class="thumb">
               <img src="images/278x278.png">
             </span>
@@ -125,6 +128,7 @@
             </div>
           </div>
           <div class="section">
+            <a name="Product-4"></a>
             <span class="thumb">
               <img src="images/278x278.png">
             </span>
@@ -150,6 +154,7 @@
             </div>
           </div>
           <div class="section">
+            <a name="Product-5"></a>
             <span class="thumb">
               <img src="images/278x278.png">
             </span>
@@ -175,6 +180,7 @@
             </div>
           </div>
           <div class="section rightMostSection">
+            <a name="Product-6"></a>
             <span class="thumb">
               <img src="images/278x278.png">
             </span>
@@ -200,6 +206,7 @@
             </div>
           </div>
           <div class="section">
+            <a name="Product-7"></a>
             <span class="thumb">
               <img src="images/278x278.png">
             </span>
@@ -225,6 +232,7 @@
             </div>
           </div>
           <div class="section">
+            <a name="Product-8"></a>
             <span class="thumb">
               <img src="images/278x278.png">
             </span>
@@ -250,6 +258,7 @@
             </div>
           </div>
           <div class="section rightMostSection">
+            <a name="Product-9"></a>
             <span class="thumb">
               <img src="images/278x278.png">
             </span>
@@ -275,6 +284,7 @@
             </div>
           </div>
           <div class="section">
+            <a name="Product-10"></a>
             <span class="thumb">
               <img src="images/278x278.png">
             </span>
@@ -300,6 +310,7 @@
             </div>
           </div>
           <div class="section">
+            <a name="Product-11"></a>
             <span class="thumb">
               <img src="images/278x278.png">
             </span>
@@ -325,6 +336,7 @@
             </div>
           </div>
           <div class="section">
+            <a name="Product-12"></a>
             <span class="thumb">
               <img src="images/278x278.png">
             </span>
@@ -366,6 +378,7 @@
         <div id="cart-details-table">
           <table id="cart-table" class="table">
           <tbody>
+          <!--
           <tr>
             <td class="table__td text-center">
               <a href="">
@@ -374,16 +387,15 @@
               </a>
             </td>
             <td class="table__td text-left">
-              <a href="#">Product</a>          
+              <a href="#">Product</a>
             </td>
-            <td class="table__td text-left">product 1</td>
-            <td class="table__td text-left">          
+            <td class="table__td text-left">
               <input class="table__input 
                             table__input--text"
                      name="quantity-1" 
                      type="text" value="1">
             </td>
-            <td class="table__td text-left">          
+            <td class="table__td text-left">
               <span class="input-group-btn">
                 <input type="button" value="Remove" class="btn btn-red">
               </span>
@@ -391,7 +403,7 @@
             <td class="table__td text-right">$45.00</td>
           </tr>
           <tr>
-            <td class="table__td--separator" colspan="6"></td>
+            <td class="table__td--separator" colspan="5"></td>
           </tr>
           <tr>
           <td class="table__td text-center">
@@ -403,7 +415,6 @@
           <td class="table__td text-left">
           <a href=#"">Product</a>
           </td>
-          <td class="table__td text-left">product 2</td>
           <td class="table__td text-left">
             <input class="table__input 
                           table__input--text" 
@@ -418,6 +429,7 @@
           <td class="table__td text-right">$100.00</td>
           </tr>
           </tbody>
+          -->
           </table>
         </div>
         <div id="coupon">
@@ -474,52 +486,97 @@
       len        = addButtons.length;
 
   var CartDB = {
-    total: 0,
-    curr: '\u0024',
+    currency: '\u0024',
     promoCodes : {
 
+    },
+    products: {},
+    addProd: function(product) {
+
+        if (product && product.name && !this.products[product.name]) {
+            this.products[product.name] = copy(product, {});
+        } else if (this.products[product.name]) {
+          this.products[product.name]['quantity'] += 1;
+        }
+
+        return this.products[product.name];
+    },
+    remProd: function(product) {
+        if (product && product.name && this.products[product.name]) {
+            delete this.products[product.name];
+            return true;
+        }
+        return false;
+    },
+    getQuantity: function(productName) {
+
+        var total = 0;
+
+        if (productName && this.products[productName]['quantity']) {
+            return this.products[productName]['quantity'];
+        }
+
+        for (var p in this.products) {
+          if (this.products.hasOwnProperty(p) && this.products[p]['quantity']) {
+              total += this.products[p]['quantity'];
+          }
+        }
+
+        return total;
     }
   };
 
     while(len--) {
         addButtons[len].addEventListener('click', function(event) {
-            updateCart(this.firstChild.nextSibling, 'add');
+            addProduct(this.firstChild.nextSibling);
         })
     }
 
-    var updateCart = function(node, operation) {
-      var prod  = node.getAttribute("data-product-name");
-      var price = node.getAttribute("data-product-price");
+    var addProduct = function(product) {
 
-      price = parseFloat(price).toFixed(2);
+        var name      = product.getAttribute("data-product-name");
+        var price     = product.getAttribute("data-product-price");
+        var quantity  = product.quantity || 1;
 
-      if (CartDB.total === 0) toggleCart();
-      
-      if (!CartDB[prod]) {
-          CartDB[prod] = { 
-              quantity:   0,
-              unitPrice:  price
-          };
-          addRow({ name: prod, price: price });
-      } 
+        price = parseFloat(price).toFixed(2);
 
-      switch (operation) {
-        case 'add':
-            CartDB[prod].quantity += 1;
-            CartDB.total = parseFloat(CartDB.total) + parseFloat(price); 
-        break;
-      }
 
+        var newProd = CartDB.addProd({
+            name:       name,
+            unitPrice:  price,
+            quantity:   quantity
+        });
+
+        if (newProd.quantity === 1) {
+          addCartRow(newProd);
+        } else {
+          updateCartRow(newProd);
+        }
+        toggleCart();
+
+    }
+
+    var updateCartRow = function(product) {
+
+      var input   = document.getElementById('input-' + product.name);
+      var partial = document.getElementById('partial-' + product.name);
+
+      input.value = product.quantity;
+      partial.innerHTML = getPartial(product.unitPrice * product.quantity);
     }
 
     // Utility functions
 
     function toggleCart() {
 
-      var display = (window.getComputedStyle(cart, null).display);
-      
-      cart.style.display = (display === 'block') ? 'none' : 'block';
+        var quantity = CartDB.getQuantity();
+        var display = (window.getComputedStyle(cart, null).display);
 
+        if (quantity === 0) {
+            cart.style.display = 'none';
+        } else if (quantity === 1) {
+            cart.style.display = 'block';
+        }
     }
 
     function createElem(obj) {
@@ -542,28 +599,22 @@
       return elem;
     }
 
-    function addRow(product) {
+    function addCartRow(product) {
+
+        var partial = getPartial(product.unitPrice * product.quantity);
+
         var tr   = createElem({ tag: 'TR' }),
             tr2  = createElem({ tag: 'TR' });
 
         var td    = createElem({ tag: 'TD', class: 'table__td text-center' }),
             td2   = createElem({ tag: 'TD', class: 'table__td text-left' }),
-            td3   = createElem({ 
-                                  tag: 'TD', 
-                                  class: 'table__td text-left',
-                                  text:  product.name 
-                               }),
             td4   = createElem({ tag: 'TD', class: 'table__td text-left' }),
             td5   = createElem({ tag: 'TD', class: 'table__td text-left' }),
-            td6   = createElem({ 
-                                  tag: 'TD', 
-                                  class: 'table__td text-right',
-                                  text:  CartDB.curr + product.price
-                              }),
+            td6   = createElem({ tag: 'TD', class: 'table__td text-right' }),
             tdSeparator  = createElem({ 
                                         tag: 'TD', 
                                         class: 'table__td--separator',
-                                        colspan: '6'
+                                        colspan: '5'
                                       });
 
         var a = createElem({ 
@@ -582,14 +633,14 @@
         var aProd = createElem({ 
           tag: 'A', 
           href: '#' + product.name,
-          text: 'Product'
+          text: product.name.split('-').join(' ')
         });
 
         var inpt = createElem({ 
           tag: 'input', 
           class: 'table__input table__input--text',
-          id: 'input' + Utilities.toDash(product.name),
-          name: 'input' + Utilities.toDash(product.name),
+          id: 'input-' + Utilities.replaceAll(product.name, ' ', '-'),
+          name: 'input-' + Utilities.replaceAll(product.name, ' ', '-'),
           type: 'text',
           value: '1'
         });
@@ -597,27 +648,45 @@
         var spn = createElem({
           tag: 'SPAN', 
           class: 'input-group-btn'
+        }),
+          spnPartial = createElem({
+          tag: 'SPAN', 
+          id: 'partial-'+ Utilities.replaceAll(product.name, ' ', '-'),
+          name: 'partial-'+ Utilities.replaceAll(product.name, ' ', '-'),
+          text:  partial
         });
 
-        var inpt2 = createElem({ 
-          tag: 'input', 
-          class: 'btn btn-red',
-          id: 'remove-product',
-          type: 'button',
-          value: 'Remove'
+        var removeButton = createElem({ 
+            tag: 'input', 
+            class: 'btn btn-red',
+            id: 'remove-' + Utilities.replaceAll(product.name, ' ', '-'),
+            type: 'button',
+            value: 'Remove'
+        });
+
+        removeButton.addEventListener('click', function(event) {
+            var row = this.parentNode.parentNode.parentNode;
+            var separator = row.previousSibling;
+
+            if (!CartDB.remProd(product)) throw "Unable to remove this product";
+            
+            cartTable.deleteRow(row.rowIndex); 
+            cartTable.deleteRow(separator.rowIndex); // Delete separator, too
+
+            toggleCart();
         });
 
         a.appendChild(img)
         td.appendChild(a);
         td2.appendChild(aProd);
         td4.appendChild(inpt);
-        spn.appendChild(inpt2);
+        spn.appendChild(removeButton);
         td5.appendChild(spn);
+        td6.appendChild(spnPartial);
 
 
         tr2.appendChild(td); 
         tr2.appendChild(td2); 
-        tr2.appendChild(td3); 
         tr2.appendChild(td4); 
         tr2.appendChild(td5); 
         tr2.appendChild(td6); 
@@ -626,6 +695,13 @@
 
         cartTable.appendChild(tr);
         cartTable.appendChild(tr2);
+    }
+
+    var getPartial = function(value) {
+
+        var curr = CartDB.currency;
+
+        return curr + currency(value, '.');
     }
 
     var currency = function(amount, separator) {
@@ -652,7 +728,14 @@
         }
     }
 
-
+    function copy(first, second) {
+      for (var p in first) {
+        if (first.hasOwnProperty(p)) {
+            second[p] = first[p];
+        }
+      }
+      return second;
+    }
 
 </script>
 
