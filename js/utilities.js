@@ -310,10 +310,23 @@ var Utilities = (function(window){
         }
 
         return result;
-
     });
 
+    /**
+     * Replaces all occurencies of a particular search string with another 
+     * string
+     *
+     * @param {String} text A string used as a base for the search
+     * @param {String} search A string you are looking for the replace
+     * @param {String} replace A string used as replacing
+     * 
+     * @returns {String} A new string with all occurrencies replaced
+     *                  
+     */ 
 
+    utilities.replaceAll = perhaps(function(text, search, replace) {
+        return text.split(search).join(replace);
+    });
 
     // ****** PRIVATE UTILITY FUNCTIONS ***********
 
