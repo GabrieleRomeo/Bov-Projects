@@ -50,6 +50,21 @@ var Utilities = (function(window){
     };
 
     /**
+     * Checks if the provided parameter is an Integer
+     *
+     * @param {Number} num A Number
+     * 
+     * @returns {Boolean} True | False
+     *                  
+     */ 
+
+    utilities.isInt = function(num) {
+
+        return parseFloat(num) === parseInt(num, 10);
+
+    };
+
+    /**
      * Iterates and calls the callback parameter for each element or property
      * of a list at the interval specified by the n parameter.
      * It does not call callback on values greater than the list’s number 
