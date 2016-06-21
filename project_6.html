@@ -465,6 +465,7 @@
   </article>
 
 <script src="js/validator.js"></script>
+<script src="js/utilities.js"></script>
 <script>
 
   var addButtons = document.getElementsByClassName('addToCart'),
@@ -474,6 +475,7 @@
 
   var CartDB = {
     total: 0,
+    curr: '\u0024',
     promoCodes : {
 
     }
@@ -489,6 +491,8 @@
       var prod  = node.getAttribute("data-product-name");
       var price = node.getAttribute("data-product-price");
 
+      price = parseFloat(price).toFixed(2);
+
       if (CartDB.total === 0) toggleCart();
       
       if (!CartDB[prod]) {
@@ -496,7 +500,7 @@
               quantity:   0,
               unitPrice:  price
           };
-          addRow({ name: prod, price: price});
+          addRow({ name: prod, price: price });
       } 
 
       switch (operation) {
@@ -539,28 +543,28 @@
     }
 
     function addRow(product) {
-        var tr    = createElem({ tag: 'TR' }),
-            tr2   = createElem({ tag: 'TR' });
+        var tr   = createElem({ tag: 'TR' }),
+            tr2  = createElem({ tag: 'TR' });
 
         var td    = createElem({ tag: 'TD', class: 'table__td text-center' }),
             td2   = createElem({ tag: 'TD', class: 'table__td text-left' }),
             td3   = createElem({ 
-              tag: 'TD', 
-              class: 'table__td text-left',
-              text:  product.name 
-            }),
+                                  tag: 'TD', 
+                                  class: 'table__td text-left',
+                                  text:  product.name 
+                               }),
             td4   = createElem({ tag: 'TD', class: 'table__td text-left' }),
             td5   = createElem({ tag: 'TD', class: 'table__td text-left' }),
             td6   = createElem({ 
-              tag: 'TD', 
-              class: 'table__td text-right',
-              text:  product.price 
-            }),
+                                  tag: 'TD', 
+                                  class: 'table__td text-right',
+                                  text:  CartDB.curr + product.price
+                              }),
             tdSeparator  = createElem({ 
-              tag: 'TD', 
-              class: 'table__td--separator',
-              colspan: '6'
-              });
+                                        tag: 'TD', 
+                                        class: 'table__td--separator',
+                                        colspan: '6'
+                                      });
 
         var a = createElem({ 
           tag: 'A',
@@ -577,14 +581,15 @@
 
         var aProd = createElem({ 
           tag: 'A', 
-          href: '#',
+          href: '#' + product.name,
           text: 'Product'
         });
 
         var inpt = createElem({ 
           tag: 'input', 
           class: 'table__input table__input--text',
-          name: 'product-field',
+          id: 'input' + Utilities.toDash(product.name),
+          name: 'input' + Utilities.toDash(product.name),
           type: 'text',
           value: '1'
         });
@@ -622,6 +627,31 @@
         cartTable.appendChild(tr);
         cartTable.appendChild(tr2);
     }
+
+    var currency = function(amount, separator) {
+        var amnt    = amount.toString();
+        var len     = amnt.length;
+        var decimal = "";
+
+        var remainder,
+            partial;
+
+        if (amnt.indexOf(".") !== -1) {
+            decimal = amnt.substr(amnt.indexOf("."), 3);
+            amnt    = amnt.substr(0, amnt.indexOf("."));
+            len    -= 3; // remove decimal part from total length
+        }
+
+        if (len < 4) {
+            return amnt;
+        } else {
+            remainder = amnt.substr(0, len - 3);
+            partial   = amnt.substr(len - 3, 3);
+
+            return currency(remainder, separator) + separator + partial + decimal;
+        }
+    }
+
 
 
 </script>
