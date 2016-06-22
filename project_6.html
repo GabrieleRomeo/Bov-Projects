@@ -581,7 +581,7 @@
       var partial = document.getElementById('partial-' + product.name);
 
       input.value = product.quantity;
-      partial.innerHTML = getCurrency(product.unitPrice * product.quantity);
+      partial.innerHTML = getCurrency(calculateProdPrice(product));
     }
 
     var removeCartRow = function(row) {
@@ -628,22 +628,32 @@
       return elem;
     }
 
+    var calculateProdPrice = function(product) {
+
+      var unitPrice = product.unitPrice,
+          quantity  = product.quantity,
+          discount  = CartDB.getDiscount(product) || 0;
+
+      var subTotal = unitPrice * quantity;
+
+      return subTotal - ((discount / 100) * subTotal);
+    }
+
+    var calculateProdDiscount = function(product) {
+
+      var unitPrice = product.unitPrice,
+          discount  = CartDB.getDiscount(product) || 0;
+
+      return unitPrice - ((discount / 100) * unitPrice);
+    }
+
     function addCartRow(product) {
 
-        var discount  = CartDB.getDiscount(product),
-            unitPrice = getCurrency(product.unitPrice),
-            unitPriceDiscount,
+        var discount      = CartDB.getDiscount(product),
+            unitPrice     = getCurrency(product.unitPrice),
+            unitPriceDis  = getCurrency(calculateProdDiscount(product)),
+            finalPrice    = getCurrency(calculateProdPrice(product)),
             partial;
-
-        if (!discount) {
-            partial = getCurrency(product.unitPrice * product.quantity);
-        } else {
-          partial = product.unitPrice * product.quantity;
-          partial = partial - ((partial * discount) / 100);
-          partial = getCurrency(partial);
-
-          unitPriceDiscount = getCurrency(product.unitPrice - ((product.unitPrice * discount) / 100));
-        }
 
         var tr   = createElem({ tag: 'TR' }),
             tr2  = createElem({ tag: 'TR' });
@@ -694,12 +704,14 @@
           }),
           spnPrice = createElem({
               tag: 'SPAN',
-              class: (discount) ? 'cart-product-price-discount' : '',
+              class: (discount) ? 'cart-product-discount ' + 
+                                  ' cart-product-discount--price' 
+                                : '',
               text: unitPrice
           }),
           spnPriceDiscount = createElem({
               tag: 'SPAN',
-              text: ' ' + unitPriceDiscount
+              text: ' ' + unitPriceDis
           }),
           spnDiscount = createElem({
               tag: 'SPAN', 
@@ -710,7 +722,7 @@
               tag: 'SPAN', 
               id: 'partial-'+ Utilities.replaceAll(product.name, ' ', '-'),
               name: 'partial-'+ Utilities.replaceAll(product.name, ' ', '-'),
-              text:  partial
+              text:  finalPrice
           });
 
         var removeButton = createElem({ 
@@ -780,6 +792,8 @@
         
         });
     }
+
+
 
     var getCurrency = function(value) {
 
