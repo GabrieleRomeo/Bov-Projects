@@ -554,7 +554,7 @@
       var partial = document.getElementById('partial-' + product.name);
 
       input.value = product.quantity;
-      partial.innerHTML = getPartial(product.unitPrice * product.quantity);
+      partial.innerHTML = getCurrency(product.unitPrice * product.quantity);
     }
 
     var removeCartRow = function(row) {
@@ -603,7 +603,8 @@
 
     function addCartRow(product) {
 
-        var partial = getPartial(product.unitPrice * product.quantity);
+        var partial   = getCurrency(product.unitPrice * product.quantity),
+            unitPrice = getCurrency(product.unitPrice);
 
         var tr   = createElem({ tag: 'TR' }),
             tr2  = createElem({ tag: 'TR' });
@@ -611,12 +612,14 @@
         var td    = createElem({ tag: 'TD', class: 'table__td text-center' }),
             td2   = createElem({ tag: 'TD', class: 'table__td text-left' }),
             td4   = createElem({ tag: 'TD', class: 'table__td text-left' }),
+            td3   = createElem({ tag: 'TD', class: 'table__td text-left', 
+                                 text: 'Unit price: ' + unitPrice }),
             td5   = createElem({ tag: 'TD', class: 'table__td text-left' }),
             td6   = createElem({ tag: 'TD', class: 'table__td text-right' }),
             tdSeparator  = createElem({ 
                                         tag: 'TD', 
                                         class: 'table__td--separator',
-                                        colspan: '5'
+                                        colspan: '6'
                                       });
 
         var a = createElem({ 
@@ -638,7 +641,7 @@
           text: Utilities.replaceAll(product.name, '-', ' ')
         });
 
-        var inpt = createElem({ 
+        var inputTxt = createElem({ 
           tag: 'input', 
           class: 'table__input table__input--text',
           id: 'input-' + Utilities.replaceAll(product.name, ' ', '-'),
@@ -669,13 +672,14 @@
         a.appendChild(img)
         td.appendChild(a);
         td2.appendChild(aProd);
-        td4.appendChild(inpt);
+        td4.appendChild(inputTxt);
         spn.appendChild(removeButton);
         td5.appendChild(spn);
         td6.appendChild(spnPartial);
 
         tr2.appendChild(td); 
         tr2.appendChild(td2); 
+        tr2.appendChild(td3); 
         tr2.appendChild(td4); 
         tr2.appendChild(td5); 
         tr2.appendChild(td6); 
@@ -691,7 +695,7 @@
             removeCartRow(this.parentNode.parentNode.parentNode);
         });
 
-        inpt.addEventListener('change', function(event) {
+        inputTxt.addEventListener('change', function(event) {
 
             var id    = this.getAttribute('id'),
                 value = this.value,
@@ -717,7 +721,7 @@
         });
     }
 
-    var getPartial = function(value) {
+    var getCurrency = function(value) {
 
         var curr = CartDB.currency;
 
