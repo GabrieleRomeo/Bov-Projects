@@ -465,7 +465,7 @@
             return false;
         } 
 
-        this.products[product.name]['quantity'] = product.quantity;
+        this.products[product.name]['quantity'] = parseInt(product.quantity);
 
         return this.products[product.name];
     },
@@ -716,7 +716,7 @@
             }
 
 
-            product.quantity = parseInt(this.value);
+            product.quantity = this.value;
 
             updateProduct(product); 
         
