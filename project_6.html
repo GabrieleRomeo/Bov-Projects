@@ -378,58 +378,7 @@
         <div id="cart-details-table">
           <table id="cart-table" class="table">
           <tbody>
-          <!--
-          <tr>
-            <td class="table__td text-center">
-              <a href="">
-                <img class="table__img-thumbnail" 
-                     src="images/64x64.png" alt="img" title="img">
-              </a>
-            </td>
-            <td class="table__td text-left">
-              <a href="#">Product</a>
-            </td>
-            <td class="table__td text-left">
-              <input class="table__input 
-                            table__input--text"
-                     name="quantity-1" 
-                     type="text" value="1">
-            </td>
-            <td class="table__td text-left">
-              <span class="input-group-btn">
-                <input type="button" value="Remove" class="btn btn-red">
-              </span>
-            </td>
-            <td class="table__td text-right">$45.00</td>
-          </tr>
-          <tr>
-            <td class="table__td--separator" colspan="5"></td>
-          </tr>
-          <tr>
-          <td class="table__td text-center">
-            <a href="">
-              <img class="table__img-thumbnail" 
-                   src="images/64x64.png" alt="img" title="img">
-            </a>
-          </td>
-          <td class="table__td text-left">
-          <a href=#"">Product</a>
-          </td>
-          <td class="table__td text-left">
-            <input class="table__input 
-                          table__input--text" 
-                   name="quantity-2"
-                   type="text" value="1">
-          </td>
-          <td class="table__td text-left">
-            <span class="input-group-btn">
-              <input type="button" value="Remove" class="btn btn-red">
-            </span>
-          </td>
-          <td class="table__td text-right">$100.00</td>
-          </tr>
           </tbody>
-          -->
           </table>
         </div>
         <div id="coupon">
@@ -446,16 +395,22 @@
           <table class="table table-border">          
           <tbody>
           <tr>
-            <td class="text-right">Sub-total:</td><td class="text-left">$145.00</td>
+            <td class="text-right">Sub-total:</td>
+            <td class="text-left"><span id="cartSubTotal"></span></td>
+          </tr>
+          <!--
+          <tr>
+            <td class="text-right">Coupon(-5%):</td>
+            <td class="text-left">$7.25</td>
           </tr>
           <tr>
-            <td class="text-right">Coupon(-5%):</td><td class="text-left">$7.25</td>
+            <td class="text-right">VAT(12%):</td>
+            <td class="text-left">$16,53</td>  
           </tr>
+          -->
           <tr>
-            <td class="text-right">VAT(12%):</td><td class="text-left">$16,53</td>  
-          </tr>
-          <tr>
-            <td class="text-right">Total:</td><td class="text-left">$154,28</td>          
+            <td class="text-right">Total:</td>
+            <td class="text-left"><span id="CartTotal"></span></td>          
           </tr>
           </tbody>
           </table>
@@ -501,6 +456,17 @@
 
         return this.products[product.name];
     },
+    updateProd: function(product) {
+
+        if (!product && !product.name && !product.quantity && 
+            !this.products[product.name]) {
+            return false;
+        } 
+
+        this.products[product.name]['quantity'] = product.quantity;
+
+        return this.products[product.name];
+    },
     remProd: function(product) {
         if (product && product.name && this.products[product.name]) {
             delete this.products[product.name];
@@ -537,11 +503,11 @@
         var name      = product.getAttribute("data-product-name");
         var price     = product.getAttribute("data-product-price");
         var quantity  = product.quantity || 1;
+        var newProd;
 
         price = parseFloat(price).toFixed(2);
 
-
-        var newProd = CartDB.addProd({
+        newProd = CartDB.addProd({
             name:       name,
             unitPrice:  price,
             quantity:   quantity
@@ -552,8 +518,34 @@
         } else {
           updateCartRow(newProd);
         }
+       
         toggleCart();
 
+    }
+
+    var updateProduct = function(product) {
+
+        var name      = product.name,
+            quantity  = product.quantity || 1,
+            update    = product.update || false;
+
+        var updatedProd;
+
+        updatedProd = CartDB.updateProd({
+            name:       name,
+            quantity:   quantity
+        });
+
+        if (!updatedProd) throw "Unable to update this product";
+
+        updateCartRow(updatedProd);
+
+        toggleCart();
+    }
+
+    var removeProduct = function(product) {
+
+        if (!CartDB.remProd(product)) throw "Unable to remove this product";       
     }
 
     var updateCartRow = function(product) {
@@ -563,6 +555,16 @@
 
       input.value = product.quantity;
       partial.innerHTML = getPartial(product.unitPrice * product.quantity);
+    }
+
+    var removeCartRow = function(row) {
+
+        var sep = row.previousSibling;
+        
+        cartTable.deleteRow(row.rowIndex); 
+        cartTable.deleteRow(sep.rowIndex); // Delete the separator row
+
+        toggleCart();
     }
 
     // Utility functions
@@ -633,7 +635,7 @@
         var aProd = createElem({ 
           tag: 'A', 
           href: '#' + product.name,
-          text: product.name.split('-').join(' ')
+          text: Utilities.replaceAll(product.name, '-', ' ')
         });
 
         var inpt = createElem({ 
@@ -664,18 +666,6 @@
             value: 'Remove'
         });
 
-        removeButton.addEventListener('click', function(event) {
-            var row = this.parentNode.parentNode.parentNode;
-            var separator = row.previousSibling;
-
-            if (!CartDB.remProd(product)) throw "Unable to remove this product";
-            
-            cartTable.deleteRow(row.rowIndex); 
-            cartTable.deleteRow(separator.rowIndex); // Delete separator, too
-
-            toggleCart();
-        });
-
         a.appendChild(img)
         td.appendChild(a);
         td2.appendChild(aProd);
@@ -683,7 +673,6 @@
         spn.appendChild(removeButton);
         td5.appendChild(spn);
         td6.appendChild(spnPartial);
-
 
         tr2.appendChild(td); 
         tr2.appendChild(td2); 
@@ -695,6 +684,37 @@
 
         cartTable.appendChild(tr);
         cartTable.appendChild(tr2);
+
+
+        removeButton.addEventListener('click', function(event) {
+            removeProduct(product);
+            removeCartRow(this.parentNode.parentNode.parentNode);
+        });
+
+        inpt.addEventListener('change', function(event) {
+
+            var id    = this.getAttribute('id'),
+                value = this.value,
+                name  = Utilities.replaceAll(id,'input-','');
+
+
+            if (!Utilities.isInt(value) || 
+                !Validators.isBetween(value, '0', 10)) {
+                // restore the input's value 
+                this.value = product.quantity;
+            } else if (value === '0') {
+                              //console.log(id + ' ' + product.name + ' ' + this);
+                removeProduct(product);
+                removeCartRow(this.parentNode.parentNode);
+                return;
+            }
+
+
+            product.quantity = this.value;
+
+            updateProduct(product); 
+        
+        });
     }
 
     var getPartial = function(value) {
