@@ -188,7 +188,14 @@ body {
   min-height: 100px;
   padding-bottom: 30px;
 }
- 
+
+.cart-product-discount {
+  color: red;
+}
+.cart-product-price-discount {
+  text-decoration: line-through;
+}
+
 .cartSteps a {
   padding: 8px 50px;
   background: #efefef;
