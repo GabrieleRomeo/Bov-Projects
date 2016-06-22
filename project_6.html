@@ -396,7 +396,7 @@
           <tbody>
           <tr>
             <td class="text-right">Sub-total:</td>
-            <td class="text-left"><span id="cartSubTotal"></span></td>
+            <td class="text-left"><span id="cartSubTot"></span></td>
           </tr>
           <!--
           <tr>
@@ -438,6 +438,8 @@
   var addButtons = document.getElementsByClassName('addToCart'),
       cart       = document.getElementById('cart'),
       cartTable  = document.getElementById('cart-table'),
+      cartSubTot = document.getElementById('cartSubTot'),
+      cartTotal  = document.getElementById('cartTotal'),
       len        = addButtons.length;
 
   var CartDB = {
@@ -714,7 +716,7 @@
             }
 
 
-            product.quantity = this.value;
+            product.quantity = parseInt(this.value);
 
             updateProduct(product); 
         
