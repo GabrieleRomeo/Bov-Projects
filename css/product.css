@@ -151,8 +151,18 @@ body {
 }
 
 .title {
+  position: relative;
   font-weight: 300;
   border-bottom: 1px solid rgba(206, 206, 206, 0.24);
+}
+
+.product-discount {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 0.8em;
+  color: red;
+  text-transform: uppercase;
 }
  
 .product-description {
