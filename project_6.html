@@ -449,8 +449,9 @@
   var CartDB = {
     currency: '\u0024',
     promoCodes : {
+      applied: null,
       code: { 'bigsale': 5},
-      codeTypes: {'1': 15, '2': 8},
+      type: {'1': 15, '2': 8},
       products: { 'product-10': 10}
     },
     products: {},
@@ -506,14 +507,15 @@
     },
     getDiscount: function(product) {
 
-      var name = product.name;
-      var type = product.type;
+      var promos  = this.promoCodes;
+      var name    = product.name;
+      var type    = product.type;
 
-      if (!name) return void 0;
+      if (!name || promos.applied) return void 0;
 
       name = name.toLowerCase();
 
-      return this.promoCodes.products[name] || void 0;
+      return promos.products[name] || promos[type] || void 0;
     }
   };
 
