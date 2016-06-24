@@ -520,6 +520,9 @@
 
       return promos.products[name] || promos[type] || void 0;
     },
+    resetCoupon: function() {
+      this.promoCodes.applied = null;
+    },
     setCoupon: function(couponCode) {
 
       var promos = this.promoCodes;
@@ -685,7 +688,7 @@
             unitPriceDis  = getCurrency(calculateProdDiscount(product)),
             finalPrice    = getCurrency(calculateProdPrice(product)),
             partial;
-
+console.log(product.name + ' ' + discount);
         var tr   = createElem({ tag: 'TR' }),
             tr2  = createElem({ tag: 'TR' });
 
