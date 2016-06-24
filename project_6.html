@@ -441,7 +441,7 @@
 
   var addButtons = document.getElementsByClassName('addToCart'),
       cart       = document.getElementById('cart'),
-      cartTable  = document.getElementById('cart-table'),
+      cartTable  = document.getElementById('cart-table').childNodes[1],
       cartSubTot = document.getElementById('cartSubTot'),
       cartTotal  = document.getElementById('cartTotal'),
       len        = addButtons.length;
@@ -450,7 +450,7 @@
     currency: '\u0024',
     promoCodes : {
       applied: null,
-      code: { 'bigsale': 5},
+      coupons: { 'bigsale': 50 },
       type: {'1': 15, '2': 8},
       products: { 'product-10': 10}
     },
@@ -500,7 +500,10 @@
         return total;
     },
     getProductsList: function() {
-      return this.products;
+      return Utilities.keys(this.products);
+    },
+    getProduct: function(name) {
+      return this.products[name] || void 0;
     },
     getPromoCode: function(code) {
       return this.promoCodes[code] || void 0;
@@ -516,6 +519,16 @@
       name = name.toLowerCase();
 
       return promos.products[name] || promos[type] || void 0;
+    },
+    setCoupon: function(couponCode) {
+
+      var promos = this.promoCodes;
+
+      if (!promos.coupons[couponCode]) return void 0;
+
+      promos.applied = promos.coupons;
+
+      return true;
     }
   };
 
@@ -594,6 +607,22 @@
         cartTable.deleteRow(sep.rowIndex); // Delete the separator row
 
         toggleCart();
+    }
+
+    var updateCart = function() {
+
+      var prodList = CartDB.getProductsList();
+
+      if (!prodList || prodList.length === 0) return;
+
+      // remove all products
+      while (cartTable.firstChild) {
+        cartTable.removeChild(cartTable.firstChild);
+      }
+
+      prodList.map(function(name) {
+        addCartRow(CartDB.getProduct(name));
+      })
     }
 
     // Utility functions
