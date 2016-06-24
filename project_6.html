@@ -688,7 +688,7 @@
             unitPriceDis  = getCurrency(calculateProdDiscount(product)),
             finalPrice    = getCurrency(calculateProdPrice(product)),
             partial;
-console.log(product.name + ' ' + discount);
+
         var tr   = createElem({ tag: 'TR' }),
             tr2  = createElem({ tag: 'TR' });
 
@@ -829,17 +829,19 @@ console.log(product.name + ' ' + discount);
 
 
 
-    var getCurrency = function(value) {
+    var getCurrency = function(value, separator) {
 
         var curr = CartDB.currency;
 
-        return curr + currency(value, '.');
+        return curr + currency(value, separator);
     }
 
     var currency = function(amount, separator) {
-        var amnt    = amount.toString();
-        var len     = amnt.length;
-        var decimal = "";
+
+        var amnt      = amount.toString();
+        var len       = amnt.length;
+        var separator = separator || ",";
+        var decimal   = "";
 
         var remainder,
             partial;
@@ -851,7 +853,7 @@ console.log(product.name + ' ' + discount);
         }
 
         if (len < 4) {
-            return amnt;
+            return amnt + decimal;
         } else {
             remainder = amnt.substr(0, len - 3);
             partial   = amnt.substr(len - 3, 3);
