@@ -805,6 +805,7 @@
         var discount      = CartDB.getDiscount(product),
             unitPrice     = getCurrency(product.unitPrice),
             unitPriceDis  = getCurrency(calculateDiscount(product)),
+            quantity      = product.quantity,
             finalPrice    = getCurrency(calculatePrice(product)),
             partial;
 
@@ -848,7 +849,7 @@
           id: 'input-' + Utilities.replaceAll(product.name, ' ', '-'),
           name: 'input-' + Utilities.replaceAll(product.name, ' ', '-'),
           type: 'text',
-          value: '1'
+          value: quantity
         });
 
         var spn = createElem({
