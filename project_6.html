@@ -388,12 +388,16 @@
         <div id="coupon">
         Use Coupon Code
           <input class="table__input"
-                 id="couponCode" 
-                 name="couponCode"
+                 id="couponInput" 
+                 name="couponInput"
                  type="text">
           <span class="input-group-btn">
-            <input type="button" value="Apply Coupon" class="btn">
+            <input class="btn" 
+                   id="couponButton" 
+                   type="button" 
+                   value="Apply Coupon">
           </span>
+          <p id="couponMessage" class="cart-coupon"></p>
         </div>
         <div id="total-cart-wrapper">
           <table class="table table-border">          
@@ -402,19 +406,17 @@
             <td class="text-right">Sub-total:</td>
             <td class="text-left"><span id="cartSubTot"></span></td>
           </tr>
-          <!--
           <tr>
-            <td class="text-right">Coupon(-5%):</td>
-            <td class="text-left">$7.25</td>
+            <td class="text-right">Shipping:</td>
+            <td class="text-left"><span id="cartShipping"></span></td>
           </tr>
-          <tr>
-            <td class="text-right">VAT(12%):</td>
-            <td class="text-left">$16,53</td>  
+          <tr id="cartCouponRow">
+            <td class="text-right">Coupon(-<span id="cartCoupon"></span>%):</td>
+            <td class="text-left"><span id="cartCouponVal"></span></td>
           </tr>
-          -->
           <tr>
             <td class="text-right">Total:</td>
-            <td class="text-left"><span id="CartTotal"></span></td>          
+            <td class="text-left"><span id="cartTotal"></span></td>          
           </tr>
           </tbody>
           </table>
@@ -444,24 +446,58 @@
       cartTable  = document.getElementById('cart-table').childNodes[1],
       cartSubTot = document.getElementById('cartSubTot'),
       cartTotal  = document.getElementById('cartTotal'),
+      cartShipp  = document.getElementById('cartShipping'),
+      cartCoupon = document.getElementById('cartCoupon'),
+      cartCouponVal = document.getElementById('cartCouponVal'),
+      cartCouponRow = document.getElementById('cartCouponRow'),
+      couponMessage = document.getElementById('couponMessage'),
+      couponButton = document.getElementById('couponButton'),
+      couponInput   = document.getElementById('couponInput'),
       len        = addButtons.length;
 
   var CartDB = {
     currency: '\u0024',
-    promoCodes : {
+    shippingCost: 7,
+    check: {
+        subTotal: 0,
+        saving: 0
+    },
+    promoCodes: {
       applied: null,
-      coupons: { 'bigsale': 50 },
+      coupons: { 'bigsale': 50, 'promopromo': 8, 'white': 5 },
       type: {'1': 15, '2': 8},
       products: { 'product-10': 10}
     },
     products: {},
+    updateCheck: function() {
+
+        var that = this;
+
+        var subTotal  = 0,
+            saving    = 0,
+            discount;
+
+        var list = this.getProducts();
+
+        list.map(function(product) {
+            discount  = that.getDiscount(product);
+            subTotal += (product.unitPrice * product.quantity);
+            saving   += subTotal - calculatePercentage(subTotal, discount);
+        })
+
+        this.check.subTotal = subTotal.toFixed(2);
+        this.check.saving   = saving.toFixed(2);
+
+    },
     addProd: function(product) {
 
-        if (product && product.name && !this.products[product.name]) {
-            this.products[product.name] = copy(product, {});
+        if (!this.products[product.name]) {
+            this.products[product.name] = copy(product, {});            
         } else if (this.products[product.name]) {
           this.products[product.name]['quantity'] += 1;
         }
+
+        this.updateCheck();
 
         return this.products[product.name];
     },
@@ -470,17 +506,21 @@
         if (!product && !product.name && !product.quantity && 
             !this.products[product.name]) {
             return false;
-        } 
+        }
 
         this.products[product.name]['quantity'] = parseInt(product.quantity);
+
+        this.updateCheck();
 
         return this.products[product.name];
     },
     remProd: function(product) {
         if (product && product.name && this.products[product.name]) {
             delete this.products[product.name];
+            this.updateCheck();
             return true;
         }
+
         return false;
     },
     getQuantity: function(productName) {
@@ -505,6 +545,27 @@
     getProduct: function(name) {
       return this.products[name] || void 0;
     },
+    getProducts: function() {
+        var list = [];
+
+        for(var key in this.products) {
+            if(this.products.hasOwnProperty(key)) {
+                list.push(this.products[key]);
+            }
+        }
+
+      return list;
+    },
+    getProductPrice: function(product) {
+
+     var  unitPrice = product.unitPrice,
+          quantity  = product.quantity,
+          discount  = discount || this.getDiscount(product) || 0;
+
+      var subTotal = unitPrice * quantity;
+
+      return calculatePercentage(subTotal, discount);
+    },
     getPromoCode: function(code) {
       return this.promoCodes[code] || void 0;
     },
@@ -514,14 +575,15 @@
       var name    = product.name;
       var type    = product.type;
 
-      if (!name || promos.applied) return void 0;
+      if (!name || promos.applied) return 0;
 
       name = name.toLowerCase();
 
-      return promos.products[name] || promos[type] || void 0;
+      return promos.products[name] || promos[type] || 0;
     },
-    resetCoupon: function() {
+    resetCoupon: function(callback) {
       this.promoCodes.applied = null;
+      callback();
     },
     setCoupon: function(couponCode) {
 
@@ -529,9 +591,18 @@
 
       if (!promos.coupons[couponCode]) return void 0;
 
-      promos.applied = promos.coupons;
+      promos.applied = promos.coupons[couponCode];
 
-      return true;
+      return promos.applied;
+    },
+    getShippingCost: function() {
+      return this.shippingCost;
+    },
+    getSubTotal: function() {
+      return this.check.subTotal;
+    },
+    getTotalSaving: function() {
+      return this.check.saving;
     }
   };
 
@@ -565,7 +636,6 @@
         }
        
         toggleCart();
-
     }
 
     var updateProduct = function(product) {
@@ -590,7 +660,17 @@
 
     var removeProduct = function(product) {
 
-        if (!CartDB.remProd(product)) throw "Unable to remove this product";       
+        var productsList;
+
+        if (!CartDB.remProd(product)) throw "Unable to remove this product"; 
+
+        productsList = CartDB.getProductsList();
+
+        CartDB.resetCoupon(function() {
+            couponMessage.innerHTML = '';
+            toggle(cartCouponRow, 'none');
+        })  
+
     }
 
     var updateCartRow = function(product) {
@@ -599,7 +679,7 @@
       var partial = document.getElementById('partial-' + product.name);
 
       input.value = product.quantity;
-      partial.innerHTML = getCurrency(calculateProdPrice(product));
+      partial.innerHTML = getCurrency(calculatePrice(product));
     }
 
     var removeCartRow = function(row) {
@@ -625,7 +705,9 @@
 
       prodList.map(function(name) {
         addCartRow(CartDB.getProduct(name));
-      })
+      });
+
+      toggleCart();
     }
 
     // Utility functions
@@ -633,13 +715,14 @@
     function toggleCart() {
 
         var quantity = CartDB.getQuantity();
-        var display = (window.getComputedStyle(cart, null).display);
 
         if (quantity === 0) {
-            cart.style.display = 'none';
+            toggle(cart, 'none');
         } else if (quantity === 1) {
-            cart.style.display = 'block';
+            toggle(cart, 'block');
         }
+
+      cartCheck();
     }
 
     function createElem(obj) {
@@ -662,31 +745,51 @@
       return elem;
     }
 
-    var calculateProdPrice = function(product) {
+    var calculatePercentage = function(value, percentage) {
+      return (value - ((percentage / 100) * value)).toFixed(2);
+    }
+
+    var calculatePrice = function(product, discount) {
 
       var unitPrice = product.unitPrice,
           quantity  = product.quantity,
-          discount  = CartDB.getDiscount(product) || 0;
+          discount  = discount || CartDB.getDiscount(product);
 
       var subTotal = unitPrice * quantity;
 
-      return subTotal - ((discount / 100) * subTotal);
+      return calculatePercentage(subTotal, discount);
     }
 
-    var calculateProdDiscount = function(product) {
+    var calculateDiscount = function(product, ignoreDiscount) {
 
       var unitPrice = product.unitPrice,
-          discount  = CartDB.getDiscount(product) || 0;
+          discount;
 
-      return unitPrice - ((discount / 100) * unitPrice);
+      discount = (!ignoreDiscount) ? CartDB.getDiscount(product) : 0;
+
+      return calculatePercentage(unitPrice, discount);
+    }
+
+    var calculateSubTotal = function(ignoreDiscount) {
+
+        var prodList = CartDB.getProductsList();
+        var subtotal = 0;
+
+        if (prodList.length === 0) return subtotal;
+
+        prodList.map(function(name) {
+          subtotal += calculatePrice(CartDB.getProduct(name), ignoreDiscount);
+        });  
+
+        return subtotal;    
     }
 
     function addCartRow(product) {
 
         var discount      = CartDB.getDiscount(product),
             unitPrice     = getCurrency(product.unitPrice),
-            unitPriceDis  = getCurrency(calculateProdDiscount(product)),
-            finalPrice    = getCurrency(calculateProdPrice(product)),
+            unitPriceDis  = getCurrency(calculateDiscount(product)),
+            finalPrice    = getCurrency(calculatePrice(product)),
             partial;
 
         var tr   = createElem({ tag: 'TR' }),
@@ -827,7 +930,65 @@
         });
     }
 
+    function cartCheck() {
 
+        var total         = 0,
+            subTotal      = CartDB.getSubTotal(),
+            shipping      = CartDB.getShippingCost(),
+            saving        = CartDB.getTotalSaving(),
+            couponAmount  = CartDB.promoCodes.applied,
+            couponValue   = 0;
+
+        if (couponAmount) {
+          couponValue = subTotal - calculatePercentage(subTotal, couponAmount);
+          cartCouponVal.innerHTML = getCurrency(couponValue.toFixed(2));
+        }
+
+        total = subTotal - saving + shipping - couponValue;
+
+        cartSubTot.innerHTML = getCurrency(subTotal - saving);
+        cartTotal.innerHTML  = getCurrency(total);
+    }
+
+    function addRow(parent, node) {
+      var tr = createElem({ tag: 'TR' });
+      tr.appendChild(node);
+    }
+
+    var verifyCoupon = function() {
+
+      var coupon = couponInput.value;
+      var couponAmount = CartDB.setCoupon(coupon),
+          couponValue  = 0;
+
+
+      var subTotal = CartDB.getSubTotal(),
+          saving   = CartDB.getTotalSaving();
+
+      couponInput.value = '';
+
+      if (!couponAmount) {
+        couponMessage.innerHTML = coupon + ' - invalid coupon code';
+        return;
+      }
+
+      couponValue = subTotal - calculatePercentage(subTotal, couponAmount);
+
+      if (couponValue < saving) {
+        couponMessage.innerHTML = 'The current promo is better than your ' +
+                                  'coupon \'' + coupon + '\' ' +
+                                  '-' + couponAmount + '% off';
+        return;
+      }
+
+      cartCouponRow.className  = '';
+      cartCoupon.innerHTML = couponAmount;
+      couponMessage.innerHTML = 'coupon \'' + coupon + '\' -' +
+                                 couponAmount + '% off';
+      updateCart();
+      toggle(cartCouponRow, 'table-row');
+        
+    }
 
     var getCurrency = function(value, separator) {
 
@@ -862,6 +1023,10 @@
         }
     }
 
+    function insertAfter(referenceNode, newNode) {
+        referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+    }
+
     function copy(first, second) {
       for (var p in first) {
         if (first.hasOwnProperty(p)) {
@@ -869,6 +1034,35 @@
         }
       }
       return second;
+    }
+
+    cartShipp.innerHTML = getCurrency(CartDB.getShippingCost());
+
+    couponButton.addEventListener('click', verifyCoupon);
+
+    function Node(selector) {
+      var _self = this;
+      var _arr  = Array.prototype;
+
+      this.node   = document.querySelectorAll(selector);
+      this.all = function() {
+        _arr.map.call(_self.node, function(item) {
+          console.log(item.innerHTML);
+        });
+      }
+
+      return this;
+    }
+
+    function toggle(element, visibility) {
+
+        var display     = (window.getComputedStyle(element, null).display);
+        var visibility  = visibility || 'block';
+
+        // if current display property is = to the visibility param, do nothing
+        if (element.style.display === visibility) return;
+        
+        element.style.display = (display === 'none') ? visibility : 'none';
     }
 
 </script>
