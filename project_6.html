@@ -67,8 +67,6 @@
               </div>
               <div class="title">
                 Product 1
-                <span class="product-promo">
-                  special type 1
                 </span>
               </div>
               <div class="product-description">
@@ -97,8 +95,6 @@
               </div>
               <div class="title">
                 Product 2
-                <span class="product-promo">
-                  special type 1
                 </span>
               </div>
               <div class="product-description">
@@ -127,8 +123,6 @@
               </div>
               <div class="title">
                 Product 3
-                <span class="product-promo">
-                  special type 1
                 </span>
               </div>
               <div class="product-description">
@@ -201,7 +195,8 @@
                 Price: $20.00
                 <div class="addToCart">
                   <span data-product-name="Product-6"
-                        data-product-price="20">
+                        data-product-price="20"
+                        data-product-type="2">
                     Add to Cart
                   </span>
                 </div>
@@ -279,7 +274,8 @@
                 Price: $5.00
                 <div class="addToCart">
                   <span data-product-name="Product-9"
-                        data-product-price="5">
+                        data-product-price="5"
+                        data-product-type="3">
                     Add to Cart
                   </span>
                 </div>
@@ -452,19 +448,21 @@
 <script src="js/validator.js"></script>
 <script src="js/utilities.js"></script>
 <script>
+  var _win = window,
+      _doc = _win.document;
 
-  var addButtons = document.getElementsByClassName('addToCart'),
-      cart       = document.getElementById('cart'),
-      cartTable  = document.getElementById('cart-table').childNodes[1],
-      cartSubTot = document.getElementById('cartSubTot'),
-      cartTotal  = document.getElementById('cartTotal'),
-      cartShipp  = document.getElementById('cartShipping'),
-      cartCoupon = document.getElementById('cartCoupon'),
-      cartCouponVal = document.getElementById('cartCouponVal'),
-      cartCouponRow = document.getElementById('cartCouponRow'),
-      couponMessage = document.getElementById('couponMessage'),
-      couponButton = document.getElementById('couponButton'),
-      couponInput   = document.getElementById('couponInput'),
+  var addButtons = _doc.getElementsByClassName('addToCart'),
+      cart       = _doc.getElementById('cart'),
+      cartTable  = _doc.getElementById('cart-table').childNodes[1],
+      cartSubTot = _doc.getElementById('cartSubTot'),
+      cartTotal  = _doc.getElementById('cartTotal'),
+      cartShipp  = _doc.getElementById('cartShipping'),
+      cartCoupon = _doc.getElementById('cartCoupon'),
+      cartCouponVal = _doc.getElementById('cartCouponVal'),
+      cartCouponRow = _doc.getElementById('cartCouponRow'),
+      couponMessage = _doc.getElementById('couponMessage'),
+      couponButton = _doc.getElementById('couponButton'),
+      couponInput   = _doc.getElementById('couponInput'),
       len        = addButtons.length;
 
   var CartDB = {
@@ -477,7 +475,7 @@
     promoCodes: {
       applied: null,
       coupons: { 'bigsale': 50, 'promopromo': 8, 'white': 5 },
-      type: {'1': 15, '2': 8},
+      types: { '1': 15, '2': 8, '3': 7 },
       products: { 'product-10': 10}
     },
     products: {},
@@ -578,6 +576,12 @@
 
       return calculatePercentage(subTotal, discount);
     },
+    getPromoTypes: function() {
+      return Utilities.keys(this.promoCodes.types);      
+    },
+    getPromoType: function(name) {
+      return this.promoCodes.types[name];      
+    },
     getPromoCode: function(code) {
       return this.promoCodes[code] || void 0;
     },
@@ -591,7 +595,7 @@
 
       name = name.toLowerCase();
 
-      return promos.products[name] || promos[type] || 0;
+      return promos.products[name] || promos.types[type] || 0;
     },
     resetCoupon: function(callback) {
       this.promoCodes.applied = null;
@@ -687,8 +691,8 @@
 
     var updateCartRow = function(product) {
 
-      var input   = document.getElementById('input-' + product.name);
-      var partial = document.getElementById('partial-' + product.name);
+      var input   = _doc.getElementById('input-' + product.name);
+      var partial = _doc.getElementById('partial-' + product.name);
 
       input.value = product.quantity;
       partial.innerHTML = getCurrency(calculatePrice(product));
@@ -739,13 +743,13 @@
 
     function createElem(obj) {
 
-      var elem = document.createElement(obj.tag);
+      var elem = _doc.createElement(obj.tag);
       var text;
 
       for (var attr in obj) {
           if (obj.hasOwnProperty(attr)) {
               if (attr === 'text') {
-                  text = document.createTextNode(obj[attr]);
+                  text = _doc.createTextNode(obj[attr]);
                   elem.appendChild(text);
               } else if (attr !== 'tag') {
                   elem.setAttribute(attr, obj[attr]);
@@ -928,7 +932,6 @@
                 // restore the input's value 
                 this.value = product.quantity;
             } else if (value === '0') {
-                              //console.log(id + ' ' + product.name + ' ' + this);
                 removeProduct(product);
                 removeCartRow(this.parentNode.parentNode);
                 return;
@@ -1035,10 +1038,6 @@
         }
     }
 
-    function insertAfter(referenceNode, newNode) {
-        referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-    }
-
     function copy(first, second) {
       for (var p in first) {
         if (first.hasOwnProperty(p)) {
@@ -1048,15 +1047,45 @@
       return second;
     }
 
-    cartShipp.innerHTML = getCurrency(CartDB.getShippingCost());
+    function initialize() {
 
-    couponButton.addEventListener('click', verifyCoupon);
+        // Initialize promos for products of a specific type
+        var types = CartDB.getPromoTypes();
+
+        types.map(function(type) {
+
+            var off  = CartDB.getPromoType(type);
+            var list;
+
+            list = _doc.querySelectorAll('span[data-product-type="'+ type +'"]');
+
+            Array.prototype.map.call(list, function(product) {  
+
+              var span = createElem({
+                          tag: 'SPAN', 
+                          class: 'product-promo',
+                          text : '[Special Type ' + type +'] -'
+                                  + off + '% off'});
+              var pNode = product.parentNode.parentNode.nextSibling.nextSibling;
+
+              pNode.appendChild(span);
+
+            });
+        });
+
+      // Set fixed shipping cost
+      cartShipp.innerHTML = getCurrency(CartDB.getShippingCost());
+
+      couponButton.addEventListener('click', verifyCoupon);
+
+    }
+
 
     function Node(selector) {
       var _self = this;
       var _arr  = Array.prototype;
 
-      this.node   = document.querySelectorAll(selector);
+      this.node   = _doc.querySelectorAll(selector);
       this.all = function() {
         _arr.map.call(_self.node, function(item) {
           console.log(item.innerHTML);
@@ -1076,7 +1105,7 @@
         
         element.style.display = (display === 'none') ? visibility : 'none';
     }
-
+initialize();
 </script>
 
 
