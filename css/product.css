@@ -156,13 +156,17 @@ body {
   border-bottom: 1px solid rgba(206, 206, 206, 0.24);
 }
 
-.product-discount {
+.product-promo {
   position: absolute;
   right: 0;
   top: 0;
   font-size: 0.8em;
-  color: red;
+  color: #ef389f;
   text-transform: uppercase;
+}
+
+.product-promo--discount {
+  color: red;
 }
  
 .product-description {
