@@ -330,7 +330,7 @@ body {
 }
 
 
-#couponCode {
+#couponInput {
     padding: 9px 10px;
     margin: 10px;
     font-family: "Courier New", Courier, monospace;
@@ -469,7 +469,7 @@ body {
 
   #cart-details-table { padding: 40px 10px; }
 
-  #couponCode {
+  #couponInput {
     font-size: 1.4375em; 
     margin-left: 23px;
   }
