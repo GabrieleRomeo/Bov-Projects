@@ -950,8 +950,8 @@
         var total         = 0,
             subTotal      = CartDB.getSubTotal(),
             shipping      = CartDB.getShippingCost(),
-            saving        = CartDB.getTotalSaving(),
             couponAmount  = CartDB.promoCodes.applied,
+            saving        = (couponAmount) ? 0 : CartDB.getTotalSaving(),
             couponValue   = 0;
 
         if (couponAmount) {
