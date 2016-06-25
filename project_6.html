@@ -474,7 +474,7 @@
     },
     promoCodes: {
       applied: null,
-      coupons: { 'bigsale': 50, 'promopromo': 8, 'white': 5 },
+      coupons: { 'bigsale': 50, 'promopromo': 16, 'white': 5 },
       types: { '1': 15, '2': 8, '3': 7 },
       products: { 'product-10': 10}
     },
@@ -492,12 +492,11 @@
         list.map(function(product) {
             discount  = that.getDiscount(product);
             subTotal += (product.unitPrice * product.quantity);
-            saving   += subTotal - calculatePercentage(subTotal, discount);
+            saving   += subTotal - calcPercentage(subTotal, discount);
         })
 
         this.check.subTotal = subTotal.toFixed(2);
         this.check.saving   = saving.toFixed(2);
-
     },
     addProd: function(product) {
 
@@ -565,16 +564,6 @@
         }
 
       return list;
-    },
-    getProductPrice: function(product) {
-
-     var  unitPrice = product.unitPrice,
-          quantity  = product.quantity,
-          discount  = discount || this.getDiscount(product) || 0;
-
-      var subTotal = unitPrice * quantity;
-
-      return calculatePercentage(subTotal, discount);
     },
     getPromoTypes: function() {
       return Utilities.keys(this.promoCodes.types);      
@@ -682,11 +671,12 @@
 
         productsList = CartDB.getProductsList();
 
-        CartDB.resetCoupon(function() {
-            couponMessage.innerHTML = '';
-            toggle(cartCouponRow, 'none');
-        })  
-
+        if (productsList.length === 0) {
+            CartDB.resetCoupon(function() {
+                couponMessage.innerHTML = '';
+                toggle(cartCouponRow, 'none');
+            });
+        }
     }
 
     var updateCartRow = function(product) {
@@ -741,30 +731,6 @@
       cartCheck();
     }
 
-    function createElem(obj) {
-
-      var elem = _doc.createElement(obj.tag);
-      var text;
-
-      for (var attr in obj) {
-          if (obj.hasOwnProperty(attr)) {
-              if (attr === 'text') {
-                  text = _doc.createTextNode(obj[attr]);
-                  elem.appendChild(text);
-              } else if (attr !== 'tag') {
-                  elem.setAttribute(attr, obj[attr]);
-              }              
-          }
-          
-      }
-
-      return elem;
-    }
-
-    var calculatePercentage = function(value, percentage) {
-      return (value - ((percentage / 100) * value)).toFixed(2);
-    }
-
     var calculatePrice = function(product, discount) {
 
       var unitPrice = product.unitPrice,
@@ -773,7 +739,7 @@
 
       var subTotal = unitPrice * quantity;
 
-      return calculatePercentage(subTotal, discount);
+      return calcPercentage(subTotal, discount);
     }
 
     var calculateDiscount = function(product, ignoreDiscount) {
@@ -783,21 +749,7 @@
 
       discount = (!ignoreDiscount) ? CartDB.getDiscount(product) : 0;
 
-      return calculatePercentage(unitPrice, discount);
-    }
-
-    var calculateSubTotal = function(ignoreDiscount) {
-
-        var prodList = CartDB.getProductsList();
-        var subtotal = 0;
-
-        if (prodList.length === 0) return subtotal;
-
-        prodList.map(function(name) {
-          subtotal += calculatePrice(CartDB.getProduct(name), ignoreDiscount);
-        });  
-
-        return subtotal;    
+      return calcPercentage(unitPrice, discount);
     }
 
     function addCartRow(product) {
@@ -809,83 +761,90 @@
             finalPrice    = getCurrency(calculatePrice(product)),
             partial;
 
-        var tr   = createElem({ tag: 'TR' }),
-            tr2  = createElem({ tag: 'TR' });
+        var tr   = createHTMLElem({ tag: 'TR' }),
+            tr2  = createHTMLElem({ tag: 'TR' });
 
-        var td    = createElem({ tag: 'TD', class: 'table__td text-center' }),
-            td2   = createElem({ tag: 'TD', class: 'table__td text-left' }),
-            td4   = createElem({ tag: 'TD', class: 'table__td text-left' }),
-            td3   = createElem({ tag: 'TD', class: 'table__td text-left',
-                                 text: 'Unit price: ' }),
-            td5   = createElem({ tag: 'TD', class: 'table__td text-left' }),
-            td6   = createElem({ tag: 'TD', class: 'table__td text-right' }),
-            tdDisc  = createElem({ tag: 'TD', class: 'table__td text-left' }),
-            tdSepa  = createElem({ tag: 'TD', class: 'table__td--separator',
-                                   colspan: '7'
-                                });
+        var td    = createHTMLElem({ tag: 'TD', 
+                                     class: 'table__td text-center' }),
+            td2   = createHTMLElem({ tag: 'TD', 
+                                     class: 'table__td text-left' }),
+            td4   = createHTMLElem({ tag: 'TD', 
+                                     class: 'table__td text-left' }),
+            td3   = createHTMLElem({ tag: 'TD', 
+                                     class: 'table__td text-left',
+                                     text: 'Unit price: ' }),
+            td5   = createHTMLElem({ tag: 'TD', 
+                                     class: 'table__td text-left' }),
+            td6   = createHTMLElem({ tag: 'TD', 
+                                    class: 'table__td text-right' }),
+            tdDisc  = createHTMLElem({ tag: 'TD', 
+                                       class: 'table__td text-left' }),
+            tdSepa  = createHTMLElem({ tag: 'TD', 
+                                       class: 'table__td--separator',
+                                       colspan: '7'});
 
-        var a = createElem({ 
-          tag: 'A',
-          src: '#'
+        var a = createHTMLElem({ 
+            tag: 'A',
+            src: '#'
         });
 
-        var img  = createElem({ 
-          tag: 'img', 
-          class: 'table__img-thumbnail',
-          src: 'images/64x64.png',
-          alt: 'Product Image',
-          title: 'Product Image' 
+        var img  = createHTMLElem({ 
+            tag: 'img', 
+            class: 'table__img-thumbnail',
+            src: 'images/64x64.png',
+            alt: 'Product Image',
+            title: 'Product Image' 
         });
 
-        var aProd = createElem({ 
-          tag: 'A', 
-          href: '#' + product.name,
-          text: Utilities.replaceAll(product.name, '-', ' ')
+        var aProd = createHTMLElem({ 
+            tag: 'A', 
+            href: '#' + product.name,
+            text: Utilities.replaceAll(product.name, '-', ' ')
         });
 
-        var inputTxt = createElem({ 
-          tag: 'input', 
-          class: 'table__input table__input--text',
-          id: 'input-' + Utilities.replaceAll(product.name, ' ', '-'),
-          name: 'input-' + Utilities.replaceAll(product.name, ' ', '-'),
-          type: 'text',
-          value: quantity
-        });
-
-        var spn = createElem({
-              tag: 'SPAN', 
-              class: 'input-group-btn'
-          }),
-          spnPrice = createElem({
-              tag: 'SPAN',
-              class: (discount) ? 'cart-product-discount ' + 
-                                  ' cart-product-discount--price' 
-                                : '',
-              text: unitPrice
-          }),
-          spnPriceDiscount = createElem({
-              tag: 'SPAN',
-              text: ' ' + unitPriceDis
-          }),
-          spnDiscount = createElem({
-              tag: 'SPAN', 
-              class: 'cart-product-discount',
-              text: discount + '% off'
-          }),
-          spnPartial = createElem({
-              tag: 'SPAN', 
-              id: 'partial-'+ Utilities.replaceAll(product.name, ' ', '-'),
-              name: 'partial-'+ Utilities.replaceAll(product.name, ' ', '-'),
-              text:  finalPrice
-          });
-
-        var removeButton = createElem({ 
+        var inputTxt = createHTMLElem({ 
             tag: 'input', 
-            class: 'btn btn-red',
-            id: 'remove-' + Utilities.replaceAll(product.name, ' ', '-'),
-            type: 'button',
-            value: 'Remove'
+            class: 'table__input table__input--text',
+            id: 'input-' + Utilities.replaceAll(product.name, ' ', '-'),
+            name: 'input-' + Utilities.replaceAll(product.name, ' ', '-'),
+            type: 'text',
+            value: quantity
         });
+
+        var spn = createHTMLElem({
+                tag: 'SPAN', 
+                class: 'input-group-btn'
+            }),
+            spnPrice = createHTMLElem({
+                tag: 'SPAN',
+                class: (discount) ? 'cart-product-discount ' + 
+                                    ' cart-product-discount--price' 
+                                  : '',
+                text: unitPrice
+            }),
+            spnPriceDiscount = createHTMLElem({
+                tag: 'SPAN',
+                text: ' ' + unitPriceDis
+            }),
+            spnDiscount = createHTMLElem({
+                tag: 'SPAN', 
+                class: 'cart-product-discount',
+                text: discount + '% off'
+            }),
+            spnPartial = createHTMLElem({
+                tag: 'SPAN', 
+                id: 'partial-'+ Utilities.replaceAll(product.name, ' ', '-'),
+                name: 'partial-'+ Utilities.replaceAll(product.name, ' ', '-'),
+                text:  finalPrice
+            });
+
+        var removeButton = createHTMLElem({ 
+                tag: 'input', 
+                class: 'btn btn-red',
+                id: 'remove-' + Utilities.replaceAll(product.name, ' ', '-'),
+                type: 'button',
+                value: 'Remove'
+            });
 
 
         a.appendChild(img)
@@ -898,8 +857,8 @@
         td6.appendChild(spnPartial);
 
         if (discount) {
-          td3.appendChild(spnPriceDiscount);
-          tdDisc.appendChild(spnDiscount);
+            td3.appendChild(spnPriceDiscount);
+            tdDisc.appendChild(spnDiscount);
         }
 
         tr2.appendChild(td); 
@@ -938,11 +897,9 @@
                 return;
             }
 
-
             product.quantity = this.value;
 
-            updateProduct(product); 
-        
+            updateProduct(product);         
         });
     }
 
@@ -956,8 +913,8 @@
             couponValue   = 0;
 
         if (couponAmount) {
-          couponValue = subTotal - calculatePercentage(subTotal, couponAmount);
-          cartCouponVal.innerHTML = getCurrency(couponValue.toFixed(2));
+            couponValue = subTotal - calcPercentage(subTotal, couponAmount);
+            cartCouponVal.innerHTML = getCurrency(couponValue.toFixed(2));
         }
 
         total = subTotal - saving + shipping - couponValue;
@@ -966,44 +923,36 @@
         cartTotal.innerHTML  = getCurrency(total);
     }
 
-    function addRow(parent, node) {
-      var tr = createElem({ tag: 'TR' });
-      tr.appendChild(node);
-    }
-
     var verifyCoupon = function() {
 
-      var coupon = couponInput.value;
-      var couponAmount = CartDB.setCoupon(coupon),
-          couponValue  = 0;
+        var coupon = couponInput.value;
+        var couponAmount = CartDB.setCoupon(coupon),
+            couponValue  = 0;
 
+        var subTotal = CartDB.getSubTotal(),
+            saving   = CartDB.getTotalSaving();
 
-      var subTotal = CartDB.getSubTotal(),
-          saving   = CartDB.getTotalSaving();
+        couponInput.value = '';
 
-      couponInput.value = '';
+        if (!couponAmount) {
+            couponMessage.innerHTML = coupon + ' - invalid coupon code';
+            return;
+        }
 
-      if (!couponAmount) {
-        couponMessage.innerHTML = coupon + ' - invalid coupon code';
-        return;
-      }
+        couponValue = subTotal - calcPercentage(subTotal, couponAmount);
 
-      couponValue = subTotal - calculatePercentage(subTotal, couponAmount);
+        if (couponValue < saving) {
+            couponMessage.innerHTML = 'The current promo is better than your ' +
+                                      'coupon \'' + coupon + '\' ' +
+                                      '-' + couponAmount + '% off';
+            return;
+        }
 
-      if (couponValue < saving) {
-        couponMessage.innerHTML = 'The current promo is better than your ' +
-                                  'coupon \'' + coupon + '\' ' +
-                                  '-' + couponAmount + '% off';
-        return;
-      }
-
-      cartCouponRow.className  = '';
-      cartCoupon.innerHTML = couponAmount;
-      couponMessage.innerHTML = 'coupon \'' + coupon + '\' -' +
-                                 couponAmount + '% off';
-      updateCart();
-      toggle(cartCouponRow, 'table-row');
-        
+        cartCoupon.innerHTML = couponAmount;
+        couponMessage.innerHTML = 'coupon \'' + coupon + '\' -' +
+                                   couponAmount + '% off';
+        updateCart();
+        toggle(cartCouponRow, 'table-row');
     }
 
     var getCurrency = function(value, separator) {
@@ -1039,6 +988,10 @@
         }
     }
 
+    var calcPercentage = function(value, percentage) {
+      return (value - ((percentage / 100) * value)).toFixed(2);
+    }
+
     function copy(first, second) {
       for (var p in first) {
         if (first.hasOwnProperty(p)) {
@@ -1046,6 +999,37 @@
         }
       }
       return second;
+    }
+
+    function toggle(element, visibility) {
+
+        var display     = (window.getComputedStyle(element, null).display);
+        var visibility  = visibility || 'block';
+
+        // if current display property is = to the visibility param, do nothing
+        if (element.style.display === visibility) return;
+        
+        element.style.display = (display === 'none') ? visibility : 'none';
+    }
+
+    function createHTMLElem(obj) {
+
+      var elem = _doc.createElement(obj.tag);
+      var text;
+
+      for (var attr in obj) {
+          if (obj.hasOwnProperty(attr)) {
+              if (attr === 'text') {
+                  text = _doc.createTextNode(obj[attr]);
+                  elem.appendChild(text);
+              } else if (attr !== 'tag') {
+                  elem.setAttribute(attr, obj[attr]);
+              }              
+          }
+          
+      }
+
+      return elem;
     }
 
     function initialize() {
@@ -1062,7 +1046,7 @@
 
             Array.prototype.map.call(list, function(product) {  
 
-              var span = createElem({
+              var span = createHTMLElem({
                           tag: 'SPAN', 
                           class: 'product-promo',
                           text : '[Special Type ' + type +'] -'
@@ -1081,31 +1065,6 @@
 
     }
 
-
-    function Node(selector) {
-      var _self = this;
-      var _arr  = Array.prototype;
-
-      this.node   = _doc.querySelectorAll(selector);
-      this.all = function() {
-        _arr.map.call(_self.node, function(item) {
-          console.log(item.innerHTML);
-        });
-      }
-
-      return this;
-    }
-
-    function toggle(element, visibility) {
-
-        var display     = (window.getComputedStyle(element, null).display);
-        var visibility  = visibility || 'block';
-
-        // if current display property is = to the visibility param, do nothing
-        if (element.style.display === visibility) return;
-        
-        element.style.display = (display === 'none') ? visibility : 'none';
-    }
 initialize();
 </script>
 
