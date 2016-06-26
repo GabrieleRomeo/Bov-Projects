@@ -580,7 +580,7 @@
       var name    = product.name;
       var type    = product.type;
 
-      if (!name || promos.applied) return 0;
+     if (!name) return 0;
 
       name = name.toLowerCase();
 
@@ -599,6 +599,22 @@
       promos.applied = promos.coupons[couponCode];
 
       return promos.applied;
+    },
+    getCouponValue: function() {
+
+        var subTotal      = this.getSubTotal(),
+            couponAmount  = this.promoCodes.applied,
+            couponValue   = 0;
+
+        // When there is not a valid coupon applied, return 0
+        if (!couponAmount) return couponValue;
+
+        couponValue = subTotal - calcPercentage(subTotal, couponAmount);
+
+        return couponValue;
+    },
+    isCoupon: function() {
+      return !!this.promoCodes.applied;
     },
     getShippingCost: function() {
       return this.shippingCost;
@@ -638,6 +654,16 @@
           addCartRow(newProd);
         } else {
           updateCartRow(newProd);
+        }
+
+        // When a user adds a new product to the cart which makes the 
+        // total saving greater than a coupon discount it reset the coupon
+        if (CartDB.getTotalSaving() > CartDB.getCouponValue()) {
+            CartDB.resetCoupon(function() {
+                couponMessage.innerHTML = '';
+                toggle(cartCouponRow, 'none');
+                updateCart();
+            });
         }
        
         toggleCart();
@@ -735,7 +761,7 @@
 
       var unitPrice = product.unitPrice,
           quantity  = product.quantity,
-          discount  = discount || CartDB.getDiscount(product);
+          discount  = (discount === 0) ? 0 : CartDB.getDiscount(product);
 
       var subTotal = unitPrice * quantity;
 
@@ -754,11 +780,14 @@
 
     function addCartRow(product) {
 
-        var discount      = CartDB.getDiscount(product),
-            unitPrice     = getCurrency(product.unitPrice),
-            unitPriceDis  = getCurrency(calculateDiscount(product)),
-            quantity      = product.quantity,
-            finalPrice    = getCurrency(calculatePrice(product)),
+      // When a coupon is applied to the total, sets the product's discount to 0
+        var isCoupon     = CartDB.isCoupon();
+
+        var discount     = (isCoupon) ? 0 : CartDB.getDiscount(product),
+            unitPrice    = getCurrency(product.unitPrice),
+            unitPriceDis = getCurrency(calculateDiscount(product)),
+            quantity     = product.quantity,
+            finalPrice   = getCurrency(calculatePrice(product, discount)),
             partial;
 
         var tr   = createHTMLElem({ tag: 'TR' }),
@@ -856,7 +885,7 @@
         td5.appendChild(spn);
         td6.appendChild(spnPartial);
 
-        if (discount) {
+        if (discount > 0) {
             td3.appendChild(spnPriceDiscount);
             tdDisc.appendChild(spnDiscount);
         }
@@ -908,19 +937,16 @@
         var total         = 0,
             subTotal      = CartDB.getSubTotal(),
             shipping      = CartDB.getShippingCost(),
-            couponAmount  = CartDB.promoCodes.applied,
-            saving        = (couponAmount) ? 0 : CartDB.getTotalSaving(),
-            couponValue   = 0;
+            saving        = CartDB.getTotalSaving(),
+            couponValue   = CartDB.getCouponValue(),
+            totalSaving   = (saving > couponValue) ? saving : couponValue;      
 
-        if (couponAmount) {
-            couponValue = subTotal - calcPercentage(subTotal, couponAmount);
-            cartCouponVal.innerHTML = getCurrency(couponValue.toFixed(2));
-        }
+        subTotal = (saving > couponValue) ? subTotal - saving : subTotal;
+        total    = subTotal + shipping - totalSaving;
 
-        total = subTotal - saving + shipping - couponValue;
-
-        cartSubTot.innerHTML = getCurrency(subTotal - saving);
-        cartTotal.innerHTML  = getCurrency(total);
+        cartSubTot.innerHTML = getCurrency(subTotal);
+        cartTotal.innerHTML  = getCurrency(parseFloat(total).toFixed(2));
+        cartCouponVal.innerHTML = getCurrency(couponValue.toFixed(2));
     }
 
     var verifyCoupon = function() {
