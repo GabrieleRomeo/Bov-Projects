@@ -339,6 +339,7 @@ body {
 .cart-coupon {
   text-align: center;
   text-transform: uppercase;
+  color: #E91E63;
 }
 
 .cart-coupon--valid {
