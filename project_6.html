@@ -454,185 +454,192 @@ var Cart = (function(window) {
   var _win = window,
       _doc = _win.document;
 
-  // Initilize only one Cart per time
-  var _once = false;
-
   var addButtons    = _doc.getElementsByClassName('addToCart'),
-      cart          = _doc.getElementById('cart'),
-      cartTable     = _doc.getElementById('cart-table').childNodes[1],
-      cartSubTot    = _doc.getElementById('cartSubTot'),
-      cartTotal     = _doc.getElementById('cartTotal'),
-      cartShipp     = _doc.getElementById('cartShipping'),
-      cartCoupon    = _doc.getElementById('cartCoupon'),
-      cartCouponVal = _doc.getElementById('cartCouponVal'),
-      cartCouponRow = _doc.getElementById('cartCouponRow'),
-      couponMessage = _doc.getElementById('couponMessage'),
-      couponButton  = _doc.getElementById('couponButton'),
-      couponInput   = _doc.getElementById('couponInput'),
+      cart          = $('#cart'),
+      cartTable     = $('#cart-table').childNodes[1],
+      cartSubTot    = $('#cartSubTot'),
+      cartTotal     = $('#cartTotal'),
+      cartShipp     = $('#cartShipping'),
+      cartCoupon    = $('#cartCoupon'),
+      cartCouponVal = $('#cartCouponVal'),
+      cartCouponRow = $('#cartCouponRow'),
+      couponMessage = $('#couponMessage'),
+      couponButton  = $('#couponButton'),
+      couponInput   = $('#couponInput'),
       len           = addButtons.length;
 
-    var CartDB = {
-        currency: '\u0024',
-        shippingCost: 7,
-        check: {
-            subTotal: 0,
-            saving: 0
-        },
-        promoCodes: {
-          applied: null,
-          coupons: { 'bigsale': 50, 'promopromo': 16, 'white': 5 },
-          types: { '1': 15, '2': 8, '3': 7 },
-          products: { 'product-10': 10}
-        },
-        products: {},
-        updateCheck: function() {
+  var CartDB = {
+      currency: '\u0024',
+      shippingCost: 7,
+      check: {
+          subTotal: 0,
+          saving: 0
+      },
+      promoCodes: {
+        applied: null,
+        coupons: { 'bigsale': 50, 'promopromo': 16, 'white': 5 },
+        types: { '1': 15, '2': 8, '3': 7 },
+        products: { 'product-10': 10}
+      },
+      products: {},
+      updateCheck: function() {
 
-            var that = this;
+          var that = this;
 
-            var subTotal  = 0,
-                saving    = 0,
-                discount;
+          var subTotal  = 0,
+              saving    = 0,
+              discount;
 
-            var list = this.getProducts();
+          var list = this.getProducts();
 
-            list.map(function(product) {
-                discount  = that.getDiscount(product);
-                subTotal += (product.unitPrice * product.quantity);
-                saving   += subTotal - calcPercentage(subTotal, discount);
-            })
+          list.map(function(product) {
+              discount  = that.getDiscount(product);
+              subTotal += (product.unitPrice * product.quantity);
+              saving   += subTotal - calcPercentage(subTotal, discount);
+          })
 
-            this.check.subTotal = subTotal.toFixed(2);
-            this.check.saving   = saving.toFixed(2);
-        },
-        addProd: function(product) {
+          this.check.subTotal = subTotal.toFixed(2);
+          this.check.saving   = saving.toFixed(2);
+      },
+      addProd: function(product) {
 
-            if (!this.products[product.name]) {
-                this.products[product.name] = copyObj(product, {});            
-            } else if (this.products[product.name]) {
-              this.products[product.name]['quantity'] += 1;
+          if (!this.products[product.name]) {
+              this.products[product.name] = copyObj(product, {});            
+          } else if (this.products[product.name]) {
+            this.products[product.name]['quantity'] += 1;
+          }
+
+          this.updateCheck();
+
+          return this.products[product.name];
+      },
+      updateProd: function(product) {
+
+          var name      = product.name,
+              quantity  = product.quantity;
+
+          if (!product && !name && !quantity && !this.products[name]) {
+              return false;
+          }
+
+          this.products[name]['quantity'] = parseInt(quantity);
+
+          this.updateCheck();
+
+          return this.products[name];
+      },
+      remProd: function(product) {
+
+          var name = product.name;
+
+          if (product && name && this.products[name]) {
+              delete this.products[name];
+              this.updateCheck();
+              return true;
+          }
+
+          return false;
+      },
+      getQuantity: function(productName) {
+
+          var total = 0;
+          var products = this.products;
+
+          if (productName && products[productName]['quantity']) {
+              return products[productName]['quantity'];
+          }
+
+          for (var p in this.products) {
+            if (products.hasOwnProperty(p) && products[p]['quantity']) {
+                total += products[p]['quantity'];
             }
+          }
 
-            this.updateCheck();
+          return total;
+      },
+      getProductsList: function() {
+        return Utilities.keys(this.products);
+      },
+      getProduct: function(name) {
+        return this.products[name] || void 0;
+      },
+      getProducts: function() {
 
-            return this.products[product.name];
-        },
-        updateProd: function(product) {
+          var list = [];
 
-            if (!product && !product.name && !product.quantity && 
-                !this.products[product.name]) {
-                return false;
-            }
-
-            this.products[product.name]['quantity'] = parseInt(product.quantity);
-
-            this.updateCheck();
-
-            return this.products[product.name];
-        },
-        remProd: function(product) {
-            if (product && product.name && this.products[product.name]) {
-                delete this.products[product.name];
-                this.updateCheck();
-                return true;
-            }
-
-            return false;
-        },
-        getQuantity: function(productName) {
-
-            var total = 0;
-
-            if (productName && this.products[productName]['quantity']) {
-                return this.products[productName]['quantity'];
-            }
-
-            for (var p in this.products) {
-              if (this.products.hasOwnProperty(p) && this.products[p]['quantity']) {
-                  total += this.products[p]['quantity'];
+          for(var key in this.products) {
+              if(this.products.hasOwnProperty(key)) {
+                  list.push(this.products[key]);
               }
-            }
+          }
 
-            return total;
-        },
-        getProductsList: function() {
-          return Utilities.keys(this.products);
-        },
-        getProduct: function(name) {
-          return this.products[name] || void 0;
-        },
-        getProducts: function() {
-            var list = [];
+        return list;
+      },
+      getPromoTypes: function() {
+        return Utilities.keys(this.promoCodes.types);      
+      },
+      getPromoType: function(name) {
+        return this.promoCodes.types[name];      
+      },
+      getPromoCode: function(code) {
+        return this.promoCodes[code] || void 0;
+      },
+      getDiscount: function(product) {
 
-            for(var key in this.products) {
-                if(this.products.hasOwnProperty(key)) {
-                    list.push(this.products[key]);
-                }
-            }
+        var promos  = this.promoCodes;
+        var name    = product.name;
+        var type    = product.type;
 
-          return list;
-        },
-        getPromoTypes: function() {
-          return Utilities.keys(this.promoCodes.types);      
-        },
-        getPromoType: function(name) {
-          return this.promoCodes.types[name];      
-        },
-        getPromoCode: function(code) {
-          return this.promoCodes[code] || void 0;
-        },
-        getDiscount: function(product) {
+       if (!name) return 0;
 
-          var promos  = this.promoCodes;
-          var name    = product.name;
-          var type    = product.type;
+        name = name.toLowerCase();
 
-         if (!name) return 0;
+        return promos.products[name] || promos.types[type] || 0;
+      },
+      resetCoupon: function(callback) {
 
-          name = name.toLowerCase();
+        this.promoCodes.applied = null;
 
-          return promos.products[name] || promos.types[type] || 0;
-        },
-        resetCoupon: function(callback) {
-          this.promoCodes.applied = null;
-          callback();
-        },
-        setCoupon: function(couponCode) {
+        if (Utilities.isFunc(callback)) callback();
+      },
+      setCoupon: function(couponCode) {
 
-          var promos = this.promoCodes;
+        var promos = this.promoCodes;
 
-          if (!promos.coupons[couponCode]) return void 0;
+        if (!promos.coupons[couponCode]) return void 0;
 
-          promos.applied = promos.coupons[couponCode];
+        promos.applied = promos.coupons[couponCode];
 
-          return promos.applied;
-        },
-        getCouponValue: function() {
+        return promos.applied;
+      },
+      getCouponValue: function() {
 
-            var subTotal      = this.getSubTotal(),
-                couponAmount  = this.promoCodes.applied,
-                couponValue   = 0;
+          var subTotal      = this.getSubTotal(),
+              couponAmount  = this.promoCodes.applied,
+              couponValue   = 0;
 
-            // When there is not a valid coupon applied, return 0
-            if (!couponAmount) return couponValue;
+          // When there is not a valid coupon applied, return 0
+          if (!couponAmount) return couponValue;
 
-            couponValue = subTotal - calcPercentage(subTotal, couponAmount);
+          couponValue = subTotal - calcPercentage(subTotal, couponAmount);
 
-            return couponValue;
-        },
-        isCoupon: function() {
-          return !!this.promoCodes.applied;
-        },
-        getShippingCost: function() {
-          return this.shippingCost;
-        },
-        getSubTotal: function() {
-          return this.check.subTotal;
-        },
-        getTotalSaving: function() {
-          return this.check.saving;
-        }
-    };
+          return couponValue;
+      },
+      isCoupon: function() {
+        return !!this.promoCodes.applied;
+      },
+      getShippingCost: function() {
+        return this.shippingCost;
+      },
+      getSubTotal: function() {
+        return this.check.subTotal;
+      },
+      getTotalSaving: function() {
+        return this.check.saving;
+      }
+  };
 
+    /* Functions used to manipulate products and manage the shopping cart */
 
     var addProduct = function(product) {
 
@@ -708,9 +715,13 @@ var Cart = (function(window) {
 
     var addCartRow = function(product) {
 
-      // When a coupon is applied to the total, sets the product's discount to 0
         var isCoupon     = CartDB.isCoupon();
 
+        /* 
+         * If a coupon is already applied to the total, sets the 
+         * product's discount to 0, otherwise gets the discount
+         * from the DB
+         */
         var discount     = (isCoupon) ? 0 : CartDB.getDiscount(product),
             unitPrice    = getCurrency(product.unitPrice),
             unitPriceDis = getCurrency(calculateDiscount(product)),
@@ -844,9 +855,8 @@ var Cart = (function(window) {
                 name  = Utilities.replaceAll(id,'input-','');
 
 
-            if (!Utilities.isInt(value) || 
-                !Validators.isBetween(value, '0', 10)) {
-                // restore the input's value 
+            if (!Utilities.isInt(value) || (value < 0)) {
+                // restore input's value 
                 this.value = product.quantity;
             } else if (value === '0') {
                 removeProduct(product);
@@ -862,8 +872,8 @@ var Cart = (function(window) {
 
     var updateCartRow = function(product) {
 
-      var input   = _doc.getElementById('input-' + product.name);
-      var partial = _doc.getElementById('partial-' + product.name);
+      var input   = $('#input-' + product.name);
+      var partial = $('#partial-' + product.name);
 
       input.value = product.quantity;
       partial.innerHTML = getCurrency(calculatePrice(product));
@@ -874,7 +884,7 @@ var Cart = (function(window) {
         var sep = row.previousSibling;
         
         cartTable.deleteRow(row.rowIndex); 
-        cartTable.deleteRow(sep.rowIndex); // Delete the separator row
+        cartTable.deleteRow(sep.rowIndex); // Delete the separator row too
 
         toggleCart();
     }
@@ -885,19 +895,17 @@ var Cart = (function(window) {
 
       if (!prodList || prodList.length === 0) return;
 
-      // remove all products
+      // remove all products node
       while (cartTable.firstChild) {
         cartTable.removeChild(cartTable.firstChild);
       }
-
+      // add again all products node
       prodList.map(function(name) {
         addCartRow(CartDB.getProduct(name));
       });
 
       toggleCart();
     }
-
-    // Utility functions
 
     function toggleCart() {
 
@@ -923,12 +931,12 @@ var Cart = (function(window) {
       return calcPercentage(subTotal, discount);
     }
 
-    var calculateDiscount = function(product, ignoreDiscount) {
+    var calculateDiscount = function(product) {
 
       var unitPrice = product.unitPrice,
           discount;
 
-      discount = (!ignoreDiscount) ? CartDB.getDiscount(product) : 0;
+      discount = CartDB.getDiscount(product);
 
       return calcPercentage(unitPrice, discount);
     }
@@ -1015,9 +1023,17 @@ var Cart = (function(window) {
         }
     }
 
-    /* Helper functions */
+    /* Helper and Utility functions */
 
-    var calcPercentage = function(value, percentage) {
+    function $(selector) {
+        return _doc.querySelector(selector);
+    }
+
+    function $$(selector) {
+        return _doc.querySelectorAll(selector);
+    }
+
+    function calcPercentage(value, percentage) {
       return (value - ((percentage / 100) * value)).toFixed(2);
     }
 
@@ -1061,6 +1077,7 @@ var Cart = (function(window) {
       return elem;
     }
 
+    // This function ensures that a function will be called exactly once
     function once(fn) {
 
       var _once = false;
@@ -1080,7 +1097,7 @@ var Cart = (function(window) {
             var off  = CartDB.getPromoType(type);
             var list;
 
-            list = _doc.querySelectorAll('span[data-product-type="'+ type +'"]');
+            list = $$('span[data-product-type="'+ type +'"]');
 
             Array.prototype.map.call(list, function(product) {  
 
@@ -1088,11 +1105,12 @@ var Cart = (function(window) {
                           tag: 'SPAN', 
                           class: 'product-promo',
                           text : '[Special Type ' + type +'] -'
-                                  + off + '% off'});
+                                  + off + '% off'
+                         });
+              // Select parent node
               var pNode = product.parentNode.parentNode.nextSibling.nextSibling;
 
               pNode.appendChild(span);
-
             });
         });
 
