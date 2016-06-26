@@ -151,8 +151,22 @@ body {
 }
 
 .title {
+  position: relative;
   font-weight: 300;
   border-bottom: 1px solid rgba(206, 206, 206, 0.24);
+}
+
+.product-promo {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 0.8em;
+  color: #ef389f;
+  text-transform: uppercase;
+}
+
+.product-promo--discount {
+  color: red;
 }
  
 .product-description {
@@ -178,7 +192,14 @@ body {
   min-height: 100px;
   padding-bottom: 30px;
 }
- 
+
+.cart-product-discount {
+  color: red;
+}
+.cart-product-discount--price {
+  text-decoration: line-through;
+}
+
 .cartSteps a {
   padding: 8px 50px;
   background: #efefef;
@@ -240,7 +261,11 @@ body {
   padding-top: 11px;
   padding-bottom: 11px;
 }
- 
+
+#cart {
+  display: none;
+}
+
 #cart-details-table {
   position: relative;
   margin: 0 auto;
@@ -266,6 +291,7 @@ body {
 .table__td {
   float: left;
   width: 50%;
+  min-height: 3.2em;
 }
 
 .table__td--separator {
@@ -293,16 +319,37 @@ body {
   display: block;
 }
 
+#cartCouponRow {
+  display: none;
+}
+
+
 #coupon {
   padding: 10px 10px;
   background-color: #EfEfEf;
 }
 
 
-#couponCode {
+#couponInput {
     padding: 9px 10px;
     margin: 10px;
     font-family: "Courier New", Courier, monospace;
+}
+
+.cart-coupon {
+  text-align: center;
+  text-transform: uppercase;
+  color: #E91E63;
+}
+
+.cart-coupon--valid {
+  font-weight: 300;
+  color: green;
+}
+
+.cart-coupon--invalid {
+  font-weight: 800;
+  color: red;
 }
  
 .input-group-btn {
@@ -423,7 +470,7 @@ body {
 
   #cart-details-table { padding: 40px 10px; }
 
-  #couponCode {
+  #couponInput {
     font-size: 1.4375em; 
     margin-left: 23px;
   }
