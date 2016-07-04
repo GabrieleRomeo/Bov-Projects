@@ -1059,21 +1059,21 @@ var Cart = (function(window) {
         element.style.display = (display === 'none') ? visibility : 'none';
     }
 
-    function createHTMLElem(obj) {
+    function createHTMLElem(_doc, obj) {
 
       var elem = _doc.createElement(obj.tag);
-      var text;
+      var text = ('text' in obj) ? _doc.createTextNode(obj['text']) : null;
+
+      if (text) elem.appendChild(text);
+
+      // it deletes unused properties 
+      delete obj.tag;
+      delete obj.text;
 
       for (var attr in obj) {
           if (obj.hasOwnProperty(attr)) {
-              if (attr === 'text') {
-                  text = _doc.createTextNode(obj[attr]);
-                  elem.appendChild(text);
-              } else if (attr !== 'tag') {
-                  elem.setAttribute(attr, obj[attr]);
-              }              
+              elem.setAttribute(attr, obj[attr]);
           }
-          
       }
 
       return elem;
