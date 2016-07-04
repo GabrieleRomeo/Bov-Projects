@@ -731,34 +731,34 @@ var Cart = (function(window) {
             finalPrice   = getCurrency(calculatePrice(product, discount)),
             partial;
 
-        var tr   = createHTMLElem({ tag: 'TR' }),
-            tr2  = createHTMLElem({ tag: 'TR' });
+        var tr   = createHTMLElem(_doc, { tag: 'TR' }),
+            tr2  = createHTMLElem(_doc, { tag: 'TR' });
 
-        var td    = createHTMLElem({ tag: 'TD', 
+        var td    = createHTMLElem(_doc, { tag: 'TD', 
                                      class: 'table__td text-center' }),
-            td2   = createHTMLElem({ tag: 'TD', 
+            td2   = createHTMLElem(_doc, { tag: 'TD', 
                                      class: 'table__td text-left' }),
-            td4   = createHTMLElem({ tag: 'TD', 
+            td4   = createHTMLElem(_doc, { tag: 'TD', 
                                      class: 'table__td text-left' }),
-            td3   = createHTMLElem({ tag: 'TD', 
+            td3   = createHTMLElem(_doc, { tag: 'TD', 
                                      class: 'table__td text-left',
                                      text: 'Unit price: ' }),
-            td5   = createHTMLElem({ tag: 'TD', 
+            td5   = createHTMLElem(_doc, { tag: 'TD', 
                                      class: 'table__td text-left' }),
-            td6   = createHTMLElem({ tag: 'TD', 
+            td6   = createHTMLElem(_doc, { tag: 'TD', 
                                     class: 'table__td text-right' }),
-            tdDisc  = createHTMLElem({ tag: 'TD', 
+            tdDisc  = createHTMLElem(_doc, { tag: 'TD', 
                                        class: 'table__td text-left' }),
-            tdSepa  = createHTMLElem({ tag: 'TD', 
+            tdSepa  = createHTMLElem(_doc, { tag: 'TD', 
                                        class: 'table__td--separator',
                                        colspan: '7'});
 
-        var a = createHTMLElem({ 
+        var a = createHTMLElem(_doc, { 
             tag: 'A',
             src: '#'
         });
 
-        var img  = createHTMLElem({ 
+        var img  = createHTMLElem(_doc, { 
             tag: 'img', 
             class: 'table__img-thumbnail',
             src: 'images/64x64.png',
@@ -766,13 +766,13 @@ var Cart = (function(window) {
             title: 'Product Image' 
         });
 
-        var aProd = createHTMLElem({ 
+        var aProd = createHTMLElem(_doc, { 
             tag: 'A', 
             href: '#' + product.name,
             text: Utilities.replaceAll(product.name, '-', ' ')
         });
 
-        var inputTxt = createHTMLElem({ 
+        var inputTxt = createHTMLElem(_doc, { 
             tag: 'input', 
             class: 'table__input table__input--text',
             id: 'input-' + Utilities.replaceAll(product.name, ' ', '-'),
@@ -781,34 +781,34 @@ var Cart = (function(window) {
             value: quantity
         });
 
-        var spn = createHTMLElem({
+        var spn = createHTMLElem(_doc, {
                 tag: 'SPAN', 
                 class: 'input-group-btn'
             }),
-            spnPrice = createHTMLElem({
+            spnPrice = createHTMLElem(_doc, {
                 tag: 'SPAN',
                 class: (discount) ? 'cart-product-discount ' + 
                                     ' cart-product-discount--price' 
                                   : '',
                 text: unitPrice
             }),
-            spnPriceDiscount = createHTMLElem({
+            spnPriceDiscount = createHTMLElem(_doc, {
                 tag: 'SPAN',
                 text: ' ' + unitPriceDis
             }),
-            spnDiscount = createHTMLElem({
+            spnDiscount = createHTMLElem(_doc, {
                 tag: 'SPAN', 
                 class: 'cart-product-discount',
                 text: discount + '% off'
             }),
-            spnPartial = createHTMLElem({
+            spnPartial = createHTMLElem(_doc, {
                 tag: 'SPAN', 
                 id: 'partial-'+ Utilities.replaceAll(product.name, ' ', '-'),
                 name: 'partial-'+ Utilities.replaceAll(product.name, ' ', '-'),
                 text:  finalPrice
             });
 
-        var removeButton = createHTMLElem({ 
+        var removeButton = createHTMLElem(_doc, { 
                 tag: 'input', 
                 class: 'btn btn-red',
                 id: 'remove-' + Utilities.replaceAll(product.name, ' ', '-'),
@@ -1103,7 +1103,7 @@ var Cart = (function(window) {
 
             Array.prototype.map.call(list, function(product) {  
 
-              var span = createHTMLElem({
+              var span = createHTMLElem(_doc, {
                           tag: 'SPAN', 
                           class: 'product-promo',
                           text : '[Special Type ' + type +'] -'
