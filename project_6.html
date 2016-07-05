@@ -1037,6 +1037,20 @@
         return _doc.querySelectorAll(selector);
     }
 
+    var map = function(array, callback) {
+
+        var newArray = [];
+
+        var i   = 0,
+            len = array.length;
+
+        for (i = 0; i < len; i++) {
+            newArray[i] = callback(array[i], i);
+        }
+        
+        return newArray;
+    }
+
     function calcPercentage(value, percentage) {
       return (value - ((percentage / 100) * value)).toFixed(2);
     }
