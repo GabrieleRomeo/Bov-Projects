@@ -451,7 +451,7 @@
 <script src="js/utilities.js"></script>
 <script>
 
-var Cart = (function(window) {
+//var Cart = (function(window) {
 
   var _win = window,
       _doc = _win.document;
@@ -714,6 +714,8 @@ var Cart = (function(window) {
             });
         }
     }
+
+
 
     var addCartRow = function(product) {
 
@@ -1129,15 +1131,18 @@ var Cart = (function(window) {
       couponButton.addEventListener('click', verifyCoupon);
     }
 
-    // Public API
+    /* Public API
     return {
       initialize: once(initialize)
     }
 
-})(window);
+}
+
+//)(window);
 
 // Initialize the shopping cart
-Cart.initialize();
+Cart.initialize();*/
+initialize();
 </script>
 
 
