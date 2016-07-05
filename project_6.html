@@ -1047,9 +1047,21 @@
         for (i = 0; i < len; i++) {
             newArray[i] = callback(array[i], i);
         }
-        
         return newArray;
     }
+
+    var reduce = function(array, callback, initialValue) {
+
+        var current = initialValue;
+
+        var i   = 0,
+            len = array.length;
+
+        for (i = 0; i < len; i++) {
+            current = callback(current, array[i]);
+        }
+        return current;
+    };
 
     function calcPercentage(value, percentage) {
       return (value - ((percentage / 100) * value)).toFixed(2);
