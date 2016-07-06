@@ -2,7 +2,7 @@
 
 var Utilities = (function(window){
 
-    var utilities = {};
+    var u = {};
 
     /**
      * Checks if the provided parameter is an Array
@@ -13,10 +13,9 @@ var Utilities = (function(window){
      *                  
      */ 
 
-    utilities.isArray = Array.isArray || function(arr) {
+    u.isArray = Array.isArray || function(arr) {
 
         return Object.prototype.toString.call(arr) === '[object Array]';
-
     };
 
     /**
@@ -28,10 +27,9 @@ var Utilities = (function(window){
      *                  
      */ 
 
-    utilities.isFunc = function(fn) {
+    u.isFunc = function(fn) {
 
         return (typeof fn === "function");
-
     };    
 
     /**
@@ -43,10 +41,23 @@ var Utilities = (function(window){
      *                  
      */ 
 
-    utilities.isString = function(str) {
+    u.isString = function(str) {
 
         return (typeof str === "string");
+    };
 
+    /**
+     * Checks if the provided parameter is a Number
+     *
+     * @param {Number} num A Number
+     * 
+     * @returns {Boolean} True | False
+     *                  
+     */ 
+
+    u.isNumber = function(num) {
+
+        return !isNaN(parseFloat(num)) && isFinite(num);
     };
 
     /**
@@ -58,10 +69,9 @@ var Utilities = (function(window){
      *                  
      */ 
 
-    utilities.isInt = function(num) {
+    u.isInt = function(num) {
 
         return parseFloat(num) === parseInt(num, 10);
-
     };
 
     /**
@@ -69,7 +79,7 @@ var Utilities = (function(window){
      * of a list at the interval specified by the n parameter.
      * It does not call callback on values greater than the list’s number 
      * 
-     * @param {Array | Object } list The list of values
+     * @param {Array} list The list of values
      * @param {int} n An interval used as step of the iteration
      * @param {Func} n A callback function applied on the elements within the
      *                 step
@@ -77,9 +87,9 @@ var Utilities = (function(window){
      * @returns {void} 
      */ 
 
-    utilities.by = function(list, n, callback) {
+    u.by = function(list, n, callback) {
 
-        if (!this.isArray(list)) return;
+        if (!u.isArray(list)) return;
 
         if (!n) n = 1;
 
@@ -87,7 +97,7 @@ var Utilities = (function(window){
         var i;
 
         for (i = 0; i < len; i++) {
-            if (n <= len && this.isFunc(callback) && ((i + 1) % n === 0)) {
+            if (n <= len && u.isFunc(callback) && ((i + 1) % n === 0)) {
                 callback(list[i], i, list);
             }
         }
@@ -101,7 +111,7 @@ var Utilities = (function(window){
      * @returns {Array} An Array containing all the keys of the provided object
      */ 
 
-    utilities.keys = perhaps(function(object) {
+    u.keys = perhaps(function(object) {
 
         var result = [];
 
@@ -111,9 +121,9 @@ var Utilities = (function(window){
                     result.push(prop);
                 }
             }
-            return result;
-
         }
+
+        return result;
     });
 
     /**
@@ -125,7 +135,7 @@ var Utilities = (function(window){
      *                  object
      */ 
 
-    utilities.values = perhaps(function(object) {
+    u.values = perhaps(function(object) {
 
         var result = [];
 
@@ -135,9 +145,9 @@ var Utilities = (function(window){
                     result.push(object[prop]);
                 }
             }
-            return result;
-
         }
+
+        return result;
     });
 
     /**
@@ -151,7 +161,7 @@ var Utilities = (function(window){
      *                  the provided object
      */ 
 
-    utilities.pairs = perhaps(function(object) {
+    u.pairs = perhaps(function(object) {
 
         var result = [];
 
@@ -162,9 +172,9 @@ var Utilities = (function(window){
                     result.push(object[prop]);
                 }
             }
-            return result;
-
         }
+
+        return result;
     });
 
     /**
@@ -177,12 +187,12 @@ var Utilities = (function(window){
      *                  
      */ 
 
-    utilities.shuffle = perhaps(function(array) {
+    u.shuffle = perhaps(function(array) {
 
-        if (!this.isArray(array)) return; 
+        if (!u.isArray(array)) return; 
 
-        var result = [];
-        var len = array.length;
+        var result  = [];
+        var len     = array.length;
         var rnd;
 
         while (len) {
@@ -212,7 +222,7 @@ var Utilities = (function(window){
      *                  
      */ 
 
-    utilities.pluralize = perhaps(function(n, word, pluralWord) {
+    u.pluralize = perhaps(function(n, word, pluralWord) {
 
         if (pluralWord) return pluralWord;
 
@@ -234,19 +244,20 @@ var Utilities = (function(window){
      *                  
      */ 
 
-    utilities.toDash = perhaps(function(str) {
+    u.toDash = perhaps(function(str) {
 
-        if (!this.isString(str)) return; 
+        if (!u.isString(str)) return; 
 
         var chars = str.split('');
 
         return chars.map(function(item) {
-            if (item === item.toUpperCase()) {
-                return '-' + item.toLowerCase();
-            }
-            return item; 
-        }).join('');
 
+                    if (item === item.toUpperCase()) {
+                        return '-' + item.toLowerCase();
+                    }
+
+                    return item; 
+                }).join('');
     });
 
     /**
@@ -258,16 +269,15 @@ var Utilities = (function(window){
      *                  
      */ 
 
-    utilities.toCamel = perhaps(function(str) {
+    u.toCamel = perhaps(function(str) {
 
-        if (!this.isString(str)) return; 
+        if (!u.isString(str)) return; 
 
         var chars = str.split('-');
 
         return chars.map(function(item) {
-                return item.charAt(0).toUpperCase() + item.substr(1);
-        }).join('');
-
+                    return item.charAt(0).toUpperCase() + item.substr(1);
+                }).join('');
     });
 
     /**
@@ -282,18 +292,17 @@ var Utilities = (function(window){
      *                  
      */ 
 
-    utilities.has = perhaps(function(obj, search) {
+    u.has = perhaps(function(obj, search) {
 
         if ("hasOwnProperty" in obj) {
             for (var prop in obj) {
                 if (obj.hasOwnProperty(prop)) {
-                    if (prop === search) return true;
+                    if (obj[prop] === search) return true;
                 }
             }
         }
 
         return false;
-
     });
  
     /**
@@ -308,9 +317,9 @@ var Utilities = (function(window){
      *                  
      */ 
 
-    utilities.pick = perhaps(function(obj, keys) {
+    u.pick = perhaps(function(obj, keys) {
 
-        if (!this.isArray(keys)) return; 
+        if (!u.isArray(keys)) return; 
 
         var result = {};
 
@@ -339,7 +348,7 @@ var Utilities = (function(window){
      *                  
      */ 
 
-    utilities.replaceAll = function(text, search, replace) {
+    u.replaceAll = function(text, search, replace) {
         return text.split(search).join(replace);
     };
 
@@ -386,6 +395,6 @@ var Utilities = (function(window){
     }
 
 
-    return utilities;
+    return u;
 
 })(window);
