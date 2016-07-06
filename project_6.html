@@ -484,6 +484,7 @@
         products: { 'product-10': 10}
       },
       products: {},
+      productsDb: [],
       updateCheck: function() {
 
           var that = this;
@@ -504,7 +505,7 @@
           this.check.saving   = saving.toFixed(2);
       },
       addProd: function(product) {
-
+          this.productsDb.push(product);
           if (!this.products[product.name]) {
               this.products[product.name] = copyObj(product, {});            
           } else if (this.products[product.name]) {
@@ -643,8 +644,27 @@
 
     /* Functions used to manipulate products and manage the shopping cart */
 
-    var addProduct = function(product) {
+    function Product(name, type, unitPrice) {
+        this.name       = name;
+        this.type       = type;
+        this.unitPrice  = unitPrice;
+        this.quantity   = 1;
+    }
 
+    var addProduct2 = function(htmlElement) {
+        var name  = htmlElement.getAttribute("data-product-name");
+        var type  = htmlElement.getAttribute("data-product-type");
+        var price = htmlElement.getAttribute("data-product-price");
+        var newP  = new Product(name, type, price);
+
+        filter(CartDB.productsDb, function(product) {
+            return Utilities.has(product, "Product-3");
+        });
+    }
+
+
+    var addProduct = function(product) {
+addProduct2(product);
         var name      = product.getAttribute("data-product-name");
         var price     = product.getAttribute("data-product-price");
         var type      = product.getAttribute("data-product-type");
@@ -1038,30 +1058,241 @@
     }
 
     var map = function(array, callback) {
-
-        var newArray = [];
-
-        var i   = 0,
-            len = array.length;
+        // holds the result of map operation  
+        var result = [];
+        var len     = array.length;
+        var i;
 
         for (i = 0; i < len; i++) {
-            newArray[i] = callback(array[i], i);
+            result.push(callback(array[i], i));
         }
-        return newArray;
+
+        return result;
     }
 
     var reduce = function(array, callback, initialValue) {
 
         var current = initialValue;
 
-        var i   = 0,
-            len = array.length;
+        var len = array.length,
+            i;
 
         for (i = 0; i < len; i++) {
             current = callback(current, array[i]);
         }
         return current;
     };
+
+    var filter = function(array, callback){
+        //holds the result of filter operation  
+        var result = [];
+        var len     = array.length;
+        var i;
+
+        //for each item apply the callback
+        for(i = 0; i < len; i++){
+          //if callback returns true then add to the result  
+          if(callback(array[i])){
+              result.push(array[i]);
+          }
+        }
+        return result;
+    }
+
+    function truthy(value) { return !!value; }
+
+    function existy(value) { return value != null };
+
+    function notDefined() { return void 0; }
+
+    // A condition fulfilled causes a function application
+    function execWhen(cond, fn) {
+        if(truthy(cond)) {
+            return fn();
+        } else {
+            return notDefined();
+        }
+    }
+
+
+    /*
+     * The [first] function gets an Array and an optional index as arguments, 
+     * and returns the first element of the Array (or the element at the 
+     * provided index, if any). If the provided index is out of range,
+     * it returns the entire Array. If the first argument is not an Array, it  
+     * returns the first argument provided to the function.
+     * 
+     */
+
+    function first(array, idx) {
+
+        var idx = idx || 0;
+
+        if (existy(array[idx])) {
+            return array[idx];
+        } else {
+            return Array.prototype.slice.call(arguments)[0];
+        }
+    }
+
+    /*
+     * The [rest] function gets an Array and an optional index as arguments, 
+     * and returns the elements of the Array except the first one (or the  
+     * element at the provided index, if any). 
+     * If the provided index is out of range, it behaves just as the same as if 
+     * the optional index had not been provided.
+     */
+
+    function rest(array, idx) {
+
+        var a = Array.prototype;
+        return a.slice.call(array, (idx >= 1 && idx <= array.length) ? idx : 1);
+    }
+
+    /*
+     * The [without] function gets an Array and an arbitrary number of other 
+     * arguments, and returns a new Array which does not contain the unwanted 
+     * elements. If the first argument is not an Array, it returns an empty
+     * Array instead.  
+     * 
+     * Example usage: 
+     *
+     *    without([1, 2, 3, 4], 1, 3, 7):
+     *    >  [2, 4]
+     *
+     *    without([1, 2, 3, 4], 3);
+     *    > [1, 2, 4]
+     */
+
+    function without(Array, _ /* args */) {
+
+        var head = Array,
+            tail = rest(arguments);
+
+        if (existy(head) && Utilities.isArray(head)) {
+            // removes the unwanted elements
+            return filter(head, function(item) {
+              return tail.indexOf(item) === -1;
+            })
+        } else {
+            return [];
+        }
+    }
+
+    /*
+     * The [cncat] function gets a variable number of arguments and returns   
+     * a chain of elements (a.k.a an Array).
+     */
+
+    function cncat(/* args */) {
+        // Gets the first argument
+        var head = first(arguments);
+
+        if (existy(head)) {
+            // It merges both the Head and the tail into a new Array
+            return [].concat.apply(head, rest(arguments));
+        } else {
+            return [];
+        }
+    }
+
+    function not(fn) {
+        return function (argument) {
+            return !fn(argument)
+        }
+     }
+
+     /*
+      * Constructor Function. Like a SQL-like statement, it represents a
+      * select action just like that: SELECT keys FROM list.
+      *
+      * For instance, it can be used as following: 
+      *  
+      *     Select(["name", "type"]).from(CartDB.productsDb)
+      */
+
+     function Select(keys) {
+        // It allows us to invoke this function without the 'new' keyword
+        if (!(this instanceof Select)) { 
+            return new Select(keys); 
+        }
+
+        // A list of keys
+        this.keys = keys;
+
+        this.from = function(table) { 
+            // if table exists, use the Functional Selection function 
+            if (truthy(table)) {
+                // it uses its homonymous Functional version
+                return fSelect(table, this.keys);
+            } else {
+              return []; // table does not exist
+            }
+            
+        };
+     }
+
+    /*
+     * This function gets an Array (table) and a list of keys as arguments.
+     * It maps each table's object and for each entry, it applies the Utility 
+     * pick function for extracting the desired keys.
+
+     * Since the 'pick' function is applied by using the built-in Javascript
+     * 'apply' function which expects as its second parameter an Array of
+     * arguments, the 'cncat' helper function is used to concatenate the 
+     * actual object with the list of keys.
+     *
+     * The result of fSelect is an Array of objects containing only the wanted 
+     * properties 
+     */
+
+    // fSelect :: (Array -> Array) -> Array
+    function fSelect(table, keys) {
+        return  map(table, function(obj) {
+            return Utilities.pick.apply(null, cncat(obj, [keys]));
+        });
+    }
+
+    /*
+     * It augments the Array prototype by adding a "where" method into it.
+     * This method gets a predicate function as argument and invokes the  
+     * its homonymous Functional version
+     * In conjunction with the Select object, it allows to query for the 
+     * properties of an object in a SQL-like manner.
+     * For example the following SQL query:
+     *
+     * Select name, type from CartDB.productsDb Where name = 'Product-1'
+     *
+     * Could be translated into:
+     *
+     *  Select(["name", "type"]).from(CartDB.productsDb).where(function(prod) {
+     *      return prod.name === 'Product-1'
+     *  })
+     *  
+     */
+
+    Array.prototype.where = function(pred) {
+        return fWhere(this, pred);
+    };
+
+    /*
+     * This function gets an Array and a predicate function as arguments and 
+     * reduces the list. It returns a new partial 'table' Array everytime the 
+     * predicate is true, otherwise it removes the current object from the 
+     * resulting 'table'
+     */
+
+    // fWhere :: (Array -> Function) -> Array
+    function fWhere(table, pred) {
+        return reduce(table, function(newTable, obj) {
+            if (truthy(pred(obj))) {
+                return newTable;
+            } else {
+                return without(newTable, obj);
+          }
+        }, table);
+    };
+
 
     function calcPercentage(value, percentage) {
       return (value - ((percentage / 100) * value)).toFixed(2);
