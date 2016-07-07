@@ -407,7 +407,9 @@
                    value="Apply Coupon">
           </span>
           <p id="couponMessage" class="cart-coupon"></p>
-          Valid coupon codes: { 'bigsale': 50, 'promopromo': 16, 'white': 5 }
+          <p id="coupon--validCodes">
+            Valid coupon codes: { 'bigsale': 50, 'promopromo': 16, 'white': 5 }
+          </p>
         </div>
         <div id="total-cart-wrapper">
           <table class="table table-border">          
@@ -452,233 +454,132 @@
 <script src="js/utilities.js"></script>
 <script>
 
-//var Cart = (function(window) {
+var Cart = (function(window) {
 
-  var _win = window,
-      _doc = _win.document;
+    var _win = window,
+        _doc = _win.document;
 
-  var addButtons    = _doc.getElementsByClassName('addToCart'),
-      cart          = $('#cart'),
-      cartTable     = $('#cart-table').childNodes[1],
-      cartSubTot    = $('#cartSubTot'),
-      cartTotal     = $('#cartTotal'),
-      cartShipp     = $('#cartShipping'),
-      cartCoupon    = $('#cartCoupon'),
-      cartCouponVal = $('#cartCouponVal'),
-      cartCouponRow = $('#cartCouponRow'),
-      couponMessage = $('#couponMessage'),
-      couponButton  = $('#couponButton'),
-      couponInput   = $('#couponInput'),
-      len           = addButtons.length;
+    var addButtons    = _doc.getElementsByClassName('addToCart'),
+        cart          = $('#cart'),
+        cartTable     = $('#cart-table').childNodes[1],
+        cartSubTot    = $('#cartSubTot'),
+        cartTotal     = $('#cartTotal'),
+        cartShipp     = $('#cartShipping'),
+        cartCoupon    = $('#cartCoupon'),
+        cartCouponVal = $('#cartCouponVal'),
+        cartCouponRow = $('#cartCouponRow'),
+        couponMessage = $('#couponMessage'),
+        couponButton  = $('#couponButton'),
+        couponInput   = $('#couponInput'),
+        len           = addButtons.length;
 
-  var CartDB = {
-      currency: '\u0024',
-      shippingCost: 7,
-      check: {
-          subTotal: 0,
-          saving: 0
-      },
-      promoCodes: {
-        applied: null,
-        coupons: { 'bigsale': 50, 'promopromo': 16, 'white': 5 },
-        types: { '1': 15, '2': 8, '3': 7 },
-        products: { 'product-10': 10}
-      },
-      products: {},
-      items: [],
-      updateCheck: function() {
+    /* 
+     * It represents the database for the current shopping cart  
+     */
+    var CartDB = {
+        currencySymbol: '\u0024',
+        shippingCost: 7,
+        check: {
+            subTotal: 0,
+            saving: 0
+        },
+        promoCodes: {
+          applied: null,
+          coupons: { 'bigsale': 50, 'promopromo': 16, 'white': 5 },
+          types: { '1': 15, '2': 8, '3': 7 },
+          products: { 'product-10': 10}
+        },
+        items: [],
+        getItems: function() {
+            return this.items;
+        },
+        getPromoTypes: function() {
+          return Utilities.keys(this.promoCodes.types);      
+        },
+        getPromoType: function(name) {
+          return this.promoCodes.types[name];      
+        },
+        getPromoCode: function(code) {
+          return this.promoCodes[code] || void 0;
+        },
+        getDiscount: function(product) {
 
-          var that = this;
+          var promos  = this.promoCodes;
+          var name    = product.name.toLowerCase();
+          var type    = product.type;
 
-          var subTotal  = 0,
-              saving    = 0,
-              discount;
-
-          var list = this.getProducts();
-
-          list.map(function(product) {
-              discount  = that.getDiscount(product);
-              subTotal += (product.unitPrice * product.quantity);
-              saving   += subTotal - calcPercentage(subTotal, discount);
-          })
-
-          this.check.subTotal = subTotal.toFixed(2);
-          this.check.saving   = saving.toFixed(2);
-      },
-      addProd: function(product) {
-          //this.productsDb.push(product);
-          if (!this.products[product.name]) {
-              this.products[product.name] = copyObj(product, {});            
-          } else if (this.products[product.name]) {
-            this.products[product.name]['quantity'] += 1;
+          // When a coupon was applied, returns 0 
+          if (truthy(promos.applied)) {
+              return 0;
           }
 
-          this.updateCheck();
+          // First, it checks for a promo for the provided product
+          // then it looks for its type, in the end returs 0
+          return promos.products[name] || promos.types[type] || 0;
+        },
+        resetCoupon: function() {
+          this.promoCodes.applied = null;
+        },
+        checkCoupon: function(coupon) {
 
-          return this.products[product.name];
-      },
-      updateProd: function(product) {
+          var promos = this.promoCodes;
 
-          var name      = product.name,
-              quantity  = product.quantity;
+          var subTotal     = 0,
+              saving       = 0,
+              off          = 0,
+              couponSaving = 0;
 
-          if (!product && !name && !quantity && !this.products[name]) {
-              return false;
+          // if the provided promo does not exist, it returns -1
+          if (!existy(promos.coupons[coupon])) {
+              // It reset a current promo (if any)
+              promos.applied = null;
+              return -1;
           }
 
-          this.products[name]['quantity'] = parseInt(quantity);
+          /* 
+           * It first checks if the coupon makes the total price less than the  
+           * total price with the current promo
+           */
+          off          = promos.coupons[coupon];
+          subTotal     = this.getSubTotal();
+          saving       = this.getSaving();
+          couponSaving = subTotal - calcPercentage(subTotal, off);
 
-          this.updateCheck();
+          // if the coupon saving is less then the normal saving, it returns 0
+          if (couponSaving < saving) return 0;
 
-          return this.products[name];
-      },
-      remProd: function(product) {
+          // Otherwise, save the current promo
+          promos.applied = off;
 
-          var name = product.name;
-
-          if (product && name && this.products[name]) {
-              delete this.products[name];
-              this.updateCheck();
-              return true;
-          }
-
-          return false;
-      },
-      getQuantity: function(productName) {
-
-          var total = 0;
-          var products = this.products;
-
-          if (productName && products[productName]['quantity']) {
-              return products[productName]['quantity'];
-          }
-
-          for (var p in this.products) {
-            if (products.hasOwnProperty(p) && products[p]['quantity']) {
-                total += products[p]['quantity'];
-            }
-          }
-
-          return total;
-      },
-      getItems: function() {
-          return this.items;
-      },
-      getProductsList: function() {
-        return Utilities.keys(this.products);
-      },
-      getProduct: function(name) {
-        return this.products[name] || void 0;
-      },
-      getProducts: function() {
-
-          var list = [];
-
-          for(var key in this.products) {
-              if(this.products.hasOwnProperty(key)) {
-                  list.push(this.products[key]);
-              }
-          }
-
-        return list;
-      },
-      getPromoTypes: function() {
-        return Utilities.keys(this.promoCodes.types);      
-      },
-      getPromoType: function(name) {
-        return this.promoCodes.types[name];      
-      },
-      getPromoCode: function(code) {
-        return this.promoCodes[code] || void 0;
-      },
-      getDiscount: function(product) {
-
-        var promos  = this.promoCodes;
-        var name    = product.name.toLowerCase();
-        var type    = product.type;
-
-        // When a coupon was applied, returns 0 
-        if (truthy(promos.applied)) {
-            return 0;
+          // returns its actual coupon's value, in percentage
+          return off;
+        },
+        getCouponOff: function() {
+            return this.promoCodes.applied || 0;
+        },
+        getShippingCost: function() {
+          return this.shippingCost;
+        },
+        setSubTotal: function(subTotal) {
+            this.check.subTotal = subTotal;
+        },
+        getSubTotal: function() {
+          return this.check.subTotal;
+        },
+        setSaving: function(saving) {
+            this.check.saving = saving;
+        },
+        getSaving: function() {
+          return this.check.saving;
         }
+    };
 
-        // First, it checks for a promo for the provided product
-        // then it looks for its type, in the end returs 0
-        return promos.products[name] || promos.types[type] || 0;
-      },
-      resetCoupon: function() {
-        this.promoCodes.applied = null;
-      },
-      checkCoupon: function(coupon) {
-
-        var promos = this.promoCodes;
-
-        var subTotal     = 0,
-            saving       = 0,
-            off          = 0,
-            couponSaving = 0;
-
-        // if the provided promo does not exist, it returns -1
-        if (!existy(promos.coupons[coupon])) {
-            // It reset a current promo (if any)
-            promos.applied = null;
-            return -1;
-        }
-
-        /* 
-         * It first checks if the coupon makes the total price less than the  
-         * total price with the current promo
-         */
-        off          = promos.coupons[coupon];
-        subTotal     = this.getSubTotal();
-        saving       = this.getSaving();
-        couponSaving = subTotal - calcPercentage(subTotal, off);
-
-        // if the coupon saving is less then the normal saving, it returns 0
-        if (couponSaving < saving) return 0;
-
-        // Otherwise, save the current promo
-        promos.applied = off;
-
-        // returns its actual coupon's value, in percentage
-        return off;
-      },
-      getCouponValue: function() {
-
-          var subTotal      = this.getSubTotal(),
-              couponAmount  = this.promoCodes.applied,
-              couponValue   = 0;
-
-          // When there is not a valid coupon applied, return 0
-          if (!couponAmount) return couponValue;
-
-          couponValue = subTotal - calcPercentage(subTotal, couponAmount);
-
-          return couponValue;
-      },
-      isCoupon: function() {
-        return !!this.promoCodes.applied;
-      },
-      getShippingCost: function() {
-        return this.shippingCost;
-      },
-      setSubTotal: function(subTotal) {
-          this.check.subTotal = subTotal;
-      },
-      getSubTotal: function() {
-        return this.check.subTotal;
-      },
-      setSaving: function(saving) {
-          this.check.saving = saving;
-      },
-      getSaving: function() {
-        return this.check.saving;
-      }
-  };
-
-    /* Functions used to manipulate products and manage the shopping cart */
-
+    /*
+     * Product - Constructor function
+     * It represents a product and exposes property and utilities methods
+     */
     function Product(name, type, unitPrice) {
+
         this.name       = name;
         this.type       = type;
         this.unitPrice  = unitPrice;
@@ -693,7 +594,7 @@
             return parseFloat(subTotal - calcPercentage(subTotal, discount));
         };
 
-        // Returns the promo for the current product or 0
+        // Returns a promo for the current product or 0
         this.getOff = function() {
             return CartDB.getDiscount(this);
         }
@@ -789,64 +690,39 @@
         };
     }
 
-    var addProduct2 = function(htmlElement) {
-        var name  = htmlElement.getAttribute("data-product-name");
-        var type  = htmlElement.getAttribute("data-product-type");
-        var price = htmlElement.getAttribute("data-product-price");
+    /*
+     * The [changeProductQuantity] adds a product in the shopping cart's  
+     * database
+     */
+
+    var addProduct = function(htmlElement) {
+
+        var name  = htmlElement.getAttribute("data-product-name"),
+            type  = htmlElement.getAttribute("data-product-type"),
+            price = htmlElement.getAttribute("data-product-price");
+
         var table = CartDB.items;
         var newP  = new Product(name, type, price);
 
         // It tries to retrieve the current product from the Db
         var items = filter(table, function(product) {
-                return product.name === name;
+            return product.name === name;
         });
         
-        // The current product isn't in the cart list, then adds it
+        // The product is not on the list yet, so add it
         if (items.length === 0) {
             table.push(newP);
         } else {
-          items[0].quantity += 1;
+            items[0].quantity += 1; // updates the product's quantity
         }
 
-       rebuildCart();
+       rebuildCartUI();
     }
 
-
-    var addProduct = function(product) {
-        addProduct2(product);
- /*      var name      = product.getAttribute("data-product-name");
-        var price     = product.getAttribute("data-product-price");
-        var type      = product.getAttribute("data-product-type");
-        var quantity  = product.quantity || 1;
-        var newProd;
-
-        price = parseFloat(price).toFixed(2);
-
-        newProd = CartDB.addProd({
-            name:       name,
-            unitPrice:  price,
-            type:       type,
-            quantity:   quantity
-        });
-
-        if (newProd.quantity === 1) {
-          addCartRow(newProd);
-        } else {
-          updateCartRow(newProd);
-        }
-
-        // When a user adds a new product to the cart which makes the 
-        // total saving greater than a coupon discount it reset the coupon
-        if (CartDB.getTotalSaving() > CartDB.getCouponValue()) {
-            CartDB.resetCoupon(function() {
-                couponMessage.innerHTML = '';
-                toggle(cartCouponRow, 'none');
-                updateCart();
-            });
-        }
-
-        toggleCart(1);*/
-    }
+    /*
+     * The [changeProductQuantity] is used for updating the product's quantity   
+     * for products which are already in the shopping cart 
+     */
 
     var changeProductQuantity = function(name, newQuantity) {
 
@@ -857,12 +733,17 @@
             return product.name === name;
         });
 
-        // Sets its new quantity
+        // Sets a new quantity value for the product
         item[0].quantity = newQuantity;
         
         // rebuild the cart
-        rebuildCart();
+        rebuildCartUI();
     }
+
+    /*
+     * The [removeProduct] is used for removing a product from the shopping  
+     * cart's database 
+     */
 
     var removeProduct = function(name) {
 
@@ -875,203 +756,21 @@
          * exploit this behavior for associate the resulting Array 
          * to the origin
          */
+
         db.items = Select(/* all */).from(table).where(function(product) {
             return product.name !== name;
         });
 
-        // rebuild the cart
-        rebuildCart();
-/*
-        productsList = CartDB.getProductsList();
-
-        if (productsList.length === 0) {
-            CartDB.resetCoupon(function() {
-                couponMessage.innerHTML = '';
-                toggle(cartCouponRow, 'none');
-            });
-        }
-*/
-    }
-/*
-    var addCartRow = function(product) {
-
-        var isCoupon     = CartDB.isCoupon();
-
-        /* 
-         * If a coupon is already applied to the total, sets the 
-         * product's discount to 0, otherwise gets the discount
-         * from the DB
-         
-        var discount     = (isCoupon) ? 0 : CartDB.getDiscount(product),
-            unitPrice    = getCurrency(product.unitPrice),
-            unitPriceDis = getCurrency(calculateDiscount(product)),
-            quantity     = product.quantity,
-            finalPrice   = getCurrency(calculatePrice(product, discount)),
-            partial;
-
-        var list = ['tr']
-
-        var tr   = createHTMLElem(_doc, { tag: 'TR' }),
-            tr2  = createHTMLElem(_doc, { tag: 'TR' });
-
-        var td    = createHTMLElem(_doc, { tag: 'TD', 
-                                     class: 'table__td text-center' }),
-            td2   = createHTMLElem(_doc, { tag: 'TD', 
-                                     class: 'table__td text-left' }),
-            td4   = createHTMLElem(_doc, { tag: 'TD', 
-                                     class: 'table__td text-left' }),
-            td3   = createHTMLElem(_doc, { tag: 'TD', 
-                                     class: 'table__td text-left',
-                                     text: 'Unit price: ' }),
-            td5   = createHTMLElem(_doc, { tag: 'TD', 
-                                     class: 'table__td text-left' }),
-            td6   = createHTMLElem(_doc, { tag: 'TD', 
-                                    class: 'table__td text-right' }),
-            tdDisc  = createHTMLElem(_doc, { tag: 'TD', 
-                                       class: 'table__td text-left' }),
-            tdSepa  = createHTMLElem(_doc, { tag: 'TD', 
-                                       class: 'table__td--separator',
-                                       colspan: '7'});
-
-        var a = createHTMLElem(_doc, { 
-            tag: 'A',
-            src: '#'
-        });
-
-        var img  = createHTMLElem(_doc, { 
-            tag: 'img', 
-            class: 'table__img-thumbnail',
-            src: 'images/64x64.png',
-            alt: 'Product Image',
-            title: 'Product Image' 
-        });
-
-        var aProd = createHTMLElem(_doc, { 
-            tag: 'A', 
-            href: '#' + product.name,
-            text: Utilities.replaceAll(product.name, '-', ' ')
-        });
-
-        var inputTxt = createHTMLElem(_doc, { 
-            tag: 'input', 
-            class: 'table__input table__input--text',
-            id: 'input-' + Utilities.replaceAll(product.name, ' ', '-'),
-            name: 'input-' + Utilities.replaceAll(product.name, ' ', '-'),
-            type: 'text',
-            value: quantity
-        });
-
-        var spn = createHTMLElem(_doc, {
-                tag: 'SPAN', 
-                class: 'input-group-btn'
-            }),
-            spnPrice = createHTMLElem(_doc, {
-                tag: 'SPAN',
-                class: (discount) ? 'cart-product-discount ' + 
-                                    ' cart-product-discount--price' 
-                                  : '',
-                text: unitPrice
-            }),
-            spnPriceDiscount = createHTMLElem(_doc, {
-                tag: 'SPAN',
-                text: ' ' + unitPriceDis
-            }),
-            spnDiscount = createHTMLElem(_doc, {
-                tag: 'SPAN', 
-                class: 'cart-product-discount',
-                text: discount + '% off'
-            }),
-            spnPartial = createHTMLElem(_doc, {
-                tag: 'SPAN', 
-                id: 'partial-'+ Utilities.replaceAll(product.name, ' ', '-'),
-                name: 'partial-'+ Utilities.replaceAll(product.name, ' ', '-'),
-                text:  finalPrice
-            });
-
-        var removeButton = createHTMLElem(_doc, { 
-                tag: 'input', 
-                class: 'btn btn-red',
-                id: 'remove-' + Utilities.replaceAll(product.name, ' ', '-'),
-                type: 'button',
-                value: 'Remove'
-            });
-
-
-        a.appendChild(img)
-        td.appendChild(a);
-        td2.appendChild(aProd);
-        td3.appendChild(spnPrice);
-        td4.appendChild(inputTxt);
-        spn.appendChild(removeButton);
-        td5.appendChild(spn);
-        td6.appendChild(spnPartial);
-
-        if (discount > 0) {
-            td3.appendChild(spnPriceDiscount);
-            tdDisc.appendChild(spnDiscount);
-        }
-
-        tr2.appendChild(td); 
-        tr2.appendChild(td2); 
-        tr2.appendChild(td3); 
-        tr2.appendChild(tdDisc);
-        tr2.appendChild(td4); 
-        tr2.appendChild(td5); 
-        tr2.appendChild(td6);  
-
-        tr.appendChild(tdSepa);
-
-        cartTable.appendChild(tr);
-        cartTable.appendChild(tr2);
-
-
-        removeButton.addEventListener('click', function(event) {
-            removeProduct(product);
-            removeCartRow(this.parentNode.parentNode.parentNode);
-        });
-
-        inputTxt.addEventListener('change', function(event) {
-
-            var id    = this.getAttribute('id'),
-                value = this.value,
-                name  = Utilities.replaceAll(id,'input-','');
-
-
-            if (!Utilities.isInt(value) || (value < 0)) {
-                // restore input's value 
-                this.value = product.quantity;
-            } else if (value === '0') {
-                removeProduct(product);
-                removeCartRow(this.parentNode.parentNode);
-                return;
-            }
-
-            product.quantity = this.value;
-
-            changeProductQuantity(product);         
-        });
+        // rebuild the Shopping Cart UI
+        rebuildCartUI();
     }
 
-    var updateCartRow = function(product) {
+    /*
+     * The [rebuildCartUI] Every time something related to products in the  
+     * shopping cart is modified, this function rebuilds the table  
+     */
 
-      var input   = $('#input-' + product.name);
-      var partial = $('#partial-' + product.name);
-
-      input.value = product.quantity;
-      partial.innerHTML = getCurrency(calculatePrice(product));
-    }
-
-    var removeCartRow = function(row) {
-
-        var sep = row.previousSibling;
-        
-        cartTable.deleteRow(row.rowIndex); 
-        cartTable.deleteRow(sep.rowIndex); // Delete the separator row too
-
-        toggleCart();
-    }
-*/
-    var rebuildCart = function() {
+    var rebuildCartUI = function() {
 
         var prodList = CartDB.getItems();
         var subTotal = 0;
@@ -1085,26 +784,37 @@
             return product.HTMLrender();
         }).join('');
 
-        // Update subTotal and Saving
+        // Update subTotal and saving
         CartDB.setSubTotal(subTotal);
         CartDB.setSaving(saving);
 
-        // Update the Shopping Cart check
-        cartCheck(subTotal, saving);
-
-        // Refresh the User Interface
-        refreshUI();
+        // Refresh the Cart User Interface
+        refreshCartSummary();
     }
 
-    var refreshUI = function() {
+    /*
+     * The [refreshCartSummary] function is used to refresh the cart summary 
+     * It recalculates the amounts every time something changes in the 
+     * shopping cart   
+     */
 
-        var db       = CartDB;
-        var subTotal = db.getSubTotal();
+    var refreshCartSummary = function() {
+
+        var db = CartDB;
+
+        var subTotal    = db.getSubTotal(),
+            saving      = db.getSaving(),
+            shipping    = db.getShippingCost(),
+            couponOff   = db.getCouponOff(),
+            couponValue = 0,
+            totalSaving = 0,
+            total       = 0;
 
         // The Cart is empty
         if (subTotal === 0) {
             // We can safely reset a previous coupon (if any)
             db.resetCoupon();
+
             // Hide Coupon details (if any)
             couponMessage.innerHTML = '';
             toggle(cartCouponRow, 'node');
@@ -1113,76 +823,26 @@
             toggle(cart, 'none');
 
             return; // Stop
-        }
+        }     
 
-        // Toggles the Shopping Cart (if necessary) 
-        toggle(cart, 'block');
+        // It re-calculates all the amounts for a correct representation
+        couponValue = subTotal - calcPercentage(subTotal, couponOff);
+        totalSaving = (saving > couponValue) ? saving : couponValue;
+        subTotal    = (saving > couponValue) ? subTotal - saving : subTotal;
+        total       = subTotal + shipping - couponValue;
 
-    }
-
-    var updateCart = function() {
-
-      var prodList = CartDB.getProductsList();
-
-      if (!prodList || prodList.length === 0) return;
-
-      // remove all products node
-      while (cartTable.firstChild) {
-        cartTable.removeChild(cartTable.firstChild);
-      }
-      // add again all products node
-      prodList.map(function(name) {
-        addCartRow(CartDB.getProduct(name));
-      });
-
-      toggleCart();
-    }
-
-    function toggleCart(quantity) {
-
-        if (quantity === 0) {
-            toggle(cart, 'none');
-        } else if (quantity === 1) {
-            toggle(cart, 'block');
-        }
-
-    }
-
-    var calculatePrice = function(product, discount) {
-
-      var unitPrice = product.unitPrice,
-          quantity  = product.quantity,
-          discount  = (discount === 0) ? 0 : CartDB.getDiscount(product);
-
-      var subTotal = unitPrice * quantity;
-
-      return calcPercentage(subTotal, discount);
-    }
-
-    var calculateDiscount = function(product) {
-
-      var unitPrice = product.unitPrice,
-          discount;
-
-      discount = CartDB.getDiscount(product);
-
-      return calcPercentage(unitPrice, discount);
-    }
-
-    function cartCheck(subTotal, saving) {
-
-        var total         = 0,
-            shipping      = CartDB.getShippingCost(),
-            couponValue   = CartDB.getCouponValue(),
-            totalSaving   = (saving > couponValue) ? saving : couponValue;      
-
-        subTotal = (saving > couponValue) ? subTotal - saving : subTotal;
-        total    = subTotal + shipping - totalSaving;
-
+        // Adds the amounts formatted with a currency in the Shoppin Cart Table 
         cartSubTot.innerHTML = getCurrency(subTotal);
         cartTotal.innerHTML  = getCurrency(parseFloat(total).toFixed(2));
         cartCouponVal.innerHTML = getCurrency(couponValue.toFixed(2));
+
+        // Toggles the Shopping Cart (if necessary) 
+        toggle(cart, 'block');
     }
+
+    /*
+     * The [checkCoupon] function applies a coupon code if valid  
+     */
 
     var checkCoupon = function(coupon) {
 
@@ -1223,21 +883,51 @@
                 cartCoupon.innerHTML = off;
                 couponMessage.innerHTML = 'coupon [' + coupon + '] -' +
                                            off + '% off';
-                rebuildCart();
+                rebuildCartUI();
                 toggle(cartCouponRow, 'table-row');
                 break;
         }
-
     }
 
-    var getCurrency = function(value, separator) {
+    /*
+     * The [toggle] function toggle an element's visibility  
+     */
 
-        var curr = CartDB.currency;
+    function toggle(element, visibility) {
 
-        return curr + currency(value, separator);
+        var display     = (window.getComputedStyle(element, null).display);
+        var visibility  = visibility || 'block';
+
+        /*
+         * If the provided visibility is the same as the current one, 
+         * it does nothing
+         */ 
+        if (element.style.display === visibility) return;
+
+        element.style.display = (display === 'none') ? visibility : 'none';
     }
 
-    var currency = function(amount, separator) {
+    /*
+     * The [getCurrency] function returns a price formatted with the currency  
+     * symbol which is saved in the database (dollar by default)
+     */
+
+    function getCurrency(price, separator) {
+
+        var symbol = CartDB.currencySymbol;
+
+        return symbol + currency(price, separator);
+    }
+
+    /*
+     * The [currency] function returns a price formatted in one of 
+     * these ways :
+     * In the US, comma (,) is used as the thousand separator
+     * In many European countries, dot (.) is used as the thousand separator 
+     * and comma (,) is used as the decimal
+     */
+
+    function currency(amount, separator) {
 
         var amnt      = amount.toString();
         var len       = amnt.length;
@@ -1263,7 +953,117 @@
         }
     }
 
-    /* Helper and Utility functions */
+    /*
+     * Given a value and a percentage, the [calcPercentage] function calculates
+     * the resulting value
+     */
+
+    function calcPercentage(value, percentage) {
+        return (value - ((percentage / 100) * value)).toFixed(2);
+    }
+
+
+    function initialize() {
+
+        var productWrapper = $('#products-wrapper');
+        // Gets a list of promos for products of a specific type
+        var types = CartDB.getPromoTypes();
+
+        // Adds the promo code (if any) to specific products
+        types.map(function(type) {
+
+            var off  = CartDB.getPromoType(type);
+            var list;
+
+            list = $$('span[data-product-type="'+ type +'"]');
+
+            Array.prototype.map.call(list, function(product) {
+
+                var span = '';
+                span += '<span class="product-promo            '; 
+                span += '             product-promo--discount">';
+                span +=  off + '% off                          ';
+                span += '</span>                               ';
+
+              // Select the parent node
+              var pNode = product.parentNode.parentNode.nextSibling.nextSibling;
+
+              // Add the SPAN element
+              pNode.innerHTML += span;
+            });
+        });
+
+      /*
+       * Since the product list does not change at run-time, adding an
+       * event listener to all the 'ADD TO Cart' button is admissible
+       */
+      while(len--) {
+          addButtons[len].addEventListener('click', function(event) {
+              addProduct(this.firstChild.nextSibling);
+          })
+      }
+
+      // Sets a fixed shipping cost
+      cartShipp.innerHTML = getCurrency(CartDB.getShippingCost());
+
+      // Adds some event listener
+      couponButton.addEventListener('click', checkCoupon, false);
+      cartTable.addEventListener('change', changeEvent, false);
+      cartTable.addEventListener('click', removeEvent, false);
+    }
+
+    // This function is used for handling the change event of the textbox
+    // for the products' quantity 
+    function changeEvent(evt) {
+
+        var target    = evt.target;
+        var name      = target.getAttribute('data-product-name');
+        var quantity  = target.value;
+
+        if (evt.target !== evt.currentTarget) {
+
+            // When the target event is not the same as the target event   
+            // listener (which I set as the Table-cart Body element)
+
+            if (!Utilities.isInt(quantity) || (quantity < 0)) {
+                // restore the default value 
+                target.value = target.defaultValue;
+            } else if (quantity === '0') {
+                  removeProduct(name);
+                  return;
+            }
+
+              changeProductQuantity(name, quantity);
+          }
+        evt.stopPropagation();
+    }
+
+    // This function is used for handling the remove event of the remove button
+    // for a product currently in the shopping cart
+
+    function removeEvent(evt) {
+        if (evt.target !== evt.currentTarget) {
+
+          // When the target event is not the same as the event listener current 
+          // target (which I set as the Table-cart Body element)
+
+            var clickedItem = evt.target.id;
+            // The element id we are interested in has the form remove_Product-{N}
+            var parts = clickedItem.split('_');
+            
+            if (parts[0] === 'remove') {
+                removeProduct(parts[1]); // parts[1] contains the product name
+            }
+        }
+        evt.stopPropagation();
+    }
+
+
+  /********************************************************
+   *                                                      *
+   *           HELPERS AND UTILITY FUNCTIONS              *
+   *                                                      *
+   *******************************************************/
 
     function $(selector) {
         return _doc.querySelector(selector);
@@ -1273,7 +1073,8 @@
         return _doc.querySelectorAll(selector);
     }
 
-    var map = function(array, callback) {
+    function map(array, callback) {
+
         // holds the result of map operation  
         var result = [];
         var len     = array.length;
@@ -1286,7 +1087,7 @@
         return result;
     }
 
-    var reduce = function(array, callback, initialValue) {
+    function reduce(array, callback, initialValue) {
 
         var current = initialValue;
 
@@ -1299,7 +1100,8 @@
         return current;
     };
 
-    var filter = function(array, callback){
+    function filter(array, callback){
+
         //holds the result of filter operation  
         var result = [];
         var len     = array.length;
@@ -1315,21 +1117,15 @@
         return result;
     }
 
+    /*
+     *  FUNCTIONAL HELPERS FUNCTIONS
+     */
+
     function truthy(value) { return !!value; }
 
     function existy(value) { return value != null };
 
     function notDefined() { return void 0; }
-
-    // A condition fulfilled causes a function application
-    function execWhen(cond, fn) {
-        if(truthy(cond)) {
-            return fn();
-        } else {
-            return notDefined();
-        }
-    }
-
 
     /*
      * The [first] function gets an Array and an optional index as arguments, 
@@ -1504,55 +1300,8 @@
         }, table);
     };
 
-
-    function calcPercentage(value, percentage) {
-      return (value - ((percentage / 100) * value)).toFixed(2);
-    }
-
-    function copyObj(first, second) {
-      for (var p in first) {
-        if (first.hasOwnProperty(p)) {
-            second[p] = first[p];
-        }
-      }
-      return second;
-    }
-
-    function toggle(element, visibility) {
-
-        var display     = (window.getComputedStyle(element, null).display);
-        var visibility  = visibility || 'block';
-
-        /*
-         * If the provided visibility is the same as the current one, 
-         * it does nothing
-         */ 
-        if (element.style.display === visibility) return;
-
-        element.style.display = (display === 'none') ? visibility : 'none';
-    }
-
-    function createHTMLElem(_doc, obj) {
-
-      var elem = _doc.createElement(obj.tag);
-      var text = ('text' in obj) ? _doc.createTextNode(obj['text']) : null;
-
-      if (text) elem.appendChild(text);
-
-      // it deletes unused properties 
-      delete obj.tag;
-      delete obj.text;
-
-      for (var attr in obj) {
-          if (obj.hasOwnProperty(attr)) {
-              elem.setAttribute(attr, obj[attr]);
-          }
-      }
-
-      return elem;
-    }
-
-    // This function ensures that a function will be called exactly once
+    // This function ensures that a provided function (fn) will be called 
+    // exactly once
     function once(fn) {
 
       var _once = false;
@@ -1562,99 +1311,19 @@
       }
     }
 
-    function initialize() {
 
-        // Gets a list of promos for products of a specific type
-        var types = CartDB.getPromoTypes();
-
-        // Adds the promo code (if any) to specific products
-        types.map(function(type) {
-
-            var off  = CartDB.getPromoType(type);
-            var list;
-
-            list = $$('span[data-product-type="'+ type +'"]');
-
-            Array.prototype.map.call(list, function(product) {
-
-                var span = '';
-                span += '<span class="product-promo            '; 
-                span += '             product-promo--discount">';
-                span +=  off + '% off                          ';
-                span += '</span>                               ';
-
-              // Select the parent node
-              var pNode = product.parentNode.parentNode.nextSibling.nextSibling;
-
-              // Add the SPAN element
-              pNode.innerHTML += span;
-            });
-        });
-
-      // Add an Event listener for each 'ADD TO CART' button
-      while(len--) {
-          addButtons[len].addEventListener('click', function(event) {
-              addProduct(this.firstChild.nextSibling);
-          })
-      }
-
-      // Set fixed shipping cost
-      cartShipp.innerHTML = getCurrency(CartDB.getShippingCost());
-
-      couponButton.addEventListener('click', checkCoupon, false);
-      cartTable.addEventListener('change', changeEvent, false);
-      cartTable.addEventListener('click', removeEvent, false);
-    }
-
-    function changeEvent(evt) {
-
-        if (evt.target !== evt.currentTarget) {
-            // When the target event is not the same as the event listener target 
-            // a.k.a the Table-cart
-              var target    = evt.target;
-              var name      = target.getAttribute('data-product-name');
-              var quantity  = target.value;
-
-              if (!Utilities.isInt(quantity) || (quantity < 0)) {
-                  // restore the default value 
-                  target.value = target.defaultValue;
-              } else if (quantity === '0') {
-                    removeProduct(name);
-                    return;
-              }
-
-              changeProductQuantity(name, quantity);
-          }
-        evt.stopPropagation();
-    }
-
-    function removeEvent(evt) {
-        if (evt.target !== evt.currentTarget) {
-          // When the target event is not the same as the event listener target 
-          // a.k.a the Table-cart
-            var clickedItem = evt.target.id;
-            // The element id we are interested in has the form remove_Product-{N}
-            var parts = clickedItem.split('_');
-            
-            if (parts[0] === 'remove') {
-                removeProduct(parts[1]); // parts[1] contains the product name
-            }
-        }
-        evt.stopPropagation();
-    }
-
-    /* Public API
+    // Public API
     return {
-      initialize: once(initialize)
+        initialize: once(initialize)
     }
 
 }
 
-//)(window);
+)(window);
 
 // Initialize the shopping cart
-Cart.initialize();*/
-initialize();
+Cart.initialize();
+
 </script>
 
 
