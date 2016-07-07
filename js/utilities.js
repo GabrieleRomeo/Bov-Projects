@@ -71,7 +71,7 @@ var Utilities = (function(window){
 
     u.isInt = function(num) {
 
-        return parseFloat(num) === parseInt(num, 10);
+        return u.isNumber(num) && (parseFloat(num) === parseInt(num, 10));
     };
 
     /**
@@ -394,7 +394,7 @@ var Utilities = (function(window){
         return parseInt(Math.random() * max, 10);
     }
 
-
+    // Returs the public API as an object
     return u;
 
 })(window);
