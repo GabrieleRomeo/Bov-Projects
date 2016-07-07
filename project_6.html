@@ -962,6 +962,9 @@ var Cart = (function(window) {
         return (value - ((percentage / 100) * value)).toFixed(2);
     }
 
+    /*
+     * This function is used for initializing the shopping cart
+     */
 
     function initialize() {
 
@@ -993,27 +996,39 @@ var Cart = (function(window) {
             });
         });
 
-      /*
-       * Since the product list does not change at run-time, adding an
-       * event listener to all the 'ADD TO Cart' button is admissible
-       */
-      while(len--) {
-          addButtons[len].addEventListener('click', function(event) {
-              addProduct(this.firstChild.nextSibling);
-          })
-      }
+        /*
+         * Since the product list does not change at run-time, adding an
+         * event listener to all the 'ADD TO Cart' button is admissible
+         */
+        while(len--) {
+            addButtons[len].addEventListener('click', function(event) {
+                addProduct(this.firstChild.nextSibling);
+            })
+        }
 
-      // Sets a fixed shipping cost
-      cartShipp.innerHTML = getCurrency(CartDB.getShippingCost());
+        // Sets a fixed shipping cost
+        cartShipp.innerHTML = getCurrency(CartDB.getShippingCost());
 
-      // Adds some event listener
-      couponButton.addEventListener('click', checkCoupon, false);
-      cartTable.addEventListener('change', changeEvent, false);
-      cartTable.addEventListener('click', removeEvent, false);
+        // Adds some event listener
+        couponButton.addEventListener('click', checkCoupon, false);
+        cartTable.addEventListener('change', changeEvent, false);
+        cartTable.addEventListener('click', removeEvent, false);
     }
 
-    // This function is used for handling the change event of the textbox
-    // for the products' quantity 
+    /* 
+     * This function is used for handling the change event for the input 
+     * textbox related to the products' quantity
+     *
+     *       ^
+     *       | 
+     *       |  [DOM EVENT BUBBLING]
+     *       |
+     *    
+     *    Thanks to the DOM Event bubbling, I was able to set only one single 
+     *    event listener for each HTML textbox which will be dynamically added 
+     *    to the Shopping Cart table.
+     *
+     */
     function changeEvent(evt) {
 
         var target    = evt.target;
@@ -1028,19 +1043,32 @@ var Cart = (function(window) {
             if (!Utilities.isInt(quantity) || (quantity < 0)) {
                 // restore the default value 
                 target.value = target.defaultValue;
+                return; // stop
             } else if (quantity === '0') {
-                  removeProduct(name);
-                  return;
+                removeProduct(name);
+                return; // stop
             }
 
               changeProductQuantity(name, quantity);
           }
-        evt.stopPropagation();
+        evt.stopPropagation(); // It stops the bubbling
     }
 
-    // This function is used for handling the remove event of the remove button
-    // for a product currently in the shopping cart
-
+    /* 
+     * This function is used for handling the remove event caught by a remove 
+     * button related to a particular product which is already in the shopping
+     * cart
+     *
+     *       ^
+     *       | [DOM EVENT BUBBLING]
+     *       |
+     *       |
+     *    
+     *    Thanks to the DOM Event bubbling, I was able to set only one single 
+     *    event listener for each HTML button which will be dynamically added 
+     *    to the Shopping Cart
+     *
+     */
     function removeEvent(evt) {
         if (evt.target !== evt.currentTarget) {
 
@@ -1048,14 +1076,14 @@ var Cart = (function(window) {
           // target (which I set as the Table-cart Body element)
 
             var clickedItem = evt.target.id;
-            // The element id we are interested in has the form remove_Product-{N}
+            // The id we are interested in, is of the form: remove_Product-{N}
             var parts = clickedItem.split('_');
             
             if (parts[0] === 'remove') {
                 removeProduct(parts[1]); // parts[1] contains the product name
             }
         }
-        evt.stopPropagation();
+        evt.stopPropagation(); // It stops the bubbling
     }
 
 
