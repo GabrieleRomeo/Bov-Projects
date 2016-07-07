@@ -407,6 +407,7 @@
                    value="Apply Coupon">
           </span>
           <p id="couponMessage" class="cart-coupon"></p>
+          Valid coupon codes: { 'bigsale': 50, 'promopromo': 16, 'white': 5 }
         </div>
         <div id="total-cart-wrapper">
           <table class="table table-border">          
@@ -484,7 +485,7 @@
         products: { 'product-10': 10}
       },
       products: {},
-      productsDb: [],
+      items: [],
       updateCheck: function() {
 
           var that = this;
@@ -505,7 +506,7 @@
           this.check.saving   = saving.toFixed(2);
       },
       addProd: function(product) {
-          this.productsDb.push(product);
+          //this.productsDb.push(product);
           if (!this.products[product.name]) {
               this.products[product.name] = copyObj(product, {});            
           } else if (this.products[product.name]) {
@@ -560,6 +561,9 @@
 
           return total;
       },
+      getItems: function() {
+          return this.items;
+      },
       getProductsList: function() {
         return Utilities.keys(this.products);
       },
@@ -590,30 +594,54 @@
       getDiscount: function(product) {
 
         var promos  = this.promoCodes;
-        var name    = product.name;
+        var name    = product.name.toLowerCase();
         var type    = product.type;
 
-       if (!name) return 0;
+        // When a coupon was applied, returns 0 
+        if (truthy(promos.applied)) {
+            return 0;
+        }
 
-        name = name.toLowerCase();
-
+        // First, it checks for a promo for the provided product
+        // then it looks for its type, in the end returs 0
         return promos.products[name] || promos.types[type] || 0;
       },
-      resetCoupon: function(callback) {
-
+      resetCoupon: function() {
         this.promoCodes.applied = null;
-
-        if (Utilities.isFunc(callback)) callback();
       },
-      setCoupon: function(couponCode) {
+      checkCoupon: function(coupon) {
 
         var promos = this.promoCodes;
 
-        if (!promos.coupons[couponCode]) return void 0;
+        var subTotal     = 0,
+            saving       = 0,
+            off          = 0,
+            couponSaving = 0;
 
-        promos.applied = promos.coupons[couponCode];
+        // if the provided promo does not exist, it returns -1
+        if (!existy(promos.coupons[coupon])) {
+            // It reset a current promo (if any)
+            promos.applied = null;
+            return -1;
+        }
 
-        return promos.applied;
+        /* 
+         * It first checks if the coupon makes the total price less than the  
+         * total price with the current promo
+         */
+        off          = promos.coupons[coupon];
+        subTotal     = this.getSubTotal();
+        saving       = this.getSaving();
+        couponSaving = subTotal - calcPercentage(subTotal, off);
+
+        // if the coupon saving is less then the normal saving, it returns 0
+        if (couponSaving < saving) return 0;
+
+        // Otherwise, save the current promo
+        promos.applied = off;
+
+        // returns its actual coupon's value, in percentage
+        return off;
       },
       getCouponValue: function() {
 
@@ -634,10 +662,16 @@
       getShippingCost: function() {
         return this.shippingCost;
       },
+      setSubTotal: function(subTotal) {
+          this.check.subTotal = subTotal;
+      },
       getSubTotal: function() {
         return this.check.subTotal;
       },
-      getTotalSaving: function() {
+      setSaving: function(saving) {
+          this.check.saving = saving;
+      },
+      getSaving: function() {
         return this.check.saving;
       }
   };
@@ -649,23 +683,138 @@
         this.type       = type;
         this.unitPrice  = unitPrice;
         this.quantity   = 1;
+
+         // Returns the total saving when a product has a promo
+        this.getSaving = function() {
+
+            var discount = CartDB.getDiscount(this);
+            var subTotal = this.getSubTotal();
+
+            return parseFloat(subTotal - calcPercentage(subTotal, discount));
+        };
+
+        // Returns the promo for the current product or 0
+        this.getOff = function() {
+            return CartDB.getDiscount(this);
+        }
+
+        // Returns the new Unit price
+        this.getNewPrice = function() {
+
+          var off       = this.getOff();
+          var unitPrice = this.unitPrice;
+
+          return parseFloat(calcPercentage(unitPrice, off));
+        }
+
+        // Returns the actual subTotal for this product
+        this.getSubTotal = function() {
+            return parseFloat(this.unitPrice * this.quantity);
+        };
+
+        // returns an HTML representation of a product
+        this.HTMLrender = function() {
+
+            var name     = Utilities.replaceAll(this.name, '-', ' ');
+            var discount = this.getOff();
+            var saving   = this.getSaving();
+            var newPrice = this.getNewPrice();
+            var newSubT  = (this.getSubTotal() - this.getSaving()).toFixed(2);
+
+            var html = '';
+
+            html += '<tr>                                                  ';
+            html += '  <td class="table__td--separator" colspan="7"></td>  ';
+            html += '</tr>                                                 ';
+            html += '<tr>                                                  ';
+            html += '  <td class="table__td text-center">                  ';
+            html += '    <a src="#">                                       ';
+            html += '      <img class="table__img-thumbnail"               ';
+            html += '           src="images/64x64.png"                     ';
+            html += '           alt="Product Image"                        ';
+            html += '          title="Product Image">                      ';
+            html += '    </a>                                              ';
+            html += '  </td>                                               ';
+            html += '  <td class="table__td text-left">                    ';
+            html += '    <a href="#'+ this.name + '">' + name +'</a>       ';
+            html += '  </td>                                               ';
+            html += '  <td class="table__td text-left">                    ';
+            html += '    Unit price:                                       ';
+
+            if (truthy(discount)) {
+                html += '    <span class="cart-product-discount             ';
+                html += '                 cart-product-discount--price">    ';
+                html += '      '+ getCurrency(this.unitPrice) +'            ';
+                html += '    </span>                                        ';
+                html += '    <span>'+ getCurrency(newPrice) +'</span>       ';
+                html += '  </td>                                            ';
+                html += '  <td class="table__td text-left">                 ';
+                html += '    <span class="cart-product-discount">           ';
+                html += '      '+ discount +'% off                          ';
+                html += '    </span>                                        ';
+            } else {
+                html += '    <span>'+ getCurrency(this.unitPrice) +'</span> ';
+                html += '  </td>                                            ';
+                html += '  <td class="table__td text-left"></td>            ';
+            }
+
+            html += '  </td>                                               ';
+            html += '  <td class="table__td text-left">                    ';
+            html += '    <input class="table__input                        ';
+            html += '                  table__input--text"                 ';
+            html += '           id="input_'+ this.name + '"                ';
+            html += '           name="input-'+ this.name + '"              ';
+            html += '           type="text"                                ';
+            html += '           data-product-name="' + this.name +'"       ';
+            html += '           value="' + this.quantity +'">              ';
+            html += '  </td>                                               ';
+            html += '  <td class="table__td text-left">                    ';
+            html += '    <span class="input-group-btn">                    ';
+            html += '    <input class="btn btn-red"                        ';
+            html += '           id="remove_'+ this.name + '"               ';
+            html += '           type="button"                              ';
+            html += '           data-product-name="' + this.name +'"       ';
+            html += '           value="Remove">                            ';
+            html += '    </span>                                           ';
+            html += '  </td>                                               ';
+            html += '  <td class="table__td text-right">                   ';
+            html += '    <span id="partial-'+ this.name + '"               ';
+            html += '          name="partial-'+ this.name + '">            ';
+            html +=  getCurrency(discount ? newSubT : this.getSubTotal())   ;
+            html += '    </span>                                           ';
+            html += '  </td>                                               ';
+            html += '</tr>                                                 ';
+
+            return html;
+        };
     }
 
     var addProduct2 = function(htmlElement) {
         var name  = htmlElement.getAttribute("data-product-name");
         var type  = htmlElement.getAttribute("data-product-type");
         var price = htmlElement.getAttribute("data-product-price");
+        var table = CartDB.items;
         var newP  = new Product(name, type, price);
 
-        filter(CartDB.productsDb, function(product) {
-            return Utilities.has(product, "Product-3");
+        // It tries to retrieve the current product from the Db
+        var items = filter(table, function(product) {
+                return product.name === name;
         });
+        
+        // The current product isn't in the cart list, then adds it
+        if (items.length === 0) {
+            table.push(newP);
+        } else {
+          items[0].quantity += 1;
+        }
+
+       rebuildCart();
     }
 
 
     var addProduct = function(product) {
-addProduct2(product);
-        var name      = product.getAttribute("data-product-name");
+        addProduct2(product);
+ /*      var name      = product.getAttribute("data-product-name");
         var price     = product.getAttribute("data-product-price");
         var type      = product.getAttribute("data-product-type");
         var quantity  = product.quantity || 1;
@@ -695,36 +844,44 @@ addProduct2(product);
                 updateCart();
             });
         }
-       
-        toggleCart();
+
+        toggleCart(1);*/
     }
 
-    var changeProductQuantity = function(product) {
+    var changeProductQuantity = function(name, newQuantity) {
 
-        var name      = product.name,
-            quantity  = product.quantity || 1,
-            update    = product.update || false;
+        var table = CartDB.items;
 
-        var updatedProd;
-
-        updatedProd = CartDB.updateProd({
-            name:       name,
-            quantity:   quantity
+        // Gets the specific product
+        var item = filter(table, function(product) {
+            return product.name === name;
         });
 
-        if (!updatedProd) throw "Unable to update this product";
-
-        updateCartRow(updatedProd);
-
-        toggleCart();
+        // Sets its new quantity
+        item[0].quantity = newQuantity;
+        
+        // rebuild the cart
+        rebuildCart();
     }
 
-    var removeProduct = function(product) {
+    var removeProduct = function(name) {
 
-        var productsList;
+        var db    = CartDB;
+        var table = db.items;
 
-        if (!CartDB.remProd(product)) throw "Unable to remove this product"; 
+        /*
+         * Since the [where] function returs a new Array containing only
+         * the resulting elements which make the predicate True, we can 
+         * exploit this behavior for associate the resulting Array 
+         * to the origin
+         */
+        db.items = Select(/* all */).from(table).where(function(product) {
+            return product.name !== name;
+        });
 
+        // rebuild the cart
+        rebuildCart();
+/*
         productsList = CartDB.getProductsList();
 
         if (productsList.length === 0) {
@@ -733,10 +890,9 @@ addProduct2(product);
                 toggle(cartCouponRow, 'none');
             });
         }
+*/
     }
-
-
-
+/*
     var addCartRow = function(product) {
 
         var isCoupon     = CartDB.isCoupon();
@@ -745,13 +901,15 @@ addProduct2(product);
          * If a coupon is already applied to the total, sets the 
          * product's discount to 0, otherwise gets the discount
          * from the DB
-         */
+         
         var discount     = (isCoupon) ? 0 : CartDB.getDiscount(product),
             unitPrice    = getCurrency(product.unitPrice),
             unitPriceDis = getCurrency(calculateDiscount(product)),
             quantity     = product.quantity,
             finalPrice   = getCurrency(calculatePrice(product, discount)),
             partial;
+
+        var list = ['tr']
 
         var tr   = createHTMLElem(_doc, { tag: 'TR' }),
             tr2  = createHTMLElem(_doc, { tag: 'TR' });
@@ -912,6 +1070,55 @@ addProduct2(product);
 
         toggleCart();
     }
+*/
+    var rebuildCart = function() {
+
+        var prodList = CartDB.getItems();
+        var subTotal = 0;
+        var saving   = 0;
+
+        // add all products to the Cart
+        cartTable.innerHTML = map(prodList, function(product) {
+            // Updates the bills
+            subTotal += product.getSubTotal();
+            saving   += product.getSaving();
+            return product.HTMLrender();
+        }).join('');
+
+        // Update subTotal and Saving
+        CartDB.setSubTotal(subTotal);
+        CartDB.setSaving(saving);
+
+        // Update the Shopping Cart check
+        cartCheck(subTotal, saving);
+
+        // Refresh the User Interface
+        refreshUI();
+    }
+
+    var refreshUI = function() {
+
+        var db       = CartDB;
+        var subTotal = db.getSubTotal();
+
+        // The Cart is empty
+        if (subTotal === 0) {
+            // We can safely reset a previous coupon (if any)
+            db.resetCoupon();
+            // Hide Coupon details (if any)
+            couponMessage.innerHTML = '';
+            toggle(cartCouponRow, 'node');
+
+            // Hide the Shopping Cart
+            toggle(cart, 'none');
+
+            return; // Stop
+        }
+
+        // Toggles the Shopping Cart (if necessary) 
+        toggle(cart, 'block');
+
+    }
 
     var updateCart = function() {
 
@@ -931,9 +1138,7 @@ addProduct2(product);
       toggleCart();
     }
 
-    function toggleCart() {
-
-        var quantity = CartDB.getQuantity();
+    function toggleCart(quantity) {
 
         if (quantity === 0) {
             toggle(cart, 'none');
@@ -941,7 +1146,6 @@ addProduct2(product);
             toggle(cart, 'block');
         }
 
-      cartCheck();
     }
 
     var calculatePrice = function(product, discount) {
@@ -965,12 +1169,10 @@ addProduct2(product);
       return calcPercentage(unitPrice, discount);
     }
 
-    function cartCheck() {
+    function cartCheck(subTotal, saving) {
 
         var total         = 0,
-            subTotal      = CartDB.getSubTotal(),
             shipping      = CartDB.getShippingCost(),
-            saving        = CartDB.getTotalSaving(),
             couponValue   = CartDB.getCouponValue(),
             totalSaving   = (saving > couponValue) ? saving : couponValue;      
 
@@ -982,36 +1184,50 @@ addProduct2(product);
         cartCouponVal.innerHTML = getCurrency(couponValue.toFixed(2));
     }
 
-    var verifyCoupon = function() {
+    var checkCoupon = function(coupon) {
 
         var coupon = couponInput.value;
-        var couponAmount = CartDB.setCoupon(coupon),
-            couponValue  = 0;
+        var off    = CartDB.checkCoupon(coupon);
 
-        var subTotal = CartDB.getSubTotal(),
-            saving   = CartDB.getTotalSaving();
-
+        // Initial reset
         couponInput.value = '';
 
-        if (!couponAmount) {
-            couponMessage.innerHTML = coupon + ' - invalid coupon code';
-            return;
+        /*
+         *  The checkCoupon method returs:
+         * 
+         *  -1  if the coupon was not found
+         *
+         *   0  if the coupon does not make the total price less than the 
+         *      total price with the current promo 
+         *
+         *  {n} if the coupon was applied because it fulfills all the 
+         *      requirements 
+         */
+
+        switch(off) {
+
+            case -1:
+
+                couponMessage.innerHTML = coupon + ' - invalid coupon code';
+                break;
+
+            case 0:
+
+                couponMessage.innerHTML = 'The current promo is better ' + 
+                                          'than your coupon ' +
+                                          '[ <em>' + coupon +'</em> ]';
+                break;
+
+            default:
+
+                cartCoupon.innerHTML = off;
+                couponMessage.innerHTML = 'coupon [' + coupon + '] -' +
+                                           off + '% off';
+                rebuildCart();
+                toggle(cartCouponRow, 'table-row');
+                break;
         }
 
-        couponValue = subTotal - calcPercentage(subTotal, couponAmount);
-
-        if (couponValue < saving) {
-            couponMessage.innerHTML = 'The current promo is better than your ' +
-                                      'coupon \'' + coupon + '\' ' +
-                                      '-' + couponAmount + '% off';
-            return;
-        }
-
-        cartCoupon.innerHTML = couponAmount;
-        couponMessage.innerHTML = 'coupon \'' + coupon + '\' -' +
-                                   couponAmount + '% off';
-        updateCart();
-        toggle(cartCouponRow, 'table-row');
     }
 
     var getCurrency = function(value, separator) {
@@ -1164,7 +1380,7 @@ addProduct2(product);
      *    > [1, 2, 4]
      */
 
-    function without(Array, _ /* args */) {
+    function without(Array /* args */) {
 
         var head = Array,
             tail = rest(arguments);
@@ -1195,12 +1411,6 @@ addProduct2(product);
             return [];
         }
     }
-
-    function not(fn) {
-        return function (argument) {
-            return !fn(argument)
-        }
-     }
 
      /*
       * Constructor Function. Like a SQL-like statement, it represents a
@@ -1249,6 +1459,7 @@ addProduct2(product);
     // fSelect :: (Array -> Array) -> Array
     function fSelect(table, keys) {
         return  map(table, function(obj) {
+            keys = existy(keys) ? keys : Utilities.keys(obj);
             return Utilities.pick.apply(null, cncat(obj, [keys]));
         });
     }
@@ -1312,9 +1523,12 @@ addProduct2(product);
         var display     = (window.getComputedStyle(element, null).display);
         var visibility  = visibility || 'block';
 
-        // if current display property is = to the visibility param, do nothing
+        /*
+         * If the provided visibility is the same as the current one, 
+         * it does nothing
+         */ 
         if (element.style.display === visibility) return;
-        
+
         element.style.display = (display === 'none') ? visibility : 'none';
     }
 
@@ -1350,9 +1564,10 @@ addProduct2(product);
 
     function initialize() {
 
-        // Initialize promos for products of a specific type
+        // Gets a list of promos for products of a specific type
         var types = CartDB.getPromoTypes();
 
+        // Adds the promo code (if any) to specific products
         types.map(function(type) {
 
             var off  = CartDB.getPromoType(type);
@@ -1360,18 +1575,19 @@ addProduct2(product);
 
             list = $$('span[data-product-type="'+ type +'"]');
 
-            Array.prototype.map.call(list, function(product) {  
+            Array.prototype.map.call(list, function(product) {
 
-              var span = createHTMLElem(_doc, {
-                          tag: 'SPAN', 
-                          class: 'product-promo',
-                          text : '[Special Type ' + type +'] -'
-                                  + off + '% off'
-                         });
-              // Select parent node
+                var span = '';
+                span += '<span class="product-promo            '; 
+                span += '             product-promo--discount">';
+                span +=  off + '% off                          ';
+                span += '</span>                               ';
+
+              // Select the parent node
               var pNode = product.parentNode.parentNode.nextSibling.nextSibling;
 
-              pNode.appendChild(span);
+              // Add the SPAN element
+              pNode.innerHTML += span;
             });
         });
 
@@ -1385,7 +1601,46 @@ addProduct2(product);
       // Set fixed shipping cost
       cartShipp.innerHTML = getCurrency(CartDB.getShippingCost());
 
-      couponButton.addEventListener('click', verifyCoupon);
+      couponButton.addEventListener('click', checkCoupon, false);
+      cartTable.addEventListener('change', changeEvent, false);
+      cartTable.addEventListener('click', removeEvent, false);
+    }
+
+    function changeEvent(evt) {
+
+        if (evt.target !== evt.currentTarget) {
+            // When the target event is not the same as the event listener target 
+            // a.k.a the Table-cart
+              var target    = evt.target;
+              var name      = target.getAttribute('data-product-name');
+              var quantity  = target.value;
+
+              if (!Utilities.isInt(quantity) || (quantity < 0)) {
+                  // restore the default value 
+                  target.value = target.defaultValue;
+              } else if (quantity === '0') {
+                    removeProduct(name);
+                    return;
+              }
+
+              changeProductQuantity(name, quantity);
+          }
+        evt.stopPropagation();
+    }
+
+    function removeEvent(evt) {
+        if (evt.target !== evt.currentTarget) {
+          // When the target event is not the same as the event listener target 
+          // a.k.a the Table-cart
+            var clickedItem = evt.target.id;
+            // The element id we are interested in has the form remove_Product-{N}
+            var parts = clickedItem.split('_');
+            
+            if (parts[0] === 'remove') {
+                removeProduct(parts[1]); // parts[1] contains the product name
+            }
+        }
+        evt.stopPropagation();
     }
 
     /* Public API
