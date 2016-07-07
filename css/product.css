@@ -329,6 +329,11 @@ body {
   background-color: #EfEfEf;
 }
 
+#coupon--validCodes {
+    font-family: monospace;
+    font-size: 1.3em;
+    color: gray;
+}
 
 #couponInput {
     padding: 9px 10px;
