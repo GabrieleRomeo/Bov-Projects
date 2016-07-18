@@ -68,7 +68,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
             if (!valid.isBeforeToday(value)) {
                 elem.node.setCustomValidity(constr.value);
             } else if (calculateAge(value) < 16) {
-                elem.node.setCustomValidity('The minimum age is 16');
+                elem.node.setCustomValidity('The minimum age of 16 years ' +
+                                            'is required');
             } else {
                 elem.resetCustomValidity();
             }
