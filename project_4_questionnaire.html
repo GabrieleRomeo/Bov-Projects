@@ -5,17 +5,20 @@
   <title>
     Modern Developer :: HTML & CSS Project Assignment - Questionnaire
   </title>
-  <meta name="description" 
-        content="Modern Developer :: HTML & CSS Project Assignment 
+  <meta name="description"
+        content="Modern Developer :: HTML & CSS Project Assignment
         - Questionnaire">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <link rel="stylesheet" 
+
+  <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Raleway:400,300italic">
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/showcase.css">
   <link rel="stylesheet" href="css/topBar.css">
-  <link rel="stylesheet" href="css/project_4_questionnaire.css">  
+  <link rel="stylesheet" href="css/project_4_questionnaire.css">
+
+  <script src="js/validator.js"></script>
+  <script src="js/project_4_questionnaire.js"></script>
 </head>
 
   <header class="topbar" role="banner">
@@ -25,10 +28,10 @@
           <a class="nav__link" href="index.html" title="Home Page">
             &#8962; Home
           </a>
-        </li>        
+        </li>
         <li class="nav__list__item">
-          <a  class="nav__link" 
-              href="project_4_login.html" 
+          <a  class="nav__link"
+              href="project_4_login.html"
               title="Next Project">
             Next Project &#8680;
           </a>
@@ -37,7 +40,7 @@
       <p class="topbar__nav__title">4: Questionnaire</p>
     </nav>
   </header>
-    
+
   <!-- PROJECT CONTENT -->
   <section class="questionnaire" id="questionnaire">
     <header>
@@ -49,21 +52,21 @@
       <h2 class="questionnaire__header">
         Which Ferrari do you prefer?
       </h2>
-    </header>    
+    </header>
     <form class="questionnaire__form" method="" action="">
       <ul class="questionnaire__list">
         <li class="list_item">
           <input class="list__radio"
                  id="F12Berlinetta"
                  name="option"
-                 type="radio"   
+                 type="radio"
                  value="1"
                  checked>
           <label class="item__label" for="F12Berlinetta">
             <span class="label__span">F12 Berlinetta</span>
           </label>
           <p class="item__description">
-            A Maximum power of 545 kW (740 cv) at 8250 rpm | Weight/power 2 | 
+            A Maximum power of 545 kW (740 cv) at 8250 rpm | Weight/power 2 |
             8.5 sec from 0 to 200km/h
           </p>
         </li>
@@ -71,7 +74,7 @@
           <input  class="list__radio"
                   id="488GTB"
                   name="option"
-                  type="radio" 
+                  type="radio"
                   value="2">
           <label class="item__label" for="488GTB">
             <span class="label__span">488 GTB</span>
@@ -82,10 +85,10 @@
           </p>
         </li>
         <li class="list_item">
-          <input  class="list__radio" 
-                  id="458Speciale" 
-                  name="option" 
-                  type="radio"   
+          <input  class="list__radio"
+                  id="458Speciale"
+                  name="option"
+                  type="radio"
                   value="3">
           <label class="item__label" for="458Speciale">
             <span class="label__span">458 Speciale</span>
@@ -96,10 +99,10 @@
           </p>
         </li>
         <li class="list_item">
-          <input  class="list__radio" 
-                  id="laFerrari" 
-                  name="option" 
-                  type="radio" 
+          <input  class="list__radio"
+                  id="laFerrari"
+                  name="option"
+                  type="radio"
                   value="4">
           <label class="item__label" for="laFerrari">
             <span class="label__span">La Ferrari</span>
@@ -111,107 +114,25 @@
         </li>
         <li class="list_item">
           <input class="list__radio"
-                 id="other" 
-                 name="option" 
-                 type="radio" 
+                 id="other"
+                 name="option"
+                 type="radio"
                  value="5">
-          <label class="item__label item__label--other" 
+          <label class="item__label item__label--other"
                  for="other">
                  Other
           </label>
           <input  class="list__input list__input--hidden"
                   id="otherValue"
-                  name="otherValue" 
+                  name="otherValue"
                   type="text">
         </li>
       </ul>
-      <input  class="questionnaire__submit" 
-              type="submit" 
+      <input  class="questionnaire__submit"
+              type="submit"
               value="Submit Questionnaire">
     </form>
   </section>
 
-  <script src="js/validator.js"></script>
-  <script>
-      var valid       = Validators;
-      var signupForm  = document.getElementById('questionnaire');
-      var doc         = document;
-      var options     = doc.getElementsByName('option');
-
-      var inputs = {
-        otherValue: valid.getNode(doc.getElementById('otherValue'))
-      }
-
-      // Sets the change event for all the radio buttons
-      var newObject = Object.keys(options).map(function(elem) {
-          options[elem].addEventListener('change', function (event) {
-
-            var input     = inputs.otherValue;
-            var classHidd = 'list__input--hidden';
-            var re        = new RegExp(classHidd);
-            var className = input.node.className.replace(re,'');
-            
-            /* 
-             * When the radio button with ID 'other' is selected we need 
-             * to set the constraint for the otherValue textbox
-             */
-            if (this.getAttribute('id') === 'other' && this.checked) {
-                input.node.setCustomValidity(input.constr.value);
-                input.node.className = className;
-            } else {
-                if (!valid.contains(input.node.className, ['hidden'])) {
-                    input.node.className += ' ' + classHidd;
-                    inputs.otherValue.node.value = '';
-                    input.resetCustomValidity();
-                }
-            }
-
-          });
-      });
-
-      inputs.otherValue.setValidator(function(elem) {
-
-          var node   = elem.node,
-              constr = elem.constr,
-              value  = node.value;
-
-          if (valid.isEmpty(value)) {
-                node.setCustomValidity(constr.value);
-          } else if (!valid.isOfLength(value, 2)) {
-            node.setCustomValidity('The length of this field should ' + 
-                                   'not be lower than two characters');
-          }
-            else {
-                elem.resetCustomValidity();
-          }
-
-      })
-
-
-      inputs.otherValue.node.addEventListener('change', function (event) {
-
-            var node   = inputs[this.getAttribute('id')],
-                constr = node.constr;
-
-            node.setInvalidClass();
-            constr.check();
-
-      });
-
-
-      signupForm.addEventListener('submit', function (event) {
-
-      // Check the validity. If at least one input is invalid, stop
-      // the submit event
-      for (var input in inputs) {
-          if (inputs.hasOwnProperty(input)) {
-              if (!inputs[input].node.validity.valid) {
-                  event.preventDefault();
-              }
-          }
-      }
-
-      }, false);
-  </script>
 </body>
 </html>
