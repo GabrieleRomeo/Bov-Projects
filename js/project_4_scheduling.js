@@ -4,14 +4,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var valid = validator,
         $     = valid.$;
-    var form  = doc.getElementById('scheduleForm');
+    var form  = $('#scheduleForm');
 
     var inputs = {
-        evtName:  valid.getNode(doc.getElementById('evtName')),
-        date:     valid.getNode(doc.getElementById('date')),
-        timezone: valid.getNode(doc.getElementById('timezone')),
-        contact:  valid.getNode(doc.getElementById('contact')),
-        email:    valid.getNode(doc.getElementById('email'))
+        evtName:  valid.getNode($('#evtName')),
+        date:     valid.getNode($('#date')),
+        timezone: valid.getNode($('#timezone')),
+        contact:  valid.getNode($('#contact')),
+        email:    valid.getNode($('#email'))
     }
 
       /*
