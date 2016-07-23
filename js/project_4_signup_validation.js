@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         email:      valid.getNode($('#email')),
         birthD:     valid.getNode($('#birthD'), 'dateOfBirth'),
         password:   valid.getNode($('#password'), 'password')
-    }
+    };
 
     /*
      * For each input, defines a particular Validator function that must
@@ -140,9 +140,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
    *                                                      *
    *******************************************************/
 
-    function $(selector) {
-        return document.querySelector(selector);
-    }
 
     function calculateAge(date) {
 
