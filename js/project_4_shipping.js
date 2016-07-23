@@ -2,22 +2,22 @@
 
 document.addEventListener('DOMContentLoaded', function (e) {
 
-    var valid = Validators;
+    var $ = validator.$;
     var form  = $('#shippingForm');
     var same  = $('#use_B_address');
 
 
     var inputs = {
-        S_firstName: valid.getNode($('#S_firstName'), 'firstName'),
-        S_lastName:  valid.getNode($('#S_lastName'),  'lastName'),
-        S_address:   valid.getNode($('#S_address')),
-        S_city:      valid.getNode($('#S_city')),
-        S_country:   valid.getNode($('#S_country')),
-        B_firstName: valid.getNode($('#B_firstName'), 'firstName'),
-        B_lastName:  valid.getNode($('#B_lastName'), 'lastName'),
-        B_address:   valid.getNode($('#B_address')),
-        B_city:      valid.getNode($('#B_city')),
-        B_country:   valid.getNode($('#B_country'))
+        S_firstName: validator.getNode($('#S_firstName'), 'firstName'),
+        S_lastName:  validator.getNode($('#S_lastName'),  'lastName'),
+        S_address:   validator.getNode($('#S_address')),
+        S_city:      validator.getNode($('#S_city')),
+        S_country:   validator.getNode($('#S_country')),
+        B_firstName: validator.getNode($('#B_firstName'), 'firstName'),
+        B_lastName:  validator.getNode($('#B_lastName'), 'lastName'),
+        B_address:   validator.getNode($('#B_address')),
+        B_city:      validator.getNode($('#B_city')),
+        B_country:   validator.getNode($('#B_country'))
     };
 
     var firstNameValidator = (function(elem){
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         var constr = elem.constr;
         var value  = elem.node.value;
 
-        if (valid.isLength(value, 2)) {
+        if (validator.isLength(value, 2)) {
             elem.node.setCustomValidity(constr.value);
         } else {
             elem.resetCustomValidity();
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         var constr = elem.constr;
         var value  = elem.node.value;
 
-        if (valid.isLength(value, 2)) {
+        if (validator.isLength(value, 2)) {
             elem.node.setCustomValidity(constr.value);
         } else {
             elem.resetCustomValidity();
@@ -49,8 +49,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
         var value  = elem.node.value;
 
         try {
-            if (!valid.moreWordsThan(value, 2)) {
-                elem.node.setCustomValidity('A valid address is composed ' +
+            if (!validator.moreWordsThan(value, 2)) {
+                elem.node.setCustomValidity('A validators address is composed ' +
                                             'at least two words');
             } else {
                 elem.resetCustomValidity();
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         var value  = elem.node.value;
 
         try {
-            if (valid.isLength(value, 2)) {
+            if (validator.isLength(value, 2)) {
                 elem.node.setCustomValidity('The minimum length of this ' +
                                             'field should be at least of ' +
                                             ' three characters');
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         var value  = elem.node.value;
 
         try {
-            if (valid.isLength(value, 2)) {
+            if (validator.isLength(value, 2)) {
                 elem.node.setCustomValidity('The minimum length of this ' +
                                             'field should be at least of ' +
                                             ' three characters');
@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
             var billInp = elem.replace(/S/,'B');
 
-            if (_self.checked && !valid.isEmpty(inputs[elem].node.value)) {
+            if (_self.checked && !validator.isEmpty(inputs[elem].node.value)) {
                 $('#' + billInp).value = inputs[elem].node.value;
             } else {
                 $('#' + billInp).value = '';
@@ -186,15 +186,5 @@ document.addEventListener('DOMContentLoaded', function (e) {
         }
 
     }, false);
-
-  /********************************************************
-   *                                                      *
-   *                UTILITY FUNCTION                      *
-   *                                                      *
-   *******************************************************/
-
-    function $(selector) {
-        return document.querySelector(selector);
-    }
 
 });
