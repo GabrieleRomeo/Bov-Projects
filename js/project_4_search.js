@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var inputs = {
         searchTxt:  valid.getNode($('#searchTxt')),
         category:   valid.getNode($('#category'))
-    }
+    };
 
       /*
        * For each input, defines a particular Validator function that must
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             elem.resetCustomValidity();
         }
-    })
+    });
 
     inputs.category.setConstraint('Please, select at least one Category');
     inputs.category.setValidator(function(elem) {
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             elem.resetCustomValidity();
         }
-    })
+    });
 
       /* Sets an initial custom validity for every input
        * All the indicated inputs are not valid by default
@@ -53,10 +53,10 @@ document.addEventListener('DOMContentLoaded', function () {
             // Using a closure, it defines a custom event listener for every
             // single inputs object
             (function(input) {
-                input.node.addEventListener('change', function (event) {
+                input.node.addEventListener('change', function () {
                     input.setInvalidClass();
                     input.constr.check();
-                })
+                });
             })(inputs[input]);
         }
     }
