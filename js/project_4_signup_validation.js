@@ -2,7 +2,9 @@
 
 document.addEventListener('DOMContentLoaded', function (e) {
 
-    var valid       = Validators;
+    var valid = validator,
+        $     = valid.$;
+
     var signupForm  = $('#signup');
 
     var inputs = {
