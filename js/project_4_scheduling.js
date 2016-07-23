@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
         timezone: valid.getNode($('#timezone')),
         contact:  valid.getNode($('#contact')),
         email:    valid.getNode($('#email'))
-    }
+    };
 
       /*
        * For each input, defines a particular Validator function that must
@@ -113,11 +113,11 @@ document.addEventListener('DOMContentLoaded', function () {
           // Using a closure, it defines a custom event listener for every
           // single inputs object
             (function(input) {
-                input.node.addEventListener('change', function (event) {
+                input.node.addEventListener('change', function () {
                     var constr  = input.constr;
                     input.setInvalidClass();
                     constr.check();
-                })
+                });
             })(inputs[input]);
         }
     }
