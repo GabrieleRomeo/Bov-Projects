@@ -245,9 +245,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var addProduct = function(htmlElement) {
 
-            var name  = htmlElement.getAttribute("data-product-name"),
-                type  = htmlElement.getAttribute("data-product-type"),
-                price = htmlElement.getAttribute("data-product-price");
+            var name  = htmlElement.getAttribute('data-product-name'),
+                type  = htmlElement.getAttribute('data-product-type'),
+                price = htmlElement.getAttribute('data-product-price');
 
             var table = CartDB.items;
             var newP  = new Product(name, type, price);
@@ -483,16 +483,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
             var amnt      = amount.toString();
             var len       = amnt.length;
-            var decimal   = "";
+            var decimal   = '';
 
             var remainder,
                 partial;
 
-            separator = separator || ",";
+            separator = separator || ',';
 
-            if (amnt.indexOf(".") !== -1) {
-                decimal = amnt.substr(amnt.indexOf("."), 3);
-                amnt    = amnt.substr(0, amnt.indexOf("."));
+            if (amnt.indexOf('.') !== -1) {
+                decimal = amnt.substr(amnt.indexOf('.'), 3);
+                amnt    = amnt.substr(0, amnt.indexOf('.'));
                 len    -= 3; // remove decimal part from total length
             }
 
