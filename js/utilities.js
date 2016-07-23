@@ -1,6 +1,5 @@
 
-
-var Utilities = (function(window){
+var utilities = (function(window){
 
     var u = {};
 
@@ -8,13 +7,12 @@ var Utilities = (function(window){
      * Checks if the provided parameter is an Array
      *
      * @param {Array} arr An Array
-     * 
+     *
      * @returns {Boolean} True | False
-     *                  
-     */ 
+     *
+     */
 
     u.isArray = Array.isArray || function(arr) {
-
         return Object.prototype.toString.call(arr) === '[object Array]';
     };
 
@@ -22,41 +20,38 @@ var Utilities = (function(window){
      * Checks if the provided parameter is a Function
      *
      * @param {Fun} fn A Function
-     * 
+     *
      * @returns {Boolean} True | False
-     *                  
-     */ 
+     *
+     */
 
     u.isFunc = function(fn) {
-
-        return (typeof fn === "function");
-    };    
+        return (typeof fn === 'function');
+    };
 
     /**
      * Checks if the provided parameter is a String
      *
      * @param {str} str A String
-     * 
+     *
      * @returns {Boolean} True | False
-     *                  
-     */ 
+     *
+     */
 
     u.isString = function(str) {
-
-        return (typeof str === "string");
+        return (typeof str === 'string');
     };
 
     /**
      * Checks if the provided parameter is a Number
      *
      * @param {Number} num A Number
-     * 
+     *
      * @returns {Boolean} True | False
-     *                  
-     */ 
+     *
+     */
 
     u.isNumber = function(num) {
-
         return !isNaN(parseFloat(num)) && isFinite(num);
     };
 
@@ -64,28 +59,27 @@ var Utilities = (function(window){
      * Checks if the provided parameter is an Integer
      *
      * @param {Number} num A Number
-     * 
+     *
      * @returns {Boolean} True | False
-     *                  
-     */ 
+     *
+     */
 
     u.isInt = function(num) {
-
         return u.isNumber(num) && (parseFloat(num) === parseInt(num, 10));
     };
 
     /**
      * Iterates and calls the callback parameter for each element or property
      * of a list at the interval specified by the n parameter.
-     * It does not call callback on values greater than the list’s number 
-     * 
+     * It does not call callback on values greater than the list’s number
+     *
      * @param {Array} list The list of values
      * @param {int} n An interval used as step of the iteration
      * @param {Func} n A callback function applied on the elements within the
      *                 step
-     * 
-     * @returns {void} 
-     */ 
+     *
+     * @returns {void}
+     */
 
     u.by = function(list, n, callback) {
 
@@ -101,21 +95,21 @@ var Utilities = (function(window){
                 callback(list[i], i, list);
             }
         }
-    }
+    };
 
     /**
      * Creates an array of all the keys of an object
-     * 
+     *
      * @param {Object} object The object used as a template
-     * 
+     *
      * @returns {Array} An Array containing all the keys of the provided object
-     */ 
+     */
 
-    u.keys = perhaps(function(object) {
+    u.keys = _maybe(function(object) {
 
         var result = [];
 
-        if ("hasOwnProperty" in object) {
+        if ('hasOwnProperty' in object) {
             for (var prop in object) {
                 if (object.hasOwnProperty(prop)) {
                     result.push(prop);
@@ -128,18 +122,18 @@ var Utilities = (function(window){
 
     /**
      * Creates an array of all the value of an object
-     * 
+     *
      * @param {Object} object The object used as a template
-     * 
-     * @returns {Array} An Array containing all the values of the provided 
+     *
+     * @returns {Array} An Array containing all the values of the provided
      *                  object
-     */ 
+     */
 
-    u.values = perhaps(function(object) {
+    u.values = _maybe(function(object) {
 
         var result = [];
 
-        if ("hasOwnProperty" in object) {
+        if ('hasOwnProperty' in object) {
             for (var prop in object) {
                 if (object.hasOwnProperty(prop)) {
                     result.push(object[prop]);
@@ -152,20 +146,20 @@ var Utilities = (function(window){
 
     /**
      * Creates an array of all keys and values of an object in the order of
-     * [key, value, key, value] for as many key/value pairs as exist in the 
+     * [key, value, key, value] for as many key/value pairs as exist in the
      * object.
      *
      * @param {Object} object The object used as a template
-     * 
-     * @returns {Array} An Array containing all all keys and values pairs of 
+     *
+     * @returns {Array} An Array containing all all keys and values pairs of
      *                  the provided object
-     */ 
+     */
 
-    u.pairs = perhaps(function(object) {
+    u.pairs = _maybe(function(object) {
 
         var result = [];
 
-        if ("hasOwnProperty" in object) {
+        if ('hasOwnProperty' in object) {
             for (var prop in object) {
                 if (object.hasOwnProperty(prop)) {
                     result.push(prop);
@@ -178,25 +172,25 @@ var Utilities = (function(window){
     });
 
     /**
-     * Returns a randomly re-arranged copy of the elements in its parameter 
+     * Returns a randomly re-arranged copy of the elements in its parameter
      * array.
      *
      * @param {Array} object The Array used as a template
-     * 
+     *
      * @returns {Array} A randomly re-arranged copy of the original Array
-     *                  
-     */ 
+     *
+     */
 
-    u.shuffle = perhaps(function(array) {
+    u.shuffle = _maybe(function(array) {
 
-        if (!u.isArray(array)) return; 
+        if (!u.isArray(array)) return;
 
         var result  = [];
         var len     = array.length;
         var rnd;
 
         while (len) {
-            rnd = getRandom(array.length);
+            rnd = _getRandom(array.length);
             if (rnd in array) {
                 result.push(array[rnd]);
                 delete array[rnd];
@@ -208,21 +202,21 @@ var Utilities = (function(window){
     });
 
     /**
-     * Returns the plural of a word depending on the value of the n parameter.   
+     * Returns the plural of a word depending on the value of the n parameter.
      * If n is 1, return the non-plural word (parameter word);
      * otherwise, add an “s” to the plural word.
-     * If the pluralWord parameter is provided, instead of adding an “s,” 
+     * If the pluralWord parameter is provided, instead of adding an “s,”
      * return the pluralWord.
      *
-     * @param {int} n The number of "s"     
+     * @param {int} n The number of "s"
      * @param {String} word A non-plural word
      * @param {String} pluralWord An optional plural word
-     * 
+     *
      * @returns {String} A pluralized string
-     *                  
-     */ 
+     *
+     */
 
-    u.pluralize = perhaps(function(n, word, pluralWord) {
+    u.pluralize = _maybe(function(n, word, pluralWord) {
 
         if (pluralWord) return pluralWord;
 
@@ -233,68 +227,66 @@ var Utilities = (function(window){
 
 
     /**
-     * Converts a camelCase string to a dashed string.  
+     * Converts a camelCase string to a dashed string.
      * Camel case presents words with no spaces separating them and with
      * each word’s first letter capitalized except the first word,
-     * which is lower case. 
+     * which is lower case.
      *
-     * @param {string} str A camelCase string 
-     * 
+     * @param {string} str A camelCase string
+     *
      * @returns {String} A dashed string
-     *                  
-     */ 
+     *
+     */
 
-    u.toDash = perhaps(function(str) {
+    u.toDash = _maybe(function(str) {
 
-        if (!u.isString(str)) return; 
+        if (!u.isString(str)) return;
 
         var chars = str.split('');
 
         return chars.map(function(item) {
-
-                    if (item === item.toUpperCase()) {
-                        return '-' + item.toLowerCase();
-                    }
-
-                    return item; 
-                }).join('');
+            if (item === item.toUpperCase()) {
+                return '-' + item.toLowerCase();
+            }
+            return item;
+        }).join('');
     });
 
     /**
-     * Converts a dashed string to a camel case string.  
+     * Converts a dashed string to a camel case string.
      *
-     * @param {string} str A dashed string 
-     * 
+     * @param {string} str A dashed string
+     *
      * @returns {String} A camelCase string
-     *                  
-     */ 
+     *
+     */
 
-    u.toCamel = perhaps(function(str) {
+    u.toCamel = _maybe(function(str) {
 
-        if (!u.isString(str)) return; 
+        if (!u.isString(str)) return;
 
         var chars = str.split('-');
 
         return chars.map(function(item) {
-                    return item.charAt(0).toUpperCase() + item.substr(1);
-                }).join('');
+            return item.charAt(0).toUpperCase() + item.substr(1);
+        }).join('');
     });
 
     /**
-     * Searches all values of the parameter obj and returns “true” if any are  
-     * equal to the search parameter. 
+     * Searches all values of the parameter obj and returns “true” if any are
+     * equal to the search parameter.
      * Otherwise it returns “false.”
      *
-     * @param {Object} obj An object 
+     * @param {Object} obj An object
      * @param {string} search The string you are looking for
-     * 
+     *
      * @returns {Boolean} True | False
-     *                  
-     */ 
+     *
+     */
 
-    u.has = perhaps(function(obj, search) {
+    u.has = _maybe(function(obj, search) {
 
-        if ("hasOwnProperty" in obj) {
+        if ('hasOwnProperty' in obj) {
             for (var prop in obj) {
                 if (obj.hasOwnProperty(prop)) {
                     if (obj[prop] === search) return true;
@@ -304,26 +296,26 @@ var Utilities = (function(window){
 
         return false;
     });
- 
+
     /**
-     * Returns a new object by picking all key/value pairs from the parameter 
+     * Returns a new object by picking all key/value pairs from the parameter
      * obj.
      * The keys that are picked will be determined by the array parameter keys.
      *
-     * @param {Object} obj An object 
+     * @param {Object} obj An object
      * @param {Array} keys A list of keys
-     * 
+     *
      * @returns {Object} An object composed of the provided keys
-     *                  
-     */ 
+     *
+     */
 
-    u.pick = perhaps(function(obj, keys) {
+    u.pick = _maybe(function(obj, keys) {
 
-        if (!u.isArray(keys)) return; 
+        if (!u.isArray(keys)) return;
 
         var result = {};
 
-        if ("hasOwnProperty" in obj) {
+        if ('hasOwnProperty' in obj) {
             for (var prop in obj) {
                 if (obj.hasOwnProperty(prop)) {
                     if (keys.indexOf(prop) !== -1) {
@@ -337,16 +329,16 @@ var Utilities = (function(window){
     });
 
     /**
-     * Replaces all occurencies of a particular search string with another 
+     * Replaces all occurencies of a particular search string with another
      * string
      *
      * @param {String} text A string used as a base for the search
      * @param {String} search A string you are looking for the replace
      * @param {String} replace A string used as replacing
-     * 
+     *
      * @returns {String} A new string with all occurrencies replaced
-     *                  
-     */ 
+     *
+     */
 
     u.replaceAll = function(text, search, replace) {
         return text.split(search).join(replace);
@@ -355,42 +347,43 @@ var Utilities = (function(window){
     // ****** PRIVATE UTILITY FUNCTIONS ***********
 
     /**
-     * It calls the fn function if and only if the provided parameters 
+     * It calls the fn function if and only if the provided parameters
      * are neither null nor undefined
-     * 
+     *
      * @param {Object} fn The function that could be applied
-     * 
+     *
      * @returns {value | void} The evalutation of fn or nothing
-     */ 
+     */
 
-    function perhaps(fn) {
+    function _maybe(fn) {
         return function() {
 
-            var i;
-            var len = arguments.length;
+            var i,
+                len = arguments.length;
 
-            if (arguments.length === 0) {
-                return;
+            if (len === 0) {
+                return void 0;
             } else {
 
                 for (i = 0; i < len; i++) {
-                    if (!arguments[i]) return;
+                    if (!arguments[i]) return void 0;
                 }
-
+                // If all the parameters were provided to the original function,
+                // applies it
                 return fn.apply(this, arguments);
             }
-        }
+        };
     }
 
     /**
      * Returns a random integer under an upper limit
-     * 
+     *
      * @param {int} max The upper limit
-     * 
+     *
      * @returns {int} A random integer
-     */ 
+     */
 
-    function getRandom(max) {
+    function _getRandom(max) {
         return parseInt(Math.random() * max, 10);
     }
 
