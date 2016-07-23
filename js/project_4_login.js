@@ -10,14 +10,15 @@ document.addEventListener('DOMContentLoaded', function () {
     var inputs = {
         username:  valid.getNode($('#username')),
         password:  valid.getNode($('#password'))
-    }
+    };
 
       /*
        * For each input, defines a particular Validator function that must
        * be satisfied to proceed further.
        */
 
-    inputs.username.setConstraint('Please, provide a valid username \n' +
+    inputs.username.setConstraint(
+        'Please, provide a valid username \n' +
         'The username must be a nonempty string and should be at least 3 ' +
         'characters in length.');
 
@@ -30,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             elem.resetCustomValidity();
         }
-    })
+    });
 
     inputs.password.setValidator(function(elem) {
 
@@ -42,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
             elem.resetCustomValidity();
         }
 
-    })
+    });
 
       /* Sets an initial custom validity for every input
        * All the indicated inputs are not valid by default
@@ -58,12 +59,12 @@ document.addEventListener('DOMContentLoaded', function () {
               // Using a closure, it defines a custom event listener for every
               // single inputs object
             (function(input) {
-                input.node.addEventListener('change', function (event) {
+                input.node.addEventListener('change', function () {
 
                     var constr  = input.constr;
                     input.setInvalidClass();
                     constr.check();
-                })
+                });
             })(inputs[input]);
         }
     }
