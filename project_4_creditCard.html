@@ -3,17 +3,20 @@
   <title>
     Modern Developer :: HTML & CSS Project Assignment - Credit Card
   </title>
-  <meta name="description" 
-        content="Modern Developer :: HTML & CSS Project Assignment 
+  <meta name="description"
+        content="Modern Developer :: HTML & CSS Project Assignment
                  - Credit Card">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <link rel="stylesheet" 
+
+  <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Raleway:400,300italic">
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/showcase.css">
   <link rel="stylesheet" href="css/topBar.css">
-  <link rel="stylesheet" href="css/project_4_creditCard.css">  
+  <link rel="stylesheet" href="css/project_4_creditCard.css">
+
+  <script src="js/validator.js"></script>
+  <script src="js/project_4_creditCard.js"></script>
 </head>
 <body>
 
@@ -24,10 +27,10 @@
           <a class="nav__link" href="index.html" title="Home Page">
             &#8962; Home
           </a>
-        </li>        
+        </li>
         <li class="nav__list__item">
-          <a  class="nav__link" 
-              href="project_4.html" 
+          <a  class="nav__link"
+              href="project_4.html"
               title="Next Project">
             Next Project &#8680;
           </a>
@@ -36,9 +39,9 @@
       <p class="topbar__nav__title">4: Credit / Debit Card</p>
     </nav>
   </header>
-    
+
     <!-- PROJECT CONTENT -->
-    
+
   <div id="super-wrapper">
     <div id="card-wrapper">
         <p>secure payment</p>
@@ -53,22 +56,22 @@
             <p>Please select a credit card type</p>
             <ul id="list-card">
                 <li>
-                  <span class="list-card__card mastercard active" 
+                  <span class="list-card__card mastercard active"
                         id="mastercard">
                   </span>
                 </li>
                 <li>
-                  <span class="list-card__card visa" 
+                  <span class="list-card__card visa"
                         id="visa">
                   </span>
                 </li>
                 <li>
-                  <span class="list-card__card maestro" 
+                  <span class="list-card__card maestro"
                         id="maestro">
                   </span>
                 </li>
                 <li>
-                  <span class="list-card__card cirrus" 
+                  <span class="list-card__card cirrus"
                         id="cirrus">
                   </span>
                 </li>
@@ -80,9 +83,9 @@
             <ul class="form-list">
               <li>
                 <label for="cardNumber">Card Number</label>
-                <input id="cardNumber" 
-                       type="text" 
-                       name="cardNumber"  
+                <input id="cardNumber"
+                       type="text"
+                       name="cardNumber"
                        maxlength="19"
                        required>
               </li>
@@ -120,7 +123,7 @@
                     <option value="12">2028</option>
                     <option value="13">2029</option>
                     <option value="14">2030</option>
-                </select>                               
+                </select>
               </li>
               <li>
                 <label for="fullName">Full Name</label>
@@ -136,205 +139,19 @@
                   <label for="csvNumber">CVC / CCV</label>
                   <input id="csvNumber"
                          name="csvNumber"
-                         type="text" 
+                         type="text"
                          maxlength="3"
-                         required>   
+                         required>
                   <span>The last 3 digits on back of the card</span>
                 </li>
               </ul>
             </div>
           </div>
           <input type="submit" class="submitButton" value="Submit Payment">
-        </form> 
+        </form>
         </section>
     </div>
   </div>
 
-  <script src="js/validator.js"></script>
-  <script>
-    var valid         = Validators;
-    var doc           = document;
-    var cardList      = doc.getElementById('list-card').children;
-    var selectedCard  = doc.getElementById('selectedCard');
-    var form          = doc.getElementById('cardForm');
-
-    var inputs = {
-        cardNumber: valid.getNode(doc.getElementById('cardNumber')),
-        expM:       valid.getNode(doc.getElementById('expirationMonth'),
-                                                     'expirationMonth'),
-        expY:       valid.getNode(doc.getElementById('expirationYear'),
-                                                     'expirationYear'),
-        fullName:   valid.getNode(doc.getElementById('fullName')),
-        csv:        valid.getNode(doc.getElementById('csvNumber'),
-                                                     'csvNumber')
-    }
-
-    /*
-     * For each card type, defines an Event Listener which will be triggered
-     * at every click.
-     */
-
-    for (var c in cardList) {
-        if (cardList.hasOwnProperty(c)) {
-          (function(node){
-              node.addEventListener('click', function(event) {
-                  resetClass('active');
-                  toggleClass(this, 'active');
-           });
-          })(cardList[c].firstElementChild);
-        }
-    }
-
-    /*
-     * For each input, defines a particular Validator function that must 
-     * be satisfied to proceed further. 
-     */
-
-    inputs.cardNumber.setConstraint('The Card Number must be a non-empty ' +
-                                 'string of sixteen alphanumeric characters');
-    inputs.cardNumber.setValidator(function(elem){
-
-        var constr = elem.constr;
-        var value  = elem.node.value;
-
-        try { 
-            if (!valid.isCreditCard(value)) {
-              elem.node.setCustomValidity(constr.value);
-            } else {
-              elem.resetCustomValidity();
-            }
-        } catch (err) {
-              elem.node.setCustomValidity(constr.value);
-        }
-
-    });
-
-    inputs.expM.setConstraint('Please select the Expiration Month');
-    inputs.expM.setValidator(function(elem) {
-
-        var constr = elem.constr;
-        var node   = elem.node;
-        
-        if (valid.isEmpty(node.options[node.selectedIndex].value)) {
-            node.setCustomValidity(constr.value);
-        } else {
-            elem.resetCustomValidity();
-        }
-
-    });
-
-    inputs.expY.setConstraint('Please select the Expiration Year');
-    inputs.expY.setValidator(function(elem) {
-
-        var node = elem.node;
-        
-        if (valid.isEmpty(node.options[node.selectedIndex].value)) {
-              node.setCustomValidity(constr.value);
-        } else {
-              elem.resetCustomValidity();
-        }
-
-    });
-
-    inputs.fullName.setConstraint('The Full Name must be a non-empty ' +
-                                 'string of at least two words');
-    inputs.fullName.setValidator(function(elem){
-
-        var constr = elem.constr;
-        var value  = elem.node.value;
-
-        try { 
-            if (valid.lessWordsThan(value, 1)) {
-                elem.node.setCustomValidity(constr.value);
-            } else {
-                elem.resetCustomValidity();
-            }
-        } catch (err) {
-                elem.node.setCustomValidity(constr.value);
-        }
-
-    });
-
-    inputs.csv.setConstraint('Please provide a valid CVC/CCV number \n' +
-                             'The last 3 digits on back of the card');
-    inputs.csv.setValidator(function(elem){
-
-        var constr = elem.constr;
-        var value  = elem.node.value;
-
-        try { 
-            if (valid.isLength(value, 2) || isNaN(value)) {
-                elem.node.setCustomValidity(constr.value);
-            } else {
-                elem.resetCustomValidity();
-            }
-        } catch (err) {
-              elem.node.setCustomValidity(constr.value);
-        }
-
-    });
-
-    /* Sets an initial custom validity for every input 
-     * All the indicated inputs are not valid by default
-     */
-
-    for (var input in inputs) {
-      if (inputs.hasOwnProperty(input)) {
-        if (inputs[input].constr.isRequired) {
-          inputs[input].node.setCustomValidity(
-                                            inputs[input].constr.constrValue);
-        }
-        
-        // Using a closure, it defines a custom event listener for every
-        // single inputs object
-        (function(input) {
-          input.node.addEventListener('change', function (event) {
-            
-              var constr  = input.constr;
-              input.setInvalidClass();
-              constr.check();
-          })
-        })(inputs[input]);
-      }
-    }
-
-    form.addEventListener('submit', function (event) {
-
-    // Check the inputs validity. If at least one input is invalid, stop
-    // the event propagation
-    for (var input in inputs) {
-        if (inputs.hasOwnProperty(input)) {
-            if (!inputs[input].node.validity.valid) {
-                event.preventDefault();
-            }
-        }
-    }
-
-    }, false);
-
-    // Utility functions
-
-    function toggleClass(node, className) {
-
-      if (valid.contains(node.className, [className])) {
-          node.className = node.className.split(className).join('').trim();
-          return;
-      }
-
-      node.className = node.className + ' ' + className;
-      selectedCard.value = node.getAttribute('id');
-    }
-
-    function resetClass(className) {
-
-        var node = doc.getElementById(selectedCard.value);
-
-        if (node) {
-            toggleClass(node, className);
-            return;
-        } 
-    }
-
-  </script>
 </body>
 </html>
