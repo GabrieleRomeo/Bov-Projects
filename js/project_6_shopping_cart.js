@@ -355,7 +355,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 shipping    = db.getShippingCost(),
                 couponOff   = db.getCouponOff(),
                 couponValue = 0,
-                totalSaving = 0,
                 total       = 0;
 
             // The Cart is empty
@@ -375,7 +374,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // It re-calculates all the amounts for a correct representation
             couponValue = subTotal - calcPercentage(subTotal, couponOff);
-            totalSaving = (saving > couponValue) ? saving : couponValue;
             subTotal    = (saving > couponValue) ? subTotal - saving : subTotal;
             total       = subTotal + shipping - couponValue;
 
@@ -560,7 +558,7 @@ document.addEventListener('DOMContentLoaded', function () {
              * event listener to all the 'ADD TO Cart' button is admissible
              */
             while(len--) {
-                addButtons[len].addEventListener('click', function(event) {
+                addButtons[len].addEventListener('click', function() {
                     addProduct(this.firstChild.nextSibling);
                 });
             }
