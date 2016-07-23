@@ -16,8 +16,8 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       /*
-       * For each input, defines a particular Validator function that must 
-       * be satisfied to proceed further. 
+       * For each input, defines a particular Validator function that must
+       * be satisfied to proceed further.
        */
 
       inputs.evtName.setConstraint('The Event Name must be a non-empty ' +
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
           var constr = elem.constr;
           var value  = elem.node.value;
 
-          try { 
+          try {
               if (valid.isLength(value, 3)) {
                     elem.node.setCustomValidity(constr.value);
               } else {
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
           var constr = elem.constr;
           var node   = elem.node;
-          
+
           if (valid.isEmpty(node.options[node.selectedIndex].value)) {
                 node.setCustomValidity(constr.value);
           } else {
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
           }
 
       });
-      
+
       inputs.contact.setConstraint('Please provide a valid Italian phone number');
       inputs.contact.setValidator(function(elem){
 
@@ -93,11 +93,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
       inputs.email.setConstraint('Please provide a valid email');
       inputs.email.setValidator(function(elem){
-        
+
           var constr = elem.constr;
           var value  = elem.node.value;
 
-          try {            
+          try {
               if (!valid.isEmailAddress(value)) {
                   elem.node.setCustomValidity(constr.value);
               } else {
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       });
 
-      /* Sets an initial custom validity for every input 
+      /* Sets an initial custom validity for every input
        * All the indicated inputs are not valid by default
        */
 
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function () {
             inputs[input].node.setCustomValidity(
                                               inputs[input].constr.constrValue);
           }
-          
+
           // Using a closure, it defines a custom event listener for every
           // single inputs object
           (function(input) {
