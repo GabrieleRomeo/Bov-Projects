@@ -5,16 +5,19 @@
   <title>
     Modern Developer :: HTML & CSS Project Assignment - Scheduling
   </title>
-  <meta name="description" 
+  <meta name="description"
         content="Modern Developer :: HTML & CSS Project Assignment - Scheduling">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <link rel="stylesheet" 
+
+  <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Raleway:400,300italic">
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/showcase.css">
   <link rel="stylesheet" href="css/topBar.css">
-  <link rel="stylesheet" href="css/project_4_scheduling.css">  
+  <link rel="stylesheet" href="css/project_4_scheduling.css">
+
+  <script src="js/validator.js"></script>
+  <script src="js/project_4_scheduling.js"></script>
 </head>
 <body>
 
@@ -25,10 +28,10 @@
           <a class="nav__link" href="index.html" title="Home Page">
             &#8962; Home
           </a>
-        </li>        
+        </li>
         <li class="nav__list__item">
-          <a  class="nav__link" 
-              href="project_4_creditCard.html" 
+          <a  class="nav__link"
+              href="project_4_creditCard.html"
               title="Next Project">
             Next Project &#8680;
           </a>
@@ -37,7 +40,7 @@
       <p class="topbar__nav__title">4: Scheduling</p>
     </nav>
   </header>
-    
+
     <!-- PROJECT CONTENT -->
 
   <div class="scheduling">
@@ -65,18 +68,18 @@
     <header class="schedule__module__header">
       <picture>
         <img class="header_picture"
-             src="images/calendar.png" 
-             width="64" 
-             height="64" 
+             src="images/calendar.png"
+             width="64"
+             height="64"
              alt="Event Schedule">
       </picture>
       <h2 class="header__heading">Event details</h2>
     </header>
-      <form class="schedule__form" id="scheduleForm" name="scheduleForm" 
+      <form class="schedule__form" id="scheduleForm" name="scheduleForm"
             action="" method="">
         <p id="evtNameBox">
           <label class="schedule__label
-                        schedule__label--required" 
+                        schedule__label--required"
                  for="evtName">Event Name
           </label>
           <input class="schedule__input
@@ -86,11 +89,11 @@
                  type="text"
                  required>
         </p>
-        <label class="schedule__label 
-                      schedule__label--required" 
+        <label class="schedule__label
+                      schedule__label--required"
                for="date">Date & Time
         </label>
-        <input class="schedule__input" 
+        <input class="schedule__input"
                id="date"
                name="date"
                type="text" required>
@@ -104,8 +107,8 @@
           <option value="2">Time Zone 2</option>
         </select>
         <label class="schedule__label" for="message">Message</label>
-        <textarea class="schedule__textarea" 
-                  id="message" 
+        <textarea class="schedule__textarea"
+                  id="message"
                   name="message">
         </textarea>
         <label class="schedule__label" for="contact">Contact Number</label>
@@ -115,154 +118,7 @@
         <input class="schedule__submit" type="submit" value="next">
       </form>
     </section>
-</div>
-
-  <script src="js/validator.js"></script>
-  <script>
-      var valid = Validators;
-      var doc   = document;
-      var form  = doc.getElementById('scheduleForm');
-
-      var inputs = {
-          evtName:  valid.getNode(doc.getElementById('evtName')),
-          date:     valid.getNode(doc.getElementById('date')),
-          timezone: valid.getNode(doc.getElementById('timezone')),
-          contact:  valid.getNode(doc.getElementById('contact')),
-          email:    valid.getNode(doc.getElementById('email'))
-      }
-
-      /*
-       * For each input, defines a particular Validator function that must 
-       * be satisfied to proceed further. 
-       */
-
-      inputs.evtName.setConstraint('The Event Name must be a non-empty ' +
-                                   'string of at least four characters');
-      inputs.evtName.setValidator(function(elem){
-
-          var constr = elem.constr;
-          var value  = elem.node.value;
-
-          try { 
-              if (valid.isLength(value, 3)) {
-                    elem.node.setCustomValidity(constr.value);
-              } else {
-                    elem.resetCustomValidity();
-              }
-          } catch (err) {
-                  elem.node.setCustomValidity(constr.value);
-          }
-
-      });
-
-      inputs.date.setValidator(function(elem){
-
-          var constr = elem.constr;
-          var value  = elem.node.value;
-
-          try {
-              if (!valid.isDate(value)) {
-                  elem.node.setCustomValidity('Please provide a valid date');
-              } else if (valid.isBeforeToday(value)) {
-                  elem.node.setCustomValidity('The specified date is before ' +
-                                              'today');
-              } else {
-                  elem.resetCustomValidity();
-              }
-          } catch (err) {
-              elem.node.setCustomValidity(constr.value);
-          }
-
-      });
-
-      inputs.timezone.setConstraint('Please, select at least one Time-zone');
-      inputs.timezone.setValidator(function(elem) {
-
-          var constr = elem.constr;
-          var node   = elem.node;
-          
-          if (valid.isEmpty(node.options[node.selectedIndex].value)) {
-                node.setCustomValidity(constr.value);
-          } else {
-                elem.resetCustomValidity();
-          }
-
-      });
-      
-      inputs.contact.setConstraint('Please provide a valid Italian phone number');
-      inputs.contact.setValidator(function(elem){
-
-          var constr = elem.constr;
-          var value  = elem.node.value;
-
-          try {
-              if (!valid.isPhoneNumber(value)) {
-                  elem.node.setCustomValidity(constr.value);
-              } else {
-                  elem.resetCustomValidity();
-              }
-          } catch (err) {
-              elem.node.setCustomValidity(err);
-          }
-
-      });
-
-      inputs.email.setConstraint('Please provide a valid email');
-      inputs.email.setValidator(function(elem){
-        
-          var constr = elem.constr;
-          var value  = elem.node.value;
-
-          try {            
-              if (!valid.isEmailAddress(value)) {
-                  elem.node.setCustomValidity(constr.value);
-              } else {
-                  elem.resetCustomValidity();
-              }
-          } catch (err) {
-              elem.node.setCustomValidity(err);
-          }
-
-      });
-
-      /* Sets an initial custom validity for every input 
-       * All the indicated inputs are not valid by default
-       */
-
-      for (var input in inputs) {
-        if (inputs.hasOwnProperty(input)) {
-          if (inputs[input].constr.isRequired) {
-            inputs[input].node.setCustomValidity(
-                                              inputs[input].constr.constrValue);
-          }
-          
-          // Using a closure, it defines a custom event listener for every
-          // single inputs object
-          (function(input) {
-            input.node.addEventListener('change', function (event) {
-                var constr  = input.constr;
-                input.setInvalidClass();
-                constr.check();
-            })
-          })(inputs[input]);
-        }
-      }
-
-
-      form.addEventListener('submit', function (event) {
-
-      // Check the inputs validity. If at least one input is invalid, stop
-      // the event propagation
-      for (var input in inputs) {
-          if (inputs.hasOwnProperty(input)) {
-              if (!inputs[input].node.validity.valid) {
-                  event.preventDefault();
-              }
-          }
-      }
-
-      }, false);
-  </script>
+  </div>
 
 </body>
 </html>
