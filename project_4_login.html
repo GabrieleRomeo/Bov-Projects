@@ -5,17 +5,20 @@
   <title>
     Modern Developer :: HTML & CSS Project Assignment - Login Form
   </title>
-  <meta name="description" 
+  <meta name="description"
         content="Modern Developer :: HTML & CSS Project Assignment - Login Form">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <link rel="stylesheet" 
+
+  <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Raleway:400,300italic">
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/showcase.css">
   <link rel="stylesheet" href="css/topBar.css">
   <link rel="stylesheet" href="css/switch-flat.css">
-  <link rel="stylesheet" href="css/project_4_login.css">  
+  <link rel="stylesheet" href="css/project_4_login.css">
+
+  <script src="js/validator.js"></script>
+  <script src="js/project_4_login.js"></script>
 </head>
 <body>
 
@@ -26,10 +29,10 @@
           <a class="nav__link" href="index.html" title="Home Page">
             &#8962; Home
           </a>
-        </li>        
+        </li>
         <li class="nav__list__item">
-          <a  class="nav__link" 
-              href="project_4_colorBuilder.html" 
+          <a  class="nav__link"
+              href="project_4_colorBuilder.html"
               title="Next Project">
             Next Project &#8680;
           </a>
@@ -38,17 +41,17 @@
       <p class="topbar__nav__title">4: Login Form</p>
     </nav>
   </header>
-    
+
     <!-- PROJECT CONTENT -->
 
   <article class="login">
     <section class="login__section section--member">
       <header>
-        <div class="section__header">          
+        <div class="section__header">
           <p class="section__header__paragraph">
             <picture>
-              <img class="section__header__img" 
-                   src="images/lock.png" 
+              <img class="section__header__img"
+                   src="images/lock.png"
                    alt="Login">
             </picture>
             Members Login
@@ -56,44 +59,44 @@
         </div>
       </header>
       <form class="login__form" id="loginForm" name="loginForm">
-        <input class="login__input 
-                      login__input--username" 
-               id="username" 
+        <input class="login__input
+                      login__input--username"
+               id="username"
                type="text"
                placeholder="Insert your username"
                required>
         <input class="login__input
-                      login__input--password" 
-               id="password" 
-               type="password" 
+                      login__input--password"
+               id="password"
+               type="password"
                placeholder="Insert your password"
                required>
         <label class="login__label" for="remember" id="rem">
           Remember me
         </label>
         <label class="switch switch-flat">
-          <input class="switch-input login__form__checkbox" 
-                 id="remember" 
+          <input class="switch-input login__form__checkbox"
+                 id="remember"
                  type="checkbox">
-          <span class="switch-label" data-on="On" data-off="Off"></span> 
-          <span class="switch-handle"></span> 
+          <span class="switch-label" data-on="On" data-off="Off"></span>
+          <span class="switch-handle"></span>
         </label>
-        <input class="login__input 
-                      login__input--submit" 
-               type="submit" 
+        <input class="login__input
+                      login__input--submit"
+               type="submit"
                value="login">
         <span>
           <a href="#" class="login__form__forgot">Forgot your password?</a>
         </span>
-      </form>      
+      </form>
     </section>
     <section class="login__section login__section--alternative">
       <span class="login__alternative">OR</span>
       <ul class="login-alternative__list">
         <li class="login-alternative__item login-alternative--newAcc">
         <picture>
-          <img class="login-alternative__img" 
-               src="images/new_user.png" 
+          <img class="login-alternative__img"
+               src="images/new_user.png"
                alt="Create a new account">
         </picture>
         <span class="login-alternative__item__text">
@@ -102,18 +105,18 @@
         </li>
       <li class="login-alternative__item login-alternative--fb">
         <picture>
-          <img class="login-alternative__img" 
-               src="images/facebook.png" 
+          <img class="login-alternative__img"
+               src="images/facebook.png"
                alt="Connect with Facebook">
-        </picture>        
+        </picture>
         <span class="login-alternative__item__text">
           Connect with Facebook
         </span>
       </li>
       <li class="login-alternative__item login-alternative--tw">
         <picture>
-          <img class="login-alternative__img" 
-               src="images/twitter.png" 
+          <img class="login-alternative__img"
+               src="images/twitter.png"
                alt="Connect with Twitter">
         </picture>
         <span class="login-alternative__item__text">
@@ -123,91 +126,6 @@
       </ul>
     </section>
   </article>
-
-  <script src="js/validator.js"></script>
-  <script>
-      var valid       = Validators;
-      var loginForm   = document.getElementById('loginForm');
-      var doc         = document;
-
-      var inputs = {
-        username:  valid.getNode(doc.getElementById('username')),
-        password:  valid.getNode(doc.getElementById('password'))
-      }
-
-      /*
-       * For each input, defines a particular Validator function that must 
-       * be satisfied to proceed further. 
-       */
-
-       inputs.username.setConstraint('Please, provide a valid username \n' +
-        'The username must be a nonempty string and should be at least 3 ' +
-        'characters in length.');
-
-       inputs.username.setValidator(function(elem) {
-
-          var constr = elem.constr;
-          var value  = elem.node.value;
-
-          if (valid.isLength(value, 2)) {
-              elem.node.setCustomValidity(constr.value);
-          } else {
-              elem.resetCustomValidity();
-          }
-
-       })
-
-       inputs.password.setValidator(function(elem) {
-
-          var constr = elem.constr;
-          var value  = elem.node.value;
-
-          if (valid.isLength(value, 5)) {
-              elem.node.setCustomValidity(constr.value);
-          } else {
-              elem.resetCustomValidity();
-          }
-
-       })
-
-      /* Sets an initial custom validity for every input 
-       * All the indicated inputs are not valid by default
-       */
-
-      for (var input in inputs) {
-        if (inputs.hasOwnProperty(input)) {
-          if (inputs[input].constr.isRequired) {
-            inputs[input].node.setCustomValidity(
-                                              inputs[input].constr.constrValue);
-          }
-          
-          // Using a closure, it defines a custom event listener for every
-          // single inputs object
-          (function(input) {
-            input.node.addEventListener('change', function (event) {
-              
-                var constr  = input.constr;
-                input.setInvalidClass();
-                constr.check();
-            })
-          })(inputs[input]);
-        }
-      }
-
-      loginForm.addEventListener('submit', function (event) {
-
-      // Check the inputs validity. If at least one input is invalid, stop
-      // the form
-      for (var input in inputs) {
-          if (inputs.hasOwnProperty(input)) {
-              if (!inputs[input].node.validity.valid) {
-                  event.preventDefault();
-              }
-          }
-      }
-
-      }, false);
-  </script>
 
 </body>
 </html>
