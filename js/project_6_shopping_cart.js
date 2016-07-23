@@ -22,8 +22,8 @@ var Cart = (function(window) {
         couponInput   = $('#couponInput'),
         len           = addButtons.length;
 
-    /* 
-     * It represents the database for the current shopping cart  
+    /*
+     * It represents the database for the current shopping cart
      */
     var CartDB = {
         currencySymbol: '\u0024',
@@ -43,10 +43,10 @@ var Cart = (function(window) {
             return this.items;
         },
         getPromoTypes: function() {
-          return Utilities.keys(this.promoCodes.types);      
+          return Utilities.keys(this.promoCodes.types);
         },
         getPromoType: function(name) {
-          return this.promoCodes.types[name];      
+          return this.promoCodes.types[name];
         },
         getPromoCode: function(code) {
           return this.promoCodes[code] || void 0;
@@ -57,7 +57,7 @@ var Cart = (function(window) {
           var name    = product.name.toLowerCase();
           var type    = product.type;
 
-          // When a coupon was applied, returns 0 
+          // When a coupon was applied, returns 0
           if (truthy(promos.applied)) {
               return 0;
           }
@@ -85,8 +85,8 @@ var Cart = (function(window) {
               return -1;
           }
 
-          /* 
-           * It first checks if the coupon makes the total price less than the  
+          /*
+           * It first checks if the coupon makes the total price less than the
            * total price with the current promo
            */
           off          = promos.coupons[coupon];
@@ -240,7 +240,7 @@ var Cart = (function(window) {
     }
 
     /*
-     * The [changeProductQuantity] adds a product in the shopping cart's  
+     * The [changeProductQuantity] adds a product in the shopping cart's
      * database
      */
 
@@ -257,7 +257,7 @@ var Cart = (function(window) {
         var items = filter(table, function(product) {
             return product.name === name;
         });
-        
+
         // The product is not on the list yet, so add it
         if (items.length === 0) {
             table.push(newP);
@@ -269,8 +269,8 @@ var Cart = (function(window) {
     }
 
     /*
-     * The [changeProductQuantity] is used for updating the product's quantity   
-     * for products which are already in the shopping cart 
+     * The [changeProductQuantity] is used for updating the product's quantity
+     * for products which are already in the shopping cart
      */
 
     var changeProductQuantity = function(name, newQuantity) {
@@ -284,14 +284,14 @@ var Cart = (function(window) {
 
         // Sets a new quantity value for the product
         item[0].quantity = newQuantity;
-        
+
         // rebuild the cart
         rebuildCartUI();
     }
 
     /*
-     * The [removeProduct] is used for removing a product from the shopping  
-     * cart's database 
+     * The [removeProduct] is used for removing a product from the shopping
+     * cart's database
      */
 
     var removeProduct = function(name) {
@@ -301,8 +301,8 @@ var Cart = (function(window) {
 
         /*
          * Since the [where] function returs a new Array containing only
-         * the resulting elements which make the predicate True, we can 
-         * exploit this behavior for associate the resulting Array 
+         * the resulting elements which make the predicate True, we can
+         * exploit this behavior for associate the resulting Array
          * to the origin
          */
 
@@ -315,8 +315,8 @@ var Cart = (function(window) {
     }
 
     /*
-     * The [rebuildCartUI] Every time something related to products in the  
-     * shopping cart is modified, this function rebuilds the table  
+     * The [rebuildCartUI] Every time something related to products in the
+     * shopping cart is modified, this function rebuilds the table
      */
 
     var rebuildCartUI = function() {
@@ -342,9 +342,9 @@ var Cart = (function(window) {
     }
 
     /*
-     * The [refreshCartSummary] function is used to refresh the cart summary 
-     * It recalculates the amounts every time something changes in the 
-     * shopping cart   
+     * The [refreshCartSummary] function is used to refresh the cart summary
+     * It recalculates the amounts every time something changes in the
+     * shopping cart
      */
 
     var refreshCartSummary = function() {
@@ -372,7 +372,7 @@ var Cart = (function(window) {
             toggle(cart, 'none');
 
             return; // Stop
-        }     
+        }
 
         // It re-calculates all the amounts for a correct representation
         couponValue = subTotal - calcPercentage(subTotal, couponOff);
@@ -380,17 +380,17 @@ var Cart = (function(window) {
         subTotal    = (saving > couponValue) ? subTotal - saving : subTotal;
         total       = subTotal + shipping - couponValue;
 
-        // Adds the amounts formatted with a currency in the Shoppin Cart Table 
+        // Adds the amounts formatted with a currency in the Shoppin Cart Table
         cartSubTot.innerHTML = getCurrency(subTotal);
         cartTotal.innerHTML  = getCurrency(parseFloat(total).toFixed(2));
         cartCouponVal.innerHTML = getCurrency(couponValue.toFixed(2));
 
-        // Toggles the Shopping Cart (if necessary) 
+        // Toggles the Shopping Cart (if necessary)
         toggle(cart, 'block');
     }
 
     /*
-     * The [checkCoupon] function applies a coupon code if valid  
+     * The [checkCoupon] function applies a coupon code if valid
      */
 
     var checkCoupon = function(coupon) {
@@ -403,14 +403,14 @@ var Cart = (function(window) {
 
         /*
          *  The checkCoupon method returs:
-         * 
+         *
          *  -1  if the coupon was not found
          *
-         *   0  if the coupon does not make the total price less than the 
-         *      total price with the current promo 
+         *   0  if the coupon does not make the total price less than the
+         *      total price with the current promo
          *
-         *  {n} if the coupon was applied because it fulfills all the 
-         *      requirements 
+         *  {n} if the coupon was applied because it fulfills all the
+         *      requirements
          */
 
         switch(off) {
@@ -422,7 +422,7 @@ var Cart = (function(window) {
 
             case 0:
 
-                couponMessage.innerHTML = 'The current promo is better ' + 
+                couponMessage.innerHTML = 'The current promo is better ' +
                                           'than your coupon ' +
                                           '[ <em>' + coupon +'</em> ]';
                 break;
@@ -439,7 +439,7 @@ var Cart = (function(window) {
     }
 
     /*
-     * The [toggle] function toggle an element's visibility  
+     * The [toggle] function toggle an element's visibility
      */
 
     function toggle(element, visibility) {
@@ -448,16 +448,16 @@ var Cart = (function(window) {
         var visibility  = visibility || 'block';
 
         /*
-         * If the provided visibility is the same as the current one, 
+         * If the provided visibility is the same as the current one,
          * it does nothing
-         */ 
+         */
         if (element.style.display === visibility) return;
 
         element.style.display = (display === 'none') ? visibility : 'none';
     }
 
     /*
-     * The [getCurrency] function returns a price formatted with the currency  
+     * The [getCurrency] function returns a price formatted with the currency
      * symbol which is saved in the database (dollar by default)
      */
 
@@ -469,10 +469,10 @@ var Cart = (function(window) {
     }
 
     /*
-     * The [currency] function returns a price formatted in one of 
+     * The [currency] function returns a price formatted in one of
      * these ways :
      * In the US, comma (,) is used as the thousand separator
-     * In many European countries, dot (.) is used as the thousand separator 
+     * In many European countries, dot (.) is used as the thousand separator
      * and comma (,) is used as the decimal
      */
 
@@ -532,7 +532,7 @@ var Cart = (function(window) {
             Array.prototype.map.call(list, function(product) {
 
                 var span = '';
-                span += '<span class="product-promo            '; 
+                span += '<span class="product-promo            ';
                 span += '             product-promo--discount">';
                 span +=  off + '% off                          ';
                 span += '</span>                               ';
@@ -564,17 +564,17 @@ var Cart = (function(window) {
         cartTable.addEventListener('click', removeEvent, false);
     }
 
-    /* 
-     * This function is used for handling the change event for the input 
+    /*
+     * This function is used for handling the change event for the input
      * textbox related to the products' quantity
      *
      *       ^
-     *       | 
+     *       |
      *       |  [DOM EVENT BUBBLING]
      *       |
-     *    
-     *    Thanks to the DOM Event bubbling, I was able to set only one single 
-     *    event listener for each HTML textbox which will be dynamically added 
+     *
+     *    Thanks to the DOM Event bubbling, I was able to set only one single
+     *    event listener for each HTML textbox which will be dynamically added
      *    to the Shopping Cart table.
      *
      */
@@ -586,11 +586,11 @@ var Cart = (function(window) {
 
         if (evt.target !== evt.currentTarget) {
 
-            // When the target event is not the same as the target event   
+            // When the target event is not the same as the target event
             // listener (which I set as the Table-cart Body element)
 
             if (!Utilities.isInt(quantity) || (quantity < 0)) {
-                // restore the default value 
+                // restore the default value
                 target.value = target.defaultValue;
                 return; // stop
             } else if (quantity === '0') {
@@ -603,8 +603,8 @@ var Cart = (function(window) {
         evt.stopPropagation(); // It stops the bubbling
     }
 
-    /* 
-     * This function is used for handling the remove event caught by a remove 
+    /*
+     * This function is used for handling the remove event caught by a remove
      * button related to a particular product which is already in the shopping
      * cart
      *
@@ -612,22 +612,22 @@ var Cart = (function(window) {
      *       | [DOM EVENT BUBBLING]
      *       |
      *       |
-     *    
-     *    Thanks to the DOM Event bubbling, I was able to set only one single 
-     *    event listener for each HTML button which will be dynamically added 
+     *
+     *    Thanks to the DOM Event bubbling, I was able to set only one single
+     *    event listener for each HTML button which will be dynamically added
      *    to the Shopping Cart
      *
      */
     function removeEvent(evt) {
         if (evt.target !== evt.currentTarget) {
 
-          // When the target event is not the same as the event listener current 
+          // When the target event is not the same as the event listener current
           // target (which I set as the Table-cart Body element)
 
             var clickedItem = evt.target.id;
             // The id we are interested in, is of the form: remove_Product-{N}
             var parts = clickedItem.split('_');
-            
+
             if (parts[0] === 'remove') {
                 removeProduct(parts[1]); // parts[1] contains the product name
             }
@@ -652,7 +652,7 @@ var Cart = (function(window) {
 
     function map(array, callback) {
 
-        // holds the result of map operation  
+        // holds the result of map operation
         var result = [];
         var len     = array.length;
         var i;
@@ -679,14 +679,14 @@ var Cart = (function(window) {
 
     function filter(array, callback){
 
-        //holds the result of filter operation  
+        //holds the result of filter operation
         var result = [];
         var len     = array.length;
         var i;
 
         //for each item apply the callback
         for(i = 0; i < len; i++){
-          //if callback returns true then add to the result  
+          //if callback returns true then add to the result
           if(callback(array[i])){
               result.push(array[i]);
           }
@@ -705,12 +705,12 @@ var Cart = (function(window) {
     function notDefined() { return void 0; }
 
     /*
-     * The [first] function gets an Array and an optional index as arguments, 
-     * and returns the first element of the Array (or the element at the 
+     * The [first] function gets an Array and an optional index as arguments,
+     * and returns the first element of the Array (or the element at the
      * provided index, if any). If the provided index is out of range,
-     * it returns the entire Array. If the first argument is not an Array, it  
+     * it returns the entire Array. If the first argument is not an Array, it
      * returns the first argument provided to the function.
-     * 
+     *
      */
 
     function first(array, idx) {
@@ -725,10 +725,10 @@ var Cart = (function(window) {
     }
 
     /*
-     * The [rest] function gets an Array and an optional index as arguments, 
-     * and returns the elements of the Array except the first one (or the  
-     * element at the provided index, if any). 
-     * If the provided index is out of range, it behaves just as the same as if 
+     * The [rest] function gets an Array and an optional index as arguments,
+     * and returns the elements of the Array except the first one (or the
+     * element at the provided index, if any).
+     * If the provided index is out of range, it behaves just as the same as if
      * the optional index had not been provided.
      */
 
@@ -739,12 +739,12 @@ var Cart = (function(window) {
     }
 
     /*
-     * The [without] function gets an Array and an arbitrary number of other 
-     * arguments, and returns a new Array which does not contain the unwanted 
+     * The [without] function gets an Array and an arbitrary number of other
+     * arguments, and returns a new Array which does not contain the unwanted
      * elements. If the first argument is not an Array, it returns an empty
-     * Array instead.  
-     * 
-     * Example usage: 
+     * Array instead.
+     *
+     * Example usage:
      *
      *    without([1, 2, 3, 4], 1, 3, 7):
      *    >  [2, 4]
@@ -769,7 +769,7 @@ var Cart = (function(window) {
     }
 
     /*
-     * The [cncat] function gets a variable number of arguments and returns   
+     * The [cncat] function gets a variable number of arguments and returns
      * a chain of elements (a.k.a an Array).
      */
 
@@ -789,44 +789,44 @@ var Cart = (function(window) {
       * Constructor Function. Like a SQL-like statement, it represents a
       * select action just like that: SELECT keys FROM list.
       *
-      * For instance, it can be used as following: 
-      *  
+      * For instance, it can be used as following:
+      *
       *     Select(["name", "type"]).from(CartDB.productsDb)
       */
 
      function Select(keys) {
         // It allows us to invoke this function without the 'new' keyword
-        if (!(this instanceof Select)) { 
-            return new Select(keys); 
+        if (!(this instanceof Select)) {
+            return new Select(keys);
         }
 
         // A list of keys
         this.keys = keys;
 
-        this.from = function(table) { 
-            // if table exists, use the Functional Selection function 
+        this.from = function(table) {
+            // if table exists, use the Functional Selection function
             if (truthy(table)) {
                 // it uses its homonymous Functional version
                 return fSelect(table, this.keys);
             } else {
               return []; // table does not exist
             }
-            
+
         };
      }
 
     /*
      * This function gets an Array (table) and a list of keys as arguments.
-     * It maps each table's object and for each entry, it applies the Utility 
+     * It maps each table's object and for each entry, it applies the Utility
      * pick function for extracting the desired keys.
 
      * Since the 'pick' function is applied by using the built-in Javascript
      * 'apply' function which expects as its second parameter an Array of
-     * arguments, the 'cncat' helper function is used to concatenate the 
+     * arguments, the 'cncat' helper function is used to concatenate the
      * actual object with the list of keys.
      *
-     * The result of fSelect is an Array of objects containing only the wanted 
-     * properties 
+     * The result of fSelect is an Array of objects containing only the wanted
+     * properties
      */
 
     // fSelect :: (Array -> Array) -> Array
@@ -839,9 +839,9 @@ var Cart = (function(window) {
 
     /*
      * It augments the Array prototype by adding a "where" method into it.
-     * This method gets a predicate function as argument and invokes the  
+     * This method gets a predicate function as argument and invokes the
      * its homonymous Functional version
-     * In conjunction with the Select object, it allows to query for the 
+     * In conjunction with the Select object, it allows to query for the
      * properties of an object in a SQL-like manner.
      * For example the following SQL query:
      *
@@ -852,7 +852,7 @@ var Cart = (function(window) {
      *  Select(["name", "type"]).from(CartDB.productsDb).where(function(prod) {
      *      return prod.name === 'Product-1'
      *  })
-     *  
+     *
      */
 
     Array.prototype.where = function(pred) {
@@ -860,9 +860,9 @@ var Cart = (function(window) {
     };
 
     /*
-     * This function gets an Array and a predicate function as arguments and 
-     * reduces the list. It returns a new partial 'table' Array everytime the 
-     * predicate is true, otherwise it removes the current object from the 
+     * This function gets an Array and a predicate function as arguments and
+     * reduces the list. It returns a new partial 'table' Array everytime the
+     * predicate is true, otherwise it removes the current object from the
      * resulting 'table'
      */
 
@@ -877,7 +877,7 @@ var Cart = (function(window) {
         }, table);
     };
 
-    // This function ensures that a provided function (fn) will be called 
+    // This function ensures that a provided function (fn) will be called
     // exactly once
     function once(fn) {
 
