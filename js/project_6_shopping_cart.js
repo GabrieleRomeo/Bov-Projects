@@ -2,7 +2,6 @@
 
 document.addEventListener('DOMContentLoaded', function () {
 
-
     var Cart = (function(window) {
 
         var _win = window,
@@ -147,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Returns a promo for the current product or 0
             this.getOff = function() {
                 return CartDB.getDiscount(this);
-            }
+            };
 
             // Returns the new Unit price
             this.getNewPrice = function() {
@@ -156,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var unitPrice = this.unitPrice;
 
                 return parseFloat(calcPercentage(unitPrice, off));
-            }
+            };
 
             // Returns the actual subTotal for this product
             this.getSubTotal = function() {
@@ -266,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             rebuildCartUI();
-        }
+        };
 
         /*
          * The [changeProductQuantity] is used for updating the product's
@@ -287,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // rebuild the cart
             rebuildCartUI();
-        }
+        };
 
         /*
          * The [removeProduct] is used for removing a product from the shopping
@@ -312,7 +311,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // rebuild the Shopping Cart UI
             rebuildCartUI();
-        }
+        };
 
         /*
          * The [rebuildCartUI] Every time something related to products in the
@@ -339,7 +338,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Refresh the Cart User Interface
             refreshCartSummary();
-        }
+        };
 
         /*
          * The [refreshCartSummary] function is used to refresh the cart summary
@@ -388,7 +387,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Toggles the Shopping Cart (if necessary)
             toggle(cart, 'block');
-        }
+        };
 
         /*
          * The [checkCoupon] function applies a coupon code if valid
@@ -439,7 +438,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 toggle(cartCouponRow, 'table-row');
                 break;
             }
-        }
+        };
 
         /*
          * The [toggle] function toggle an element's visibility
@@ -563,7 +562,7 @@ document.addEventListener('DOMContentLoaded', function () {
             while(len--) {
                 addButtons[len].addEventListener('click', function(event) {
                     addProduct(this.firstChild.nextSibling);
-                })
+                });
             }
 
             // Sets a fixed shipping cost
@@ -687,7 +686,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 current = callback(current, array[i]);
             }
             return current;
-        };
+        }
 
         function filter(array, callback){
 
@@ -712,9 +711,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         function truthy(value) { return !!value; }
 
-        function existy(value) { return value != null };
-
-        function notDefined() { return void 0; }
+        function existy(value) { return value != null; }
 
         /*
          * The [first] function gets an Array and an optional index as
@@ -774,7 +771,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // removes the unwanted elements
                 return filter(head, function(item) {
                     return tail.indexOf(item) === -1;
-                })
+                });
             } else {
                 return [];
             }
@@ -887,7 +884,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     return without(newTable, obj);
                 }
             }, table);
-        };
+        }
 
         // This function ensures that a provided function (fn) will be called
         // exactly once
@@ -896,17 +893,17 @@ document.addEventListener('DOMContentLoaded', function () {
             var _once = false;
 
             return function () {
-                return _once ?
+                return  _once  ?
                         void 0 :
-                        ((_once = true), fn.apply(this, arguments))
-            }
+                        ((_once = true), fn.apply(this, arguments));
+            };
         }
 
 
         // Public API
         return {
             initialize: once(initialize)
-        }
+        };
     }
 
 )(window);
