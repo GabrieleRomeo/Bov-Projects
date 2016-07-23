@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 elem.resetCustomValidity();
             }
         } catch (err) {
-                elem.node.setCustomValidity(constr.value);
+            elem.node.setCustomValidity(constr.value);
         }
 
     });
@@ -108,33 +108,33 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
     for (var input in inputs) {
         if (inputs.hasOwnProperty(input)) {
-          if (inputs[input].constr.isRequired) {
-            inputs[input].elem.node.setCustomValidity(
+            if (inputs[input].constr.isRequired) {
+                inputs[input].elem.node.setCustomValidity(
                                               inputs[input].constr.constrValue);
-          }
+            }
 
           // Defines a custom event listener for each input object
-          (function(input) {
-            input.node.addEventListener('change', function (event) {
-                var constr  = input.constr;
-                input.setInvalidClass();
-                constr.check();
-            })
-          })(inputs[input]);
+            (function(input) {
+                input.node.addEventListener('change', function () {
+                    var constr  = input.constr;
+                    input.setInvalidClass();
+                    constr.check();
+                });
+            })(inputs[input]);
         }
     }
 
     signupForm.addEventListener('submit', function (event) {
 
-    // Check the inputs validity. If at least one input is invalid, stop
-    // the form
-    for (var input in inputs) {
-      if (inputs.hasOwnProperty(input)) {
-          if (!inputs[input].node.validity.valid) {
-              event.preventDefault();
-          }
-      }
-    }
+        // Check the inputs validity. If at least one input is invalid, stop
+        // the form
+        for (var input in inputs) {
+            if (inputs.hasOwnProperty(input)) {
+                if (!inputs[input].node.validity.valid) {
+                    event.preventDefault();
+                }
+            }
+        }
 
     }, false);
 
