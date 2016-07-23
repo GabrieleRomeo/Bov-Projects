@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
           try {
               if (!valid.moreWordsThan(value, 2)) {
-                  elem.node.setCustomValidity('A valid address is composed ' + 
+                  elem.node.setCustomValidity('A valid address is composed ' +
                                               'at least two words');
               } else {
                   elem.resetCustomValidity();
@@ -67,10 +67,10 @@ document.addEventListener('DOMContentLoaded', function (e) {
           var constr = elem.constr;
           var value  = elem.node.value;
 
-          try { 
+          try {
               if (valid.isLength(value, 2)) {
-                  elem.node.setCustomValidity('The minimum length of this ' + 
-                                              'field should be at least of ' + 
+                  elem.node.setCustomValidity('The minimum length of this ' +
+                                              'field should be at least of ' +
                                               ' three characters');
               } else {
                   elem.resetCustomValidity();
@@ -88,8 +88,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
           try {
             if (valid.isLength(value, 2)) {
-                  elem.node.setCustomValidity('The minimum length of this ' + 
-                                              'field should be at least of ' + 
+                  elem.node.setCustomValidity('The minimum length of this ' +
+                                              'field should be at least of ' +
                                               ' three characters');
             } else {
                 elem.resetCustomValidity();
@@ -101,8 +101,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
       });
 
       /*
-       * For each input, defines a particular Validator function that must 
-       * be satisfied to proceed further. 
+       * For each input, defines a particular Validator function that must
+       * be satisfied to proceed further.
        */
 
       inputs.S_firstName.setValidator(firstNameValidator);
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
       inputs.B_country.setValidator(countryValidator);
 
 
-      /* Sets an initial custom validity for every input 
+      /* Sets an initial custom validity for every input
        * All the indicated inputs are not valid by default
        */
 
@@ -146,9 +146,9 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 input.setInvalidClass();
                 constr.check();
 
-                if (id.indexOf('S_') === 0) { 
-                    /* Every time the checkbox is checked, it copies the value 
-                     * of the current 'shipping' input into the corresponding 
+                if (id.indexOf('S_') === 0) {
+                    /* Every time the checkbox is checked, it copies the value
+                     * of the current 'shipping' input into the corresponding
                      * billing input
                      */
                     if (same.checked) {
