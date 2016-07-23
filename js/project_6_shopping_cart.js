@@ -4,10 +4,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var Cart = (function(window) {
 
-        var _win = window,
-            _doc = _win.document;
+        var $ = validator.$,
+            $$ = validator.$$;
 
-        var addButtons    = _doc.getElementsByClassName('addToCart'),
+        var addButtons    = $$('.addToCart'),
             cart          = $('#cart'),
             cartTable     = $('#cart-table').childNodes[1],
             cartSubTot    = $('#cartSubTot'),
@@ -650,14 +650,6 @@ document.addEventListener('DOMContentLoaded', function () {
        *           HELPERS AND UTILITY FUNCTIONS              *
        *                                                      *
        *******************************************************/
-
-        function $(selector) {
-            return _doc.querySelector(selector);
-        }
-
-        function $$(selector) {
-            return _doc.querySelectorAll(selector);
-        }
 
         function map(array, callback) {
 
