@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
         expY:       valid.getNode($('#expirationYear'), 'expirationYear'),
         fullName:   valid.getNode($('#fullName')),
         csv:        valid.getNode($('#csvNumber'), 'csvNumber')
-    }
+    };
 
     /*
      * For each card type, defines an Event Listener which will be triggered
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
     for (var c in cardList) {
         if (cardList.hasOwnProperty(c)) {
             (function(node){
-                node.addEventListener('click', function(event) {
+                node.addEventListener('click', function() {
                     resetClass('active');
                     toggleClass(this, 'active');
                 });
@@ -128,10 +128,10 @@ document.addEventListener('DOMContentLoaded', function () {
             // Using a closure, it defines a custom event listener for every
             // single inputs object
             (function(input) {
-                input.node.addEventListener('change', function (event) {
+                input.node.addEventListener('change', function () {
                     input.setInvalidClass();
                     input.constr.check();
-                })
+                });
             })(inputs[input]);
         }
     }
