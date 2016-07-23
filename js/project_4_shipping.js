@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         B_address:   valid.getNode($('#B_address')),
         B_city:      valid.getNode($('#B_city')),
         B_country:   valid.getNode($('#B_country'))
-    }
+    };
 
     var firstNameValidator = (function(elem){
 
@@ -46,7 +46,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
     var addressValidator = (function(elem){
 
-        var constr = elem.constr;
         var value  = elem.node.value;
 
         try {
@@ -133,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
       // Using a closure, it defines a custom event listener for each
       // single inputs object
             (function(input) {
-                input.node.addEventListener('change', function (event) {
+                input.node.addEventListener('change', function () {
 
                     var constr  = input.constr;
                     var id      = input.node.getAttribute('id');
@@ -151,13 +150,13 @@ document.addEventListener('DOMContentLoaded', function (e) {
                             $('#' + billInp).value = input.node.value;
                         }
                     }
-                })
+                });
             })(inputs[input]);
         }
     }
 
       // Copies the billing info into the corresponding shipping inputs
-    same.addEventListener('change', function (event) {
+    same.addEventListener('change', function () {
 
         var _self = this;
 
@@ -179,11 +178,11 @@ document.addEventListener('DOMContentLoaded', function (e) {
       // Check the inputs validity. If at least one input is invalid, stop
       // the form
         for (var input in inputs) {
-              if (inputs.hasOwnProperty(input)) {
-                  if (!inputs[input].node.validity.valid) {
-                      event.preventDefault();
-                  }
-              }
+            if (inputs.hasOwnProperty(input)) {
+                if (!inputs[input].node.validity.valid) {
+                    event.preventDefault();
+                }
+            }
         }
 
     }, false);
