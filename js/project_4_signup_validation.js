@@ -57,7 +57,9 @@ document.addEventListener('DOMContentLoaded', function (e) {
             } else {
                 elem.resetCustomValidity();
             }
-        } catch (err) {}
+        } catch (err) {
+            throw err;
+        }
 
     });
 
