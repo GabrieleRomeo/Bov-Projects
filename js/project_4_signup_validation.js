@@ -14,8 +14,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
     }
 
     /*
-     * For each input, defines a particular Validator function that must 
-     * be satisfied to proceed further. 
+     * For each input, defines a particular Validator function that must
+     * be satisfied to proceed further.
      */
 
     inputs.firstName.setValidator(function(elem){
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         var constr = elem.constr;
         var value  = elem.node.value;
 
-        try { 
+        try {
             if (!valid.isBeforeToday(value)) {
                 elem.node.setCustomValidity(constr.value);
             } else if (calculateAge(value) < 16) {
@@ -97,8 +97,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
     });
 
 
-    /* 
-     * Defines an initial custom validity for each input 
+    /*
+     * Defines an initial custom validity for each input
      * By default, they are all invalid
      */
 
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             inputs[input].elem.node.setCustomValidity(
                                               inputs[input].constr.constrValue);
           }
-          
+
           // Defines a custom event listener for each input object
           (function(input) {
             input.node.addEventListener('change', function (event) {
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
         function diffInDays(d1, d2){
 
-            //the absolute difference of d1 and d2 in milli-seconds   
+            //the absolute difference of d1 and d2 in milli-seconds
             var diffInMilliSec = Math.abs(d1.getTime() - d2.getTime());
             var milliSecInAday = 24 * 60 * 60 * 1000; //milli-seconds in a day
 
