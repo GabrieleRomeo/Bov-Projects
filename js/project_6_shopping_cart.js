@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var Cart = (function(window) {
 
-        var $ = validator.$,
+        var $  = validator.$,
             $$ = validator.$$;
 
         var addButtons    = $$('.addToCart'),
