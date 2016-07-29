@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
              */
             if (!isLastCharNum()   ||
                  isDecimal(result) || result.split(0).join(' ').trim() === '') {
-              return;
+                return;
             }
 
             result += '.';
@@ -61,9 +61,9 @@ document.addEventListener('DOMContentLoaded', function () {
         Object.keys(numberButtons).map(function(item) {
 
             if (!isNaN(numberButtons[item].id)) {
-              numberButtons[item].addEventListener('click', function () {
-                  updateResult(this.value);
-              });
+                numberButtons[item].addEventListener('click', function () {
+                    updateResult(this.value);
+                });
             }
         });
 
@@ -74,11 +74,11 @@ document.addEventListener('DOMContentLoaded', function () {
               /*
                * When last char is not a number, skip
                */
-              if (!isLastCharNum()) {
-                  return;
-              }
+                if (!isLastCharNum()) {
+                    return;
+                }
 
-              updateResult(this.value.replace('÷','/'));
+                updateResult(this.value.replace('÷','/'));
             });
         });
 
