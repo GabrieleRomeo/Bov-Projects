@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     (function() {
 
-        var $ = utilities.$;
+        var $ = validator.$;
 
         var resultInput    = $('#result'),
             numbersLayer   = $('#numbers'),
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         clr.addEventListener('click', function() {
-            updateResult();
+            updateResult('');
         });
 
         eql.addEventListener('click', function() {
