@@ -77,10 +77,15 @@ document.addEventListener('DOMContentLoaded', function () {
     inputs.expY.setConstraint('Please select the Expiration Year');
     inputs.expY.setValidator(function(elem) {
 
-        var node = elem.node;
+        var node     = elem.node,
+            seleYear = parseInt(node.options[node.selectedIndex].value),
+            currYear = currDate.getFullYear();
 
         if (valid.isEmpty(node.options[node.selectedIndex].value)) {
             node.setCustomValidity(elem.constr.value);
+        } else if (seleYear < currYear) {
+            node.setCustomValidity('Invalid Year because previous than that ' +
+                                   'current one. Please try again.');
         } else {
             elem.resetCustomValidity();
         }
