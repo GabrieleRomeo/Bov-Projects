@@ -20,15 +20,15 @@ document.addEventListener('DOMContentLoaded', function () {
         var result = '';
 
         // Event Listeners DEL, CLEAR, EQUAL, COMMA
-        del.addEventListener('click', function(event) {
+        del.addEventListener('click', function() {
             updateResult('');
         })
 
-        clr.addEventListener('click', function(event) {
+        clr.addEventListener('click', function() {
             updateResult(result.substr(0, result.length - 1), "clear");
         })
 
-        eql.addEventListener('click', function(event) {
+        eql.addEventListener('click', function() {
 
             var partial;
 
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         })
 
-        com.addEventListener('click', function(event) {
+        com.addEventListener('click', function() {
 
             /*
              * Skip if:
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
         Object.keys(numberButtons).map(function(item) {
 
             if (!isNaN(numberButtons[item].id)) {
-              numberButtons[item].addEventListener('click', function (event) {
+              numberButtons[item].addEventListener('click', function () {
                   updateResult(this.value);
               })
             }
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Event Listeners Operations [+ - / *]
         Object.keys(controlButtons).map(function(item) {
-            controlButtons[item].addEventListener('click', function (event) {
+            controlButtons[item].addEventListener('click', function () {
 
               /*
                * When last char is not a number, skip
