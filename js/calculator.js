@@ -22,11 +22,11 @@ document.addEventListener('DOMContentLoaded', function () {
         // Event Listeners DEL, CLEAR, EQUAL, COMMA
         del.addEventListener('click', function() {
             updateResult('');
-        })
+        });
 
         clr.addEventListener('click', function() {
             updateResult(result.substr(0, result.length - 1), "clear");
-        })
+        });
 
         eql.addEventListener('click', function() {
 
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 updateResult(partial, "=");
             }
 
-        })
+        });
 
         com.addEventListener('click', function() {
 
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
             result += '.';
             resultInput.value = result;
 
-        })
+        });
 
         // Event Listeners Numbers 0 - 9
         Object.keys(numberButtons).map(function(item) {
@@ -63,9 +63,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!isNaN(numberButtons[item].id)) {
               numberButtons[item].addEventListener('click', function () {
                   updateResult(this.value);
-              })
+              });
             }
-        })
+        });
 
         // Event Listeners Operations [+ - / *]
         Object.keys(controlButtons).map(function(item) {
@@ -79,8 +79,8 @@ document.addEventListener('DOMContentLoaded', function () {
               }
 
               updateResult(this.value.replace('÷','/'));
-            })
-        })
+            });
+        });
 
         function isDecimal(value) {
 
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 partial = partial + value.charAt(len);
                 len--;
-            };
+            }
 
            return (partial.indexOf('.') > -1);
         }
