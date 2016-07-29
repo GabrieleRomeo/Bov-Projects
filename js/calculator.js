@@ -103,10 +103,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return result.length > 0 ? !isNaN(result.charAt(result.length - 1)) : false;
         }
 
-        function getLastChar() {
-            return result.charAt(result.length - 1);
-        }
-
         function updateResult(value, opt) {
 
             if (!value) {
