@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
             switch(opt) {
             case '=':
             case 'clear':
-                result = (value === "Infinity") ? 'Division by 0' : value;
+                result = (value === 'Infinity') ? 'Division by 0' : value;
                 break;
 
             default:
