@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var selectedCard  = $('#selectedCard');
     var form          = $('#cardForm');
 
+    var currDate = new Date();
+
     var inputs = {
         cardNumber: valid.getNode($('#cardNumber')),
         expM:       valid.getNode($('#expirationMonth'), 'expirationMonth'),
@@ -58,10 +60,15 @@ document.addEventListener('DOMContentLoaded', function () {
     inputs.expM.setConstraint('Please select the Expiration Month');
     inputs.expM.setValidator(function(elem) {
 
-        var node   = elem.node;
+        var node      = elem.node,
+            seleMonth = parseInt(node.options[node.selectedIndex].value),
+            currMonth = currDate.getMonth();
 
-        if (valid.isEmpty(node.options[node.selectedIndex].value)) {
+        if (seleMonth < 0) {
             node.setCustomValidity(elem.constr.value);
+        } else if (seleMonth < currMonth) {
+            node.setCustomValidity('Invalid Month because previous than that ' +
+                                   'current one. Please try again.');
         } else {
             elem.resetCustomValidity();
         }
