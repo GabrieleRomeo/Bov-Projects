@@ -590,25 +590,9 @@ var validator = (function(window) {
      * @returns {boolean} True or False
      */
 
-    v.lacks = _maybe(function(input, words) {
-        var list;
-        var len,
-            i;
-
-        // When the words list is not provided return undefined by default
-        if (!_isArray(words)) return void 0;
-
-        list = this.withoutSymbols(input.toLowerCase()).split(' ');
-        len  = words.length;
-
-        for (i = 0; i < len; i++) {
-            if (list.indexOf(words[i].toLowerCase()) > -1) {
-                return false;
-            }
-        }
-
-        return true;
-    });
+    v.lacks = function(input, words) {
+        return !v.contains.call(this, input, words);
+    };
 
     /**
      * Checks that the input text parameter contains only strings found

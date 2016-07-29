@@ -21,11 +21,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Event Listeners DEL, CLEAR, EQUAL, COMMA
         del.addEventListener('click', function() {
-            updateResult('');
+            updateResult(result.substr(0, result.length - 1), 'delete');
         });
 
         clr.addEventListener('click', function() {
-            updateResult(result.substr(0, result.length - 1), 'clear');
+            updateResult();
         });
 
         eql.addEventListener('click', function() {
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             switch(opt) {
             case '=':
-            case 'clear':
+            case 'delete':
                 result = (value === 'Infinity') ? 'Division by 0' : value;
                 break;
 
