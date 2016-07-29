@@ -2,128 +2,128 @@
 
 document.addEventListener('DOMContentLoaded', function () {
 
-(function() {
-    var resultInput     = document.getElementById('result');
-    var numbersLayer    = document.getElementById('numbers');
-    var controlsLayer   = document.getElementById('controls');
-    var numberButtons   = numbersLayer.childNodes;
-    var controlButtons  = controlsLayer.childNodes;
+    (function() {
+        var resultInput     = document.getElementById('result');
+        var numbersLayer    = document.getElementById('numbers');
+        var controlsLayer   = document.getElementById('controls');
+        var numberButtons   = numbersLayer.childNodes;
+        var controlButtons  = controlsLayer.childNodes;
 
-    var del = document.getElementById('del'),
-        clr = document.getElementById('clear'),
-        eql = document.getElementById('equal'),
-        com = document.getElementById('comma');
+        var del = document.getElementById('del'),
+            clr = document.getElementById('clear'),
+            eql = document.getElementById('equal'),
+            com = document.getElementById('comma');
 
-    var result = '';
+        var result = '';
 
-    // Event Listeners DEL, CLEAR, EQUAL, COMMA
-    del.addEventListener('click', function(event) {
-        updateResult('');
-    })
-
-    clr.addEventListener('click', function(event) {
-        updateResult(result.substr(0, result.length - 1), "clear");
-    })
-
-    eql.addEventListener('click', function(event) {
-
-        var partial;
-
-        if (isLastCharNum()) {
-            partial = (function() { return eval(result).toString() ; })();
-            updateResult(partial, "=");
-        }
-
-    })
-
-    com.addEventListener('click', function(event) {
-
-        /* 
-         * Skip if:
-         * - The last char is not a number 
-         * - The current result is already a decimal number
-         * - The current result contains only 0
-         */
-        if (!isLastCharNum()   || 
-             isDecimal(result) || result.split(0).join(' ').trim() === '') {
-          return;
-        } 
-
-        result += '.';
-        resultInput.value = result;
-
-    })
-
-    // Event Listeners Numbers 0 - 9
-    Object.keys(numberButtons).map(function(item) {
-
-        if (!isNaN(numberButtons[item].id)) {
-          numberButtons[item].addEventListener('click', function (event) {
-              updateResult(this.value);
-          })
-        }
-    })
-
-    // Event Listeners Operations [+ - / *]
-    Object.keys(controlButtons).map(function(item) {    
-        controlButtons[item].addEventListener('click', function (event) {
-
-          /*
-           * When last char is not a number, skip
-           */
-          if (!isLastCharNum()) {
-              return;
-          }
-
-          updateResult(this.value.replace('÷','/'));
+        // Event Listeners DEL, CLEAR, EQUAL, COMMA
+        del.addEventListener('click', function(event) {
+            updateResult('');
         })
-    })
 
-    function isDecimal(value) {
+        clr.addEventListener('click', function(event) {
+            updateResult(result.substr(0, result.length - 1), "clear");
+        })
 
-        if (!value) return true;
+        eql.addEventListener('click', function(event) {
 
-        var len = (value.length - 1) || 0;
-        var partial = '';
+            var partial;
 
-        while (len > 0 && 
-              !(isNaN(value.charAt(len)) && value.charAt(len) !== '.')) {
-            
-            partial = partial + value.charAt(len);
-            len--;
-        };
+            if (isLastCharNum()) {
+                partial = (function() { return eval(result).toString() ; })();
+                updateResult(partial, "=");
+            }
 
-       return (partial.indexOf('.') > -1);
-    }
+        })
 
-    function isLastCharNum() {
-      return result.length > 0 ? !isNaN(result.charAt(result.length - 1)) : false;
-    } 
+        com.addEventListener('click', function(event) {
 
-    function getLastChar() {
-      return result.charAt(result.length - 1);
-    }
+            /*
+             * Skip if:
+             * - The last char is not a number
+             * - The current result is already a decimal number
+             * - The current result contains only 0
+             */
+            if (!isLastCharNum()   ||
+                 isDecimal(result) || result.split(0).join(' ').trim() === '') {
+              return;
+            }
 
-    function updateResult(value, opt) {
+            result += '.';
+            resultInput.value = result;
 
-        if (!value) {
-            result = '';
+        })
+
+        // Event Listeners Numbers 0 - 9
+        Object.keys(numberButtons).map(function(item) {
+
+            if (!isNaN(numberButtons[item].id)) {
+              numberButtons[item].addEventListener('click', function (event) {
+                  updateResult(this.value);
+              })
+            }
+        })
+
+        // Event Listeners Operations [+ - / *]
+        Object.keys(controlButtons).map(function(item) {
+            controlButtons[item].addEventListener('click', function (event) {
+
+              /*
+               * When last char is not a number, skip
+               */
+              if (!isLastCharNum()) {
+                  return;
+              }
+
+              updateResult(this.value.replace('÷','/'));
+            })
+        })
+
+        function isDecimal(value) {
+
+            if (!value) return true;
+
+            var len = (value.length - 1) || 0;
+            var partial = '';
+
+            while (len > 0 &&
+                  !(isNaN(value.charAt(len)) && value.charAt(len) !== '.')) {
+
+                partial = partial + value.charAt(len);
+                len--;
+            };
+
+           return (partial.indexOf('.') > -1);
         }
 
-        switch(opt) {
-          case '=':
-          case 'clear':
-            result = (value === "Infinity") ? 'Division by 0' : value;
-          break;
-
-          default:
-            result += value;
+        function isLastCharNum() {
+          return result.length > 0 ? !isNaN(result.charAt(result.length - 1)) : false;
         }
 
-        resultInput.value = result;
+        function getLastChar() {
+          return result.charAt(result.length - 1);
+        }
 
-        if (result === 'Division by 0') result = '';
-    }
-})();
+        function updateResult(value, opt) {
+
+            if (!value) {
+                result = '';
+            }
+
+            switch(opt) {
+              case '=':
+              case 'clear':
+                result = (value === "Infinity") ? 'Division by 0' : value;
+              break;
+
+              default:
+                result += value;
+            }
+
+            resultInput.value = result;
+
+            if (result === 'Division by 0') result = '';
+        }
+    })();
 
 });
