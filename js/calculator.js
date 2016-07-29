@@ -96,15 +96,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 len--;
             }
 
-           return (partial.indexOf('.') > -1);
+            return (partial.indexOf('.') > -1);
         }
 
         function isLastCharNum() {
-          return result.length > 0 ? !isNaN(result.charAt(result.length - 1)) : false;
+            return result.length > 0 ? !isNaN(result.charAt(result.length - 1)) : false;
         }
 
         function getLastChar() {
-          return result.charAt(result.length - 1);
+            return result.charAt(result.length - 1);
         }
 
         function updateResult(value, opt) {
@@ -114,12 +114,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             switch(opt) {
-              case '=':
-              case 'clear':
+            case '=':
+            case 'clear':
                 result = (value === "Infinity") ? 'Division by 0' : value;
-              break;
+                break;
 
-              default:
+            default:
                 result += value;
             }
 
