@@ -3,16 +3,19 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     (function() {
-        var resultInput     = document.getElementById('result');
-        var numbersLayer    = document.getElementById('numbers');
-        var controlsLayer   = document.getElementById('controls');
-        var numberButtons   = numbersLayer.childNodes;
-        var controlButtons  = controlsLayer.childNodes;
 
-        var del = document.getElementById('del'),
-            clr = document.getElementById('clear'),
-            eql = document.getElementById('equal'),
-            com = document.getElementById('comma');
+        var $ = utilities.$;
+
+        var resultInput    = $('#result'),
+            numbersLayer   = $('#numbers'),
+            controlsLayer  = $('#controls'),
+            numberButtons  = numbersLayer.childNodes,
+            controlButtons = controlsLayer.childNodes;
+
+        var del = $('#del'),
+            clr = $('#clear'),
+            eql = $('#equal'),
+            com = $('#comma');
 
         var result = '';
 
