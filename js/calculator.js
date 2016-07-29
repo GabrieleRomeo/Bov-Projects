@@ -100,7 +100,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         function isLastCharNum() {
-            return result.length > 0 ? !isNaN(result.charAt(result.length - 1)) : false;
+            return result.length > 0 ?
+                   !isNaN(result.charAt(result.length - 1)) :
+                   false;
         }
 
         function updateResult(value, opt) {
