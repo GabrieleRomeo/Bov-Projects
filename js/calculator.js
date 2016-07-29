@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         clr.addEventListener('click', function() {
-            updateResult(result.substr(0, result.length - 1), "clear");
+            updateResult(result.substr(0, result.length - 1), 'clear');
         });
 
         eql.addEventListener('click', function() {
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (isLastCharNum()) {
                 partial = (function() { return eval(result).toString() ; })();
-                updateResult(partial, "=");
+                updateResult(partial, '=');
             }
 
         });
