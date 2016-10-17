@@ -41,108 +41,150 @@
     </nav>
   </header>
 
+
     <!-- PROJECT CONTENT -->
-  <div id="calc-wrapper">
-      <input id="result" name="result" type="text" disabled>
-      <div id="calc-controls">
-      <section id="top-controls">
-        <input  class="button clear-controls"
-                id="del"
-                name="del"
-                type="button"
-                value="DEL">
-        <input  class="button clear-controls"
+
+  <div id="calculator">
+    <div id="result__wrapper">
+      <p id="operation">100+5</p>
+      <p id="result">105</p>
+    </div>
+
+    <div id="controls__wrapper">
+      <ul class="control__list" id="top-controls">
+        <li>
+          <input  class="button clear-controls"
+              id="del"
+              name="del"
+              type="button"
+              value="DEL">
+        </li>
+        <li>
+          <input  class="button clear-controls"
                 id="clear"
                 name="clear"
                 type="button"
                 value="CLEAR">
-      </section>
-      <section id="numbers">
-        <input  class="button"
+        </li>
+      </ul>
+      <ul class="control__list" id="numbers">
+        <li>
+          <input  class="button"
                 id="7"
                 name="7"
                 type="button"
                 value="7">
-        <input  class="button"
+        </li>
+        <li>
+          <input  class="button"
                 id="8"
                 name="8"
                 type="button"
                 value="8">
-        <input  class="button"
+        </li>
+        <li>
+          <input  class="button"
                 id="9"
                 name="9"
                 type="button"
                 value="9">
-        <input  class="button"
+        </li>
+        <li>
+          <input  class="button"
                 id="4"
                 name="4"
                 type="button"
                 value="4">
-        <input  class="button"
+        </li>
+        <li>
+          <input  class="button"
                 id="5"
                 name="5"
                 type="button"
                 value="5">
-        <input  class="button"
+        </li>
+        <li>
+          <input  class="button"
                 id="6"
                 name="6"
                 type="button"
                 value="6">
-        <input  class="button"
+        </li>
+        <li>
+          <input  class="button"
                 id="1"
                 name="1"
                 type="button"
                 value="1">
-        <input  class="button"
+        </li>
+        <li>
+          <input  class="button"
                 id="2"
                 name="2"
                 type="button"
                 value="2">
-        <input  class="button"
+        </li>
+        <li>
+          <input  class="button"
                 id="3"
                 name="3"
                 type="button"
                 value="3">
-        <input  class="button double"
+        </li>
+        <li>
+          <input  class="button double"
                 id="0"
                 name="0"
                 type="button"
                 value="0">
-        <input  class="button double"
+        </li>
+        <li>
+          <input  class="button double"
                 id="comma"
-                name="comma"
+                name="period"
                 type="button"
-                value="&#44;">
-        <input  class="button equal hover-controls"
-                id="equal"
-                name="equal"
-                type="button"
-                value="=">
-      </section>
-      <section id="controls">
-        <input  class="button oper-controls hover-controls"
-                id="add"
-                name="add"
-                type="button"
-                value="&#43;">
-        <input  class="button oper-controls hover-controls"
-                id="sub"
-                name="sub"
-                type="button"
-                value="&#45;">
-        <input  class="button oper-controls hover-controls"
-                id="div"
-                name="div"
-                type="button"
-                value="&#247;">
-        <input  class="button oper-controls hover-controls"
-                id="mult"
-                name="mult"
-                type="button"
-                value="&#42;">
-      </section>
-      </div>
+                value="&#46;">
+        </li>
+      </ul>
+      <ul class="control__list control__list--operations" id="right-controls">
+        <li>
+            <input  class="button oper-controls hover-controls"
+                  id="div"
+                  name="div"
+                  type="button"
+                  value="&#247;"
+          </li>
+          <li>
+            <input  class="button oper-controls hover-controls"
+                  id="mult"
+                  name="mult"
+                  type="button"
+                  value="&#42;">
+          </li>
+          <li>
+            <input  class="button oper-controls hover-controls"
+                  id="sub"
+                  name="sub"
+                  type="button"
+                  value="&#45;">
+          </li>
+          <li>
+            <input  class="button oper-controls hover-controls"
+                  id="add"
+                  name="add"
+                  type="button"
+                  value="&#43;">
+          </li>
+          <li class="equal">
+            <input  class="button hover-controls"
+                  id="equal"
+                  name="equal"
+                  type="button"
+                  value="&#61;">
+          </li>
+      </ul>
     </div>
+  </div>
 
 </body>
 </html>
