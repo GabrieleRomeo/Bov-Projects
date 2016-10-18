@@ -11,6 +11,7 @@ body {
     linear-gradient(225deg, hsla(246, 91%, 49%, 1) 10%, hsla(246, 91%, 49%, 0) 80%),
     linear-gradient(315deg, hsla(349, 99%, 46%, 1) 100%, hsla(349, 99%, 46%, 0) 70%);
   background-blend-mode: difference;
+  background-attachment: fixed;
 }
 
 .calculator {
@@ -32,11 +33,6 @@ body {
   background-color: #262835;
 }
 
-.operation {
-  overflow-y: hidden;
-  overflow-x: scroll;
-}
-
 .operation--green {
   color: #a6d800;
 }
@@ -47,30 +43,6 @@ body {
   color: #fff;
   font-size: 3em;
   text-align: right;
-  overflow-y: hidden;
-  overflow-x: scroll;
-}
-
-.result::-webkit-scrollbar {
-    width: 12px;
-}
-
-/* Track */
-.result::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
-
-/* Handle */
-.result::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-    background: rgba(255,0,0,0.8);
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
-}
-.result::-webkit-scrollbar-thumb:window-inactive {
-  background: rgba(255,0,0,0.4);
 }
 
 .operation {
@@ -81,10 +53,44 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
+.result,
+.operation {
+  overflow-y: hidden;
+  overflow-x: scroll;
+}
+
+.result::-webkit-scrollbar,
+.operation::-webkit-scrollbar {
+    width: 12px;
+    height: 5px;
+}
+
+/* Track */
+.result::-webkit-scrollbar-track,
+.operation::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+
+/* Handle */
+.result::-webkit-scrollbar-thumb,
+.operation::-webkit-scrollbar-thumb{
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(255,0,0,0.8);
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+}
+.result::-webkit-scrollbar-thumb:window-inactive,
+.operation::-webkit-scrollbar-thumb:window-inactive {
+  background: rgba(255,0,0,0.4);
+}
+
 .calculator input {
   display: inline-block;
   width: 100%;
   height: 100%;
+  font-weight: 300;
   color: inherit;
   background-color: transparent;
   border: 0;
@@ -175,7 +181,7 @@ body {
 .control__list--numbers li:hover,
 .control__list--operations.control__list li:hover {
   color: #fff;
-  background: #2196f3;
+  background: rgba(33, 150, 243, 0.18);
 }
 
 .control__list li:active {
