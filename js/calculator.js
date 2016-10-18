@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (isLastCharNum()) {
                     partial = (function() { return eval(result).toString() ; })();
                     HTMLResult.innerHTML = parseFloat(partial).toFixed(1);
+                    result = '(' + result.toString() +')';
                 }
             });
 
@@ -89,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
                   /*
                    * When last char is not a number or is the equal sign, skip
                    */
-                    if (!isLastCharNum() || this.firstElementChild.value === '=') {
+                    if ((!isLastCharNum() && !isLastBracket())  || this.firstElementChild.value === '=') {
                         return;
                     }
 
@@ -121,6 +122,12 @@ document.addEventListener('DOMContentLoaded', function () {
                    false;
         }
 
+        function isLastBracket() {
+            return result.length > 0 ?
+                   result.charAt(result.length - 1) === ')' :
+                   false;
+        }
+
         function updateResult(value, opt) {
 
             if (!value) {
@@ -128,7 +135,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             switch(opt) {
-            case '=':
             case 'delete':
                 result = (value === 'Infinity') ? 'Division by 0' : value;
                 break;
