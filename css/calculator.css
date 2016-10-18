@@ -253,6 +253,12 @@ body {
   height: 19%;
 }
 
+.calculator--3 .control__list--numbers li:hover,
+.calculator--3 .control__list--operations.control__list li:hover {
+  color: #3f51b5;
+  background: rgba(33, 150, 243, 0.18);
+}
+
 .calculator--3 .control__list .equal {
   width: 100%;
   color: #fff;
@@ -266,7 +272,8 @@ body {
 
 .calculator--3 .control__list .equal:hover,
 .calculator--3 .control__list .equal:focus {
-  background-color: #12b94a;
+  color: #fff!important;
+  background-color: #12b94a!important;
 }
 
 /* SCAFFOLD */
