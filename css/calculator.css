@@ -10,6 +10,7 @@ body {
     linear-gradient(135deg, hsla(129, 91%, 44%, 1) 10%, hsla(129, 91%, 44%, 0) 80%),
     linear-gradient(225deg, hsla(246, 91%, 49%, 1) 10%, hsla(246, 91%, 49%, 0) 80%),
     linear-gradient(315deg, hsla(349, 99%, 46%, 1) 100%, hsla(349, 99%, 46%, 0) 70%);
+  background-blend-mode: difference;
 }
 
 .calculator {
@@ -43,7 +44,7 @@ body {
 .result {
   height: 82px;
   margin: 20px;
-  color: #317cbf;
+  color: #fff;
   font-size: 3em;
   text-align: right;
   overflow-y: hidden;
