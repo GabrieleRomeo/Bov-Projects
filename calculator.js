@@ -20,19 +20,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var result = '';
 
-        function bind(HTMLelement) {
+        function bind(HTMLcalculator) {
 
-            HTMLResult     = $(HTMLelement + ' .result'),
-            operation      = $(HTMLelement + ' .operation'),
-            numbersLayer   = $(HTMLelement + ' .control__list--numbers'),
-            controlsLayer  = $(HTMLelement + ' .control__list--operations'),
-            numberButtons  = numbersLayer.childNodes,
+            HTMLResult     = $(HTMLcalculator + ' .result');
+            operation      = $(HTMLcalculator + ' .operation');
+            numbersLayer   = $(HTMLcalculator + ' .control__list--numbers');
+            controlsLayer  = $(HTMLcalculator + ' .control__list--operations');
+            numberButtons  = numbersLayer.childNodes;
             controlButtons = controlsLayer.childNodes;
 
-            del = $(HTMLelement + ' .button--del'),
-            clr = $(HTMLelement + ' .button--clear'),
-            eql = $(HTMLelement + ' .button--equal'),
-            per = $(HTMLelement + ' .button--period');
+            del = $(HTMLcalculator + ' .button--del');
+            clr = $(HTMLcalculator + ' .button--clear');
+            eql = $(HTMLcalculator + ' .button--equal');
+            per = $(HTMLcalculator + ' .button--period');
 
             // Event Listeners DEL, CLEAR, EQUAL, COMMA
             del.addEventListener('click', function() {
@@ -98,6 +98,27 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
+        function updateResult(value, opt) {
+
+            if (!value) {
+                result = '';
+            }
+
+            switch(opt) {
+            case '=':
+            case 'delete':
+                result = (value === 'Infinity') ? 'Division by 0' : value;
+                break;
+
+            default:
+                result += value;
+            }
+
+            operation.innerHTML = result;
+
+            if (result === 'Division by 0') result = '';
+        }
+
         function isDecimal(value) {
 
             if (!value) return true;
@@ -121,31 +142,13 @@ document.addEventListener('DOMContentLoaded', function () {
                    false;
         }
 
-        function updateResult(value, opt) {
-
-            if (!value) {
-                result = '';
-            }
-
-            switch(opt) {
-            case '=':
-            case 'delete':
-                result = (value === 'Infinity') ? 'Division by 0' : value;
-                break;
-
-            default:
-                result += value;
-            }
-
-            operation.innerHTML = result;
-
-            if (result === 'Division by 0') result = '';
-        }
-
-        return { bind: bind };
+        return {
+            bind: bind
+        };
     });
 
-    var calculator1 = calculator().bind('#calculator'),
-        calculator2 = calculator().bind('#calculator-2'),
-        calculator3 = calculator().bind('#calculator-3');
+    // Initialize calculators
+    var calculator1 = calculator().bind('#calculator');
+    var calculator2 = calculator().bind('#calculator-2');
+    var calculator3 = calculator().bind('#calculator-3');
 });
