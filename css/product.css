@@ -102,6 +102,7 @@ body {
   text-align: center;
   overflow: hidden;
   height: 278px;
+  padding-top: 40px;
 }
 
 .sectionContainer {
