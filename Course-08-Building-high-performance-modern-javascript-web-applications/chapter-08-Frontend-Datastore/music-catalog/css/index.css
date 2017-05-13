@@ -91,7 +91,7 @@ body {
   display: flex;
   left: 0;
   justify-content: space-between;
-  background-color: rgb(240, 248, 255);
+  background-color: rgba(245, 245, 245, 1);
   padding: 16px 20px;
   width: 86%;
 }
@@ -102,7 +102,7 @@ body {
   color: rgb(150, 150, 150);
 }
 .c-album__footer a:hover {
-  color: rgb(98, 197, 197);
+  color: rgb(216, 68, 68);
 }
 .c-album__divImg {
   height: 250px;
