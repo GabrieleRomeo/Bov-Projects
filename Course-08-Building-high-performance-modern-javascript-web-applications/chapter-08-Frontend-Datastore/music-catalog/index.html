@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>IndexDB - Music Catalog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Fauna+One" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Playfair+Display" rel="stylesheet">
+  <link href="css/index.css" rel="stylesheet">
+  <script src="https://use.fontawesome.com/118670e9e2.js"></script>
+</head>
+
+  <body>
+
+    <div class="c-albums">
+
+      <header>
+        <h2 class="c-albums__logo">Music Catalog</h2>
+      </header>
+
+      <section>
+        <div class="c-search-box">
+          <label class="c-search-box__label">
+            <i class="fa fa-search" aria-hidden="true"></i>
+          </label>
+          <input class="c-search-box__input" id="searchInput" type="text">
+        </div>
+      </section>
+
+      <section>
+        <div class="c-views">
+
+          <input class="c-views__input" id="listView" type="radio" name="views">
+          <label class="c-views____label" for="listView">
+            <i class="fa fa-list" aria-hidden="true"></i>
+          </label>
+
+          <input class="c-views__input" id="tableView" type="radio" name="views">
+          <label class="c-views____label" for="tableView">
+            <i class="fa fa-table" aria-hidden="true"></i>
+          </label>
+
+        </div>
+      </section>
+
+      <section class="l-album">
+
+      </section>
+
+    </div>
+
+    <script src="js/album.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          albumDB.init();
+      });
+
+    </script>
+
+
+  </body>
+</html>
