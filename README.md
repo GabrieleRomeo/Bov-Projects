@@ -16,7 +16,7 @@ This repository contains a list of projects made during the [bov Academy](https:
 
 
 
-### Course 08: Building high performance modern Javascript web applications
+### Course 08: Building high performance modern Javascript web applications
 
 
 
