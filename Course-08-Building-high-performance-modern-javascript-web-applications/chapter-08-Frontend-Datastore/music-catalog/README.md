@@ -4,9 +4,11 @@ Create a simple music catalog that displays albums. Each album should be stored 
 
 ![img1](img/music_catalog_1.png)
 
-The Music Catalog project I developed makes use of IndexedDB as well as the sessionStorage object for holding the user preference about the main view.
+The Music Catalog project I developed makes use of *IndexedDB* as well as the *sessionStorage* object for memorizing user preference about the main view.
 
-Long text descriptions are cut, and the system shows a Show More link so that the user can see the remaining text.
+Long text descriptions are cut, and the system shows a *Show More* link so that the user can see the remaining text.
+
+![imgcut](img/music_catalog_4.png)
 
 A user can switch between the list and table view using the appropriate button.
 
@@ -14,7 +16,7 @@ A user can switch between the list and table view using the appropriate button.
 
 
 
-I added the search capability too so that a user can seek a particular text within Albums titles and descriptions.
+I also added the search capability so that a user can seek a particular text within Albums titles and descriptions.
 
 ![img1](img/music_catalog_2.png)
 
