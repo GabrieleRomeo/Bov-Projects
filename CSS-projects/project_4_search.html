@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>
+    Modern Developer :: HTML & CSS Project Assignment - Search Form
+  </title>
+  <meta name="description"
+        content="Modern Developer :: HTML & CSS Project Assignment - Search Form">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Raleway:400,300italic">
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/showcase.css">
+  <link rel="stylesheet" href="css/topBar.css">
+  <link rel="stylesheet" href="css/project_4_search.css">
+
+  <script src="js/validator.js"></script>
+  <script src="js/project_4_search.js"></script>
+</head>
+<body>
+
+  <header class="topbar" role="banner">
+    <nav class="topbar__nav" role="navigation">
+      <ul class="topbar__nav__list">
+        <li class="nav__list__item nav__list__item--home">
+          <a class="nav__link" href="index.html" title="Home Page">
+            &#8962; Home
+          </a>
+        </li>
+        <li class="nav__list__item">
+          <a  class="nav__link"
+              href="project_4_questionnaire.html"
+              title="Next Project">
+            Next Project &#8680;
+          </a>
+        </li>
+      </ul>
+      <p class="topbar__nav__title">4: Search Form</p>
+    </nav>
+  </header>
+
+    <!-- PROJECT CONTENT -->
+
+  <form class="search" id="search" name="search">
+    <label class="search__label" for="searchTxt">Search</label>
+      <input class="search__input"
+             id="searchTxt"
+             name="searchTxt"
+             type="text"
+             required>
+      <select class="search__select" id="category" name="category" required>
+        <option value="">Select</option>
+        <option value="1">Category one</option>
+        <option value="2">Category two</option>
+        <option value="3">Category three</option>
+        <option value="4">Category four</option>
+        <option value="5">Category five</option>
+        <option value="6">Category six</option>
+      </select>
+      <input class="search__submit" type="submit" value="Search">
+  </form>
+
+</body>
+</html>

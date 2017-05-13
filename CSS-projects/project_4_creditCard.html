@@ -1,0 +1,157 @@
+<head>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>
+    Modern Developer :: HTML & CSS Project Assignment - Credit Card
+  </title>
+  <meta name="description"
+        content="Modern Developer :: HTML & CSS Project Assignment
+                 - Credit Card">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Raleway:400,300italic">
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/showcase.css">
+  <link rel="stylesheet" href="css/topBar.css">
+  <link rel="stylesheet" href="css/project_4_creditCard.css">
+
+  <script src="js/validator.js"></script>
+  <script src="js/project_4_creditCard.js"></script>
+</head>
+<body>
+
+  <header class="topbar" role="banner">
+    <nav class="topbar__nav" role="navigation">
+      <ul class="topbar__nav__list">
+        <li class="nav__list__item nav__list__item--home">
+          <a class="nav__link" href="index.html" title="Home Page">
+            &#8962; Home
+          </a>
+        </li>
+        <li class="nav__list__item">
+          <a  class="nav__link"
+              href="project_4.html"
+              title="Next Project">
+            Next Project &#8680;
+          </a>
+        </li>
+      </ul>
+      <p class="topbar__nav__title">4: Credit / Debit Card</p>
+    </nav>
+  </header>
+
+    <!-- PROJECT CONTENT -->
+
+  <div id="super-wrapper">
+    <div id="card-wrapper">
+        <p>secure payment</p>
+        <header id="head-section">
+            <h1>enter payment information</h1>
+            <picture>
+              <img class="header__img" src="images/lock_big.png">
+            </picture>
+        </header>
+        <section id="card-section">
+          <div id="list-card-wrapper">
+            <p>Please select a credit card type</p>
+            <ul id="list-card">
+                <li>
+                  <span class="list-card__card mastercard active"
+                        id="mastercard">
+                  </span>
+                </li>
+                <li>
+                  <span class="list-card__card visa"
+                        id="visa">
+                  </span>
+                </li>
+                <li>
+                  <span class="list-card__card maestro"
+                        id="maestro">
+                  </span>
+                </li>
+                <li>
+                  <span class="list-card__card cirrus"
+                        id="cirrus">
+                  </span>
+                </li>
+            </ul>
+          </div>
+        <form id="cardForm" name="cardForm" action="#" method="#">
+          <input id="selectedCard" value="mastercard" type="hidden">
+          <div id="card-info">
+            <ul class="form-list">
+              <li>
+                <label for="cardNumber">Card Number</label>
+                <input id="cardNumber"
+                       type="text"
+                       name="cardNumber"
+                       maxlength="19"
+                       required>
+              </li>
+              <li>
+                <label for="expirationMonth">Card expiration</label>
+                <select name="expirationMonth" id="expirationMonth" required>
+                    <option value="">Month</option>
+                    <option value="0">01 - January</option>
+                    <option value="1">02 - February</option>
+                    <option value="2">03 - March</option>
+                    <option value="3">04 - April</option>
+                    <option value="4">05 - May</option>
+                    <option value="5">06 - June</option>
+                    <option value="6">07 - July</option>
+                    <option value="7">08 - August</option>
+                    <option value="8">09 - September</option>
+                    <option value="9">10 - October</option>
+                    <option value="10">11 - November</option>
+                    <option value="11">12 - December</option>
+                </select>
+                <select name="expirationYear" id="expirationYear" required>
+                    <option value="">Year</option>
+                    <option value="2016">2016</option>
+                    <option value="2017">2017</option>
+                    <option value="2018">2018</option>
+                    <option value="2019">2019</option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                    <option value="2029">2029</option>
+                    <option value="2030">2030</option>
+                </select>
+              </li>
+              <li>
+                <label for="fullName">Full Name</label>
+                <input name="fullName" id="fullName" type="text" required>
+              </li>
+            </ul>
+          </div>
+          <div id="security-info">
+            <p></p>
+            <div id="right">
+              <ul class="form-list">
+                <li>
+                  <label for="csvNumber">CVC / CCV</label>
+                  <input id="csvNumber"
+                         name="csvNumber"
+                         type="text"
+                         maxlength="3"
+                         required>
+                  <span>The last 3 digits on back of the card</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <input type="submit" class="submitButton" value="Submit Payment">
+        </form>
+        </section>
+    </div>
+  </div>
+
+</body>
+</html>

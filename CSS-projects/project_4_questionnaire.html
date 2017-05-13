@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>
+    Modern Developer :: HTML & CSS Project Assignment - Questionnaire
+  </title>
+  <meta name="description"
+        content="Modern Developer :: HTML & CSS Project Assignment
+        - Questionnaire">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Raleway:400,300italic">
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/showcase.css">
+  <link rel="stylesheet" href="css/topBar.css">
+  <link rel="stylesheet" href="css/project_4_questionnaire.css">
+
+  <script src="js/validator.js"></script>
+  <script src="js/project_4_questionnaire.js"></script>
+</head>
+
+  <header class="topbar" role="banner">
+    <nav class="topbar__nav" role="navigation">
+      <ul class="topbar__nav__list">
+        <li class="nav__list__item nav__list__item--home">
+          <a class="nav__link" href="index.html" title="Home Page">
+            &#8962; Home
+          </a>
+        </li>
+        <li class="nav__list__item">
+          <a  class="nav__link"
+              href="project_4_login.html"
+              title="Next Project">
+            Next Project &#8680;
+          </a>
+        </li>
+      </ul>
+      <p class="topbar__nav__title">4: Questionnaire</p>
+    </nav>
+  </header>
+
+  <!-- PROJECT CONTENT -->
+  <section class="questionnaire" id="questionnaire">
+    <header>
+      <picture>
+        <img class="questionnaire__logo"
+             src="images/ferrari_logo.png"
+             alt="Ferrari's logo">
+      </picture>
+      <h2 class="questionnaire__header">
+        Which Ferrari do you prefer?
+      </h2>
+    </header>
+    <form class="questionnaire__form" method="" action="">
+      <ul class="questionnaire__list">
+        <li class="list_item">
+          <input class="list__radio"
+                 id="F12Berlinetta"
+                 name="option"
+                 type="radio"
+                 value="1"
+                 checked>
+          <label class="item__label" for="F12Berlinetta">
+            <span class="label__span">F12 Berlinetta</span>
+          </label>
+          <p class="item__description">
+            A Maximum power of 545 kW (740 cv) at 8250 rpm | Weight/power 2 |
+            8.5 sec from 0 to 200km/h
+          </p>
+        </li>
+        <li class="list_item">
+          <input  class="list__radio"
+                  id="488GTB"
+                  name="option"
+                  type="radio"
+                  value="2">
+          <label class="item__label" for="488GTB">
+            <span class="label__span">488 GTB</span>
+          </label>
+          <p class="item__description">
+            A Maximum power of 492 kW (670 CV) at 8000 rpm |
+            Maximum torque 760 Nm at 3000 rpm in VII gear
+          </p>
+        </li>
+        <li class="list_item">
+          <input  class="list__radio"
+                  id="458Speciale"
+                  name="option"
+                  type="radio"
+                  value="3">
+          <label class="item__label" for="458Speciale">
+            <span class="label__span">458 Speciale</span>
+          </label>
+          <p class="item__description">
+            Aero efficiency 1.5 | A specific power output of 135 cv/l |
+            Maximum power 445 kW (605 cv) at 9000 rpm
+          </p>
+        </li>
+        <li class="list_item">
+          <input  class="list__radio"
+                  id="laFerrari"
+                  name="option"
+                  type="radio"
+                  value="4">
+          <label class="item__label" for="laFerrari">
+            <span class="label__span">La Ferrari</span>
+          </label>
+          <p class="item__description">
+            A maximum speed over >350 km/h | < 7 sec From 0 To 200km/h |
+            Total maximum power of 963 cv
+          </p>
+        </li>
+        <li class="list_item">
+          <input class="list__radio"
+                 id="other"
+                 name="option"
+                 type="radio"
+                 value="5">
+          <label class="item__label item__label--other"
+                 for="other">
+                 Other
+          </label>
+          <input  class="list__input list__input--hidden"
+                  id="otherValue"
+                  name="otherValue"
+                  type="text">
+        </li>
+      </ul>
+      <input  class="questionnaire__submit"
+              type="submit"
+              value="Submit Questionnaire">
+    </form>
+  </section>
+
+</body>
+</html>
