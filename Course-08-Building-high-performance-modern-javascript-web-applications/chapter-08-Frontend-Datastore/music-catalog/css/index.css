@@ -107,7 +107,7 @@ body {
 .c-album__divImg {
   height: 250px;
 }
-#statusLine {
+.statusLine {
   position:fixed;
   left:0px;
   top:0px;
@@ -116,6 +116,9 @@ body {
   background-color: black;
   font: bold 18px sans-serif;
   padding: 10px;
+}
+.error {
+  background-color: #f30;
 }
 .c-views {
   display: flex;
