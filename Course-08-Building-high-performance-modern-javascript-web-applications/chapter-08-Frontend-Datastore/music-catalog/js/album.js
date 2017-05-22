@@ -1,19 +1,19 @@
-var albumDB = (function() {
+let albumDB = (function() {
     'use strict';
 
-    var aDB = {};
-    var datastore = null;
-    var dbName = 'albumsDB';
+    let aDB = {};
+    let datastore = null;
+    const dbName = 'albumsDB';
 
-    var indexedDB = window.indexedDB        ||
+    const indexedDB = window.indexedDB      ||
                     window.mozIndexedDB     ||
                     window.webkitIndexedDB;
     // Firefox does not prefix
-    var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
+    const IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
 
-    var searchInput = document.querySelector('#searchInput');
-    var viewComponent = document.querySelector('.c-views');
-    var isVisibleClass = 'is-visible';
+    let searchInput = document.querySelector('#searchInput');
+    let viewComponent = document.querySelector('.c-views');
+    const isVisibleClass = 'is-visible';
 
 
     /********************************************************************
@@ -21,13 +21,19 @@ var albumDB = (function() {
      *                      Utility Functions
      *
      ********************************************************************/
-    function status(msg) {
 
-        var statusLine = document.getElementById('statusLine');
+    function status(msg, extraClass) {
+
+        let statusLine = document.querySelector('.statusLine');
 
         if (!statusLine) {
             statusLine = document.createElement('DIV');
-            statusLine.setAttribute('ID', 'statusLine');
+            statusLine.setAttribute('class', 'statusLine');
+
+            if (extraClass) {
+                statusLine.classList.add(extraClass);
+            }
+
             document.body.appendChild(statusLine);
         }
 
@@ -40,12 +46,12 @@ var albumDB = (function() {
     }
 
     function debounce(fn, delay) {
-        var timer = null;
+        let timer = null;
         return function () {
-            var context = this, args = arguments;
+            let args = arguments;
             clearTimeout(timer);
             timer = setTimeout(function () {
-                fn.apply(context, args);
+                fn.apply(this, args);
             }, delay);
         };
     }
@@ -54,28 +60,30 @@ var albumDB = (function() {
      * When the Db is empty the system imports a list of albums from
      * freemusicarchive.org
      */
-    function importAlbums(callback) {
+    function importAlbums() {
 
-        var xhr = new XMLHttpRequest();
-        var URL = 'https://freemusicarchive.org/api/get/albums.json?api_key=JZLCCHD6Y8PC7NPF';
-        var isAsynchronous = false;
+        const URL = 'https://freemusicarchive.org/api/get/albums.json?api_key=JZLCCHD6Y8PC7NPF';
 
-        status('Loading remote Albums from freemusicarchive.org');
+        let promise = new Promise((resolve, reject) => {
 
-        xhr.open('GET', URL, isAsynchronous);
-        xhr.setRequestHeader('Accept', 'application/json', isAsynchronous);
-        xhr.onerror = status; // Display any error codes
+            const xhr = new XMLHttpRequest();
+            const isAsynchronous = false;
 
-        xhr.onload = function(e) {
-            if (xhr.status === 200) {
-                var albumsObj = JSON.parse(xhr.responseText);
-                var dataset   = albumsObj && albumsObj.dataset || null;
-                var albumsArr = dataset && [].slice.call(dataset) || [];
-                callback(albumsArr);
-            }
-        };
+            xhr.onload = () => {
+                resolve(xhr.response);
+            };
 
-        xhr.send();
+            xhr.onerror = (error) => {
+                reject(error);
+            };
+
+            xhr.open('GET', URL, isAsynchronous);
+            status('Loading remote Albums from freemusicarchive.org');
+            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.send();
+        });
+
+        return promise;
     }
 
     /**
@@ -84,20 +92,26 @@ var albumDB = (function() {
      */
     aDB.open = function(callback) {
         // Database version
-        var version = 1;
+        const version = 1;
 
         // Request a connection to the datastore
-        var request = indexedDB.open(dbName, version);
+        let request = indexedDB.open(dbName, version);
 
         // Handle upgrades
         request.onupgradeneeded = function(event) {
 
-            var db = event.target.result;
+            let db = event.target.result;
 
             event.target.transaction.onerror = aDB.onerror;
 
             // Import the albums
-            importAlbums(function(arrayList) {
+            let albums = importAlbums();
+
+            albums.then(function(result) {
+
+                let albumsObj = JSON.parse(result);
+                let dataset   = albumsObj && albumsObj.dataset || null;
+                let arrayList = dataset && Array.from(dataset) || [];
 
                 status('Importing Albums');
 
@@ -107,16 +121,16 @@ var albumDB = (function() {
                 }
 
                 // Create a new datastore.
-                var store = db.createObjectStore('albums', {
+                let store = db.createObjectStore('albums', {
                     keyPath: 'album_id'
                 });
 
                 store.transaction.oncomplete = function () {
                     // start a new transaction
-                    var transaction = db.transaction('albums', 'readwrite'),
+                    let transaction = db.transaction('albums', 'readwrite'),
                         objectStore = transaction.objectStore('albums');
 
-                    arrayList.forEach(function(album) {
+                    arrayList.forEach((album) => {
                         //write to the object store
                         objectStore.add(album);
                     });
@@ -124,7 +138,12 @@ var albumDB = (function() {
                     status('');
                 };
 
+            },
+            (error) => {
+                status(error, 'error');
             });
+
+
         };
 
         // Handle successful datastore access.
@@ -144,14 +163,14 @@ var albumDB = (function() {
     // Fetch all of the items in the datastore.
     aDB.fetchAlbums = function(callback) {
 
-        var db = datastore;
-        var transaction = db.transaction(['albums'], 'readwrite');
-        var objStore = transaction.objectStore('albums');
+        const db = datastore;
+        const transaction = db.transaction(['albums'], 'readwrite');
+        const objStore = transaction.objectStore('albums');
 
-        var keyRange = IDBKeyRange.lowerBound(0);
-        var cursorRequest = objStore.openCursor(keyRange);
+        let keyRange = IDBKeyRange.lowerBound(0);
+        let cursorRequest = objStore.openCursor(keyRange);
 
-        var albums = [];
+        let albums = [];
 
         status('Fetching Albums');
 
@@ -160,7 +179,8 @@ var albumDB = (function() {
         };
 
         cursorRequest.onsuccess = function(event) {
-            var result = event.target.result;
+
+            let result = event.target.result;
 
             if (!!result === false) {
                 status('');
@@ -179,13 +199,13 @@ var albumDB = (function() {
     // Fetch a specific album
     aDB.fetchAlbum = function(value, callback) {
 
-        var db = datastore;
-        var transaction = db.transaction(['albums'], 'readwrite');
-        var objStore = transaction.objectStore('albums');
+        const db = datastore;
+        const transaction = db.transaction(['albums'], 'readwrite');
+        const objStore = transaction.objectStore('albums');
 
-        var cursorRequest = objStore.openCursor();
+        let cursorRequest = objStore.openCursor();
 
-        var albums = [];
+        let albums = [];
 
         status('Searching Albums');
 
@@ -195,7 +215,7 @@ var albumDB = (function() {
 
         cursorRequest.onsuccess = function(event) {
 
-            var result = event.target.result;
+            let result = event.target.result;
 
             if (!!result === false) {
                 status('');
@@ -220,15 +240,15 @@ var albumDB = (function() {
 
     // Log errors
     aDB.onerror = function(error) {
-        console.log(error.message);
+        status(error.message, 'error');
     };
 
 
     // Set the right checkbox view and load initial data
     aDB.init = function() {
 
-        var view = getCurrentViewType();
-        var checkBox = document.getElementById(view);
+        let view = getCurrentViewType();
+        let checkBox = document.getElementById(view);
 
         // Initialize the right checkbox for the view
         checkBox.checked = true;
@@ -242,12 +262,12 @@ var albumDB = (function() {
      */
     function initTableView() {
 
-        var baseTable = document.createElement('TABLE');
-        var baseTableH = document.createElement('THEAD');
-        var baseTableB = document.createElement('TBODY');
-        var baseTableR = document.createElement('TR');
+        const baseTable = document.createElement('TABLE');
+        const baseTableH = document.createElement('THEAD');
+        const baseTableB = document.createElement('TBODY');
+        const baseTableR = document.createElement('TR');
 
-        var baseTableHContent = '<tr>';
+        let baseTableHContent = '<tr>';
         baseTableHContent += '<th>Title</th>';
         baseTableHContent += '<th>Date of creation</th>';
         baseTableHContent += '<th>Information</th>';
@@ -271,21 +291,21 @@ var albumDB = (function() {
      */
     function listView(fragment, album) {
 
-        var article = document.createElement('ARTICLE');
-        var divImg = document.createElement('DIV');
-        var header  = document.createElement('HEADER');
-        var h2  = document.createElement('H2');
-        var date  = document.createElement('p');
-        var body = document.createElement('DIV');
-        var footer = document.createElement('FOOTER');
-        var albumlink = document.createElement('A');
-        var artistlink = document.createElement('A');
-        var showMLink = document.createElement('A');
+        const article = document.createElement('ARTICLE');
+        const divImg = document.createElement('DIV');
+        const header  = document.createElement('HEADER');
+        const h2  = document.createElement('H2');
+        const date  = document.createElement('p');
+        const body = document.createElement('DIV');
+        const footer = document.createElement('FOOTER');
+        const albumlink = document.createElement('A');
+        const artistlink = document.createElement('A');
+        const showMLink = document.createElement('A');
 
 
-        var backImg =  'background: rgb(254, 255, 245)  ';
-            backImg += 'url("' + album["album_image_file"] +'")';
-            backImg += ' left top no-repeat; background-size: cover; ';
+        let backImg =  'background: rgb(254, 255, 245)  ';
+        backImg += 'url("' + album.album_image_file +'")';
+        backImg += ' left top no-repeat; background-size: cover; ';
 
         // Add classes
         article.classList.add('c-album');
@@ -298,14 +318,14 @@ var albumDB = (function() {
         showMLink.classList.add('c-album__showMoreLess');
 
         // Add content
-        h2.textContent = album['album_title'].replace(/\"/g, '');
-        date.textContent = album['album_date_created'];
-        body.innerHTML = album['album_information'];
+        h2.textContent = album.album_title.replace(/\"/g, '');
+        date.textContent = album.album_date_created;
+        body.innerHTML = album.album_information;
         albumlink.textContent = 'Album Site';
-        albumlink.setAttribute('href', album['album_url']);
+        albumlink.setAttribute('href', album.album_url);
         albumlink.setAttribute('title', 'Album WebSite');
         artistlink.textContent = 'Artist';
-        artistlink.setAttribute('href', album['artist_url']);
+        artistlink.setAttribute('href', album.artist_url);
         artistlink.setAttribute('title', 'Artist WebSite');
         showMLink.textContent = 'Show More';
         showMLink.setAttribute('href', '#');
@@ -331,30 +351,31 @@ var albumDB = (function() {
      * Build the Table view dynamically
      */
     function tableView(table, album) {
-        var rowCount = table.rows.length;
 
-        var row = table.insertRow(rowCount++);
+        let rowCount = table.rows.length;
 
-        var titleCell = row.insertCell(0);
-        var dateCell  = row.insertCell(1);
-        var infoCell  = row.insertCell(2);
-        var albumURLCell  = row.insertCell(3);
-        var artistURLCell  = row.insertCell(4);
+        let row = table.insertRow(rowCount++);
 
-        var albumlink = document.createElement('A');
-        var artistlink = document.createElement('A');
+        let titleCell = row.insertCell(0);
+        let dateCell  = row.insertCell(1);
+        let infoCell  = row.insertCell(2);
+        let albumURLCell  = row.insertCell(3);
+        let artistURLCell  = row.insertCell(4);
+
+        let albumlink = document.createElement('A');
+        let artistlink = document.createElement('A');
 
         albumlink.textContent = 'Album Site';
         infoCell.classList.add('h-text--left');
-        albumlink.setAttribute('href', album['album_url']);
+        albumlink.setAttribute('href', album.album_url);
         albumlink.setAttribute('title', 'Album WebSite');
         artistlink.textContent = 'Artist';
-        artistlink.setAttribute('href', album['artist_url']);
+        artistlink.setAttribute('href', album.artist_url);
         artistlink.setAttribute('title', 'Artist WebSite');
 
-        titleCell.innerHTML = album['album_title'].replace(/\"/g, '');
-        dateCell.innerHTML = album['album_date_created'];
-        infoCell.innerHTML = album['album_information'];
+        titleCell.innerHTML = album.album_title.replace(/\"/g, '');
+        dateCell.innerHTML = album.album_date_created;
+        infoCell.innerHTML = album.album_information;
         albumURLCell.appendChild(albumlink);
         artistURLCell.appendChild(artistlink);
 
@@ -366,13 +387,13 @@ var albumDB = (function() {
      */
     function renderList(albums) {
 
-        var layout = document.querySelector('.l-album');
-        var fragment;
-        var view = getCurrentViewType();
-        var tableElement;
+        let layout = document.querySelector('.l-album');
+        let fragment;
+        let view = getCurrentViewType();
+        let tableElement;
 
         if (albums.length === 0) {
-            var result  = '<div class="c-album__body"';
+            let result  = '<div class="c-album__body"';
             result += 'style="width: 100%;text-align: center;';
             result += 'font-size: 1.2em;">';
             result += 'Sorry! Nothing Found.';
@@ -405,8 +426,8 @@ var albumDB = (function() {
     function showMore(item) {
         item.classList.add(isVisibleClass);
         item.addEventListener('click', function(event) {
-            var item = event.target;
-            var article = event.target.parentNode.parentNode;
+            let item = event.target;
+            let article = event.target.parentNode.parentNode;
 
             if (article.classList.contains('showContent')) {
                 article.classList.remove('showContent');
@@ -436,7 +457,7 @@ var albumDB = (function() {
     }, 250));
 
     viewComponent.addEventListener('change', function(event) {
-        var viewType = event.target.id;
+        const viewType = event.target.id;
         localStorage.setItem('viewType', viewType);
         refreshView();
     });
