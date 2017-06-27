@@ -211,8 +211,9 @@ f.memoized = (fn) => {
 
 // not :: bool -> bool
 f.not = (x) => !bool(x);
+
 /*
- * Gets a data type and returns a function that, when applied, checks if
+ * Given a data type, it returns a function that, when applied, checks if
  * the provide value is of the intended data type
  */
 
