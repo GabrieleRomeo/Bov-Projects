@@ -13,6 +13,7 @@ const f = {};
   // Primitives
 const str  = typeOf('string');
 const num  = typeOf('number');
+const int  = typeOf('integer');
 const fun  = typeOf('function');
 const bool = typeOf('boolean');
 
@@ -23,9 +24,13 @@ const arr = typeOf('Array');
 const sym = typeOf('Symbol');
 const HTMLNode = typeOf('HtmlNode');
 
+// Custom data type
+const allowedTypes = (...types) => typeOf(types);
+
 export const types = {
   str,
   num,
+  int,
   bool,
   fun,
   date,
@@ -33,6 +38,7 @@ export const types = {
   arr,
   sym,
   HTMLNode,
+  allowedTypes,
 };
 
 
@@ -217,18 +223,20 @@ f.not = (x) => !bool(x);
  * the provide value is of the intended data type
  */
 
-function typeOf(type) {
+function typeOf(types) {
   return function(x) {
     const HTMLTest = /HTML.*Element/i;
-    const expected = f.capitalize(type);
+    const INTEGERTest = /^[0-9]*$/g;
+    const expected = [].concat(types).map(f.capitalize);
     const provided = f.capitalize(f.classOf(x));
 
-    if (expected === 'HTMLNODE' && HTMLTest.test(provided) ||
-        provided === expected) {
+    if (expected.includes('HTMLNODE') && HTMLTest.test(provided) ||
+        expected.includes('INTEGER') && f.classOf(x) === 'Number' &&  INTEGERTest.test(x) ||
+        expected.includes(provided)) {
       return x;
     } else {
       throw new TypeError(`
-        Error: expected ${expected} but provided ${provided}
+        Error: expected ${expected.join(' OR ')} but provided ${provided}
         `);
     }
   };
