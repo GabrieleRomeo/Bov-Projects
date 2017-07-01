@@ -55,112 +55,110 @@ v.isEmailAddress = (input) => {
 
 v.isPhoneNumber = function(input) {
 
-  if (!input) return false;
+  const COUNTRY_CODE        = '39',
+        INTERNATIONAL_PRFX  = '00',
+        SPECIALS = [
+          '112', '113', '115', '116', '117', '118', '1515', '1518', '1530'
+        ],
+        ZONES = {
+          1: {
+            prefixes: ['010','011','0122','0123','0124','0125','0131',
+                       '0141','015','0161','0163','0165','0166','0171',
+                       '0183','0184','0185','0187']
+          },
+          2: {
+            prefixes: ['02']
+          },
+          3: {
+            prefixes: ['030','031','0321','0322','0324','0331','0332',
+                       '0341','0342','0343','0344','0346','035','0362',
+                       '0362','0363','0364','0365','0371','0372','0373',
+                       '0375','0376','0382','039']
+          },
+          4: {
+            prefixes: ['040','041','0421','0422','0423','0424','0425',
+                       '0426','0432','0434','0438','0444','0445','045',
+                       '0461','0471','0481','049']
+          },
+          5: {
+            prefixes: ['050','051','0522','0521','0523','0532','0535',
+                       '0536','0541','0543','0544','0545','0547','0549',
+                       '055','0565','0571','0574','0575','0577','0583',
+                       '0585','0586','059']
+          },
+          6: {
+            prefixes: ['06']
+          },
+          7: {
+            prefixes: ['070','071','0721','0731','0732','0733','0734',
+                       '0735','0736','0737','075','0761','0765','0771',
+                       '0773','0774','0775','0776','0783','0789','079']
+          },
+          8: {
+            prefixes: ['080','081','0823','0824','0825','0832','085',
+                       '0861','0862','0865','0874','0881','0882','0883',
+                       '0884','089']
+          },
+          9: {
+            prefixes: ['090','091','0921','0931','0932','0933','0924',
+                       '0922','0925','0934','0941','0942','095','0961',
+                       '0962','0963','07965','0974','0975','099','0984']
+          }
+        };
 
   let _errorMsg;
+  let parts = TYPES.str(input).split('-'),
+      prefix  = parts[0],
+      number  = parts[1];
 
-  const COUNTRY_CODE = '39';
-  const INTERNATIONAL_PRFX  = '00';
-  const SPECIALS = [112, 113, 115, 116, 117, 118, 1515, 1518, 1530];
-  const ZONES = {
-    1: {
-      prefixes: ['010','011','0122','0123','0124','0125','0131',
-           '0141','015','0161','0163','0165','0166','0171',
-           '0183','0184','0185','0187']
-    },
-    2: {
-      prefixes: ['02']
-    },
-    3: {
-      prefixes: ['030','031','0321','0322','0324','0331','0332',
-           '0341','0342','0343','0344','0346','035','0362',
-           '0362','0363','0364','0365','0371','0372','0373',
-           '0375','0376','0382','039']
-    },
-    4: {
-      prefixes: ['040','041','0421','0422','0423','0424','0425',
-           '0426','0432','0434','0438','0444','0445','045',
-           '0461','0471','0481','049']
-    },
-    5: {
-      prefixes: ['050','051','0522','0521','0523','0532','0535',
-           '0536','0541','0543','0544','0545','0547','0549',
-           '055','0565','0571','0574','0575','0577','0583',
-           '0585','0586','059']
-    },
-    6: {
-      prefixes: ['06']
-    },
-    7: {
-      prefixes: ['070','071','0721','0731','0732','0733','0734',
-           '0735','0736','0737','075','0761','0765','0771',
-           '0773','0774','0775','0776','0783','0789','079']
-    },
-    8: {
-      prefixes: ['080','081','0823','0824','0825','0832','085',
-           '0861','0862','0865','0874','0881','0882','0883',
-           '0884','089']
-    },
-    9: {
-      prefixes: ['090','091','0921','0931','0932','0933','0924',
-           '0922','0925','0934','0941','0942','095','0961',
-           '0962','0963','07965','0974','0975','099','0984']
-    }
-  };
-
-  const parts = input.split('-');
-  let prefix  = parts[0];
-  const number  = parts[1];
-
-  const intPrefix = (prefix.substr(0, 2) === INTERNATIONAL_PRFX);
-  const countryC  = intPrefix ? prefix.substr(2, 2) : prefix.substr(1, 2);
-  const isContryC = countryC === COUNTRY_CODE;
-
+  const INTPREFIX = (prefix.substr(0, 2) === INTERNATIONAL_PRFX);
+  const COUNTRYC  = INTPREFIX ? prefix.substr(2, 2) : prefix.substr(1, 2);
+  const ISCONTRYC = COUNTRYC === COUNTRY_CODE;
   let startAt = 1;
   let type;
   let zone;
 
-  // Is it an emergency or service number?
-  if (SPECIALS.indexOf(parseInt(input)) !== -1) {
-    return true;
+  // Is this an emergency or service number?
+  if (SPECIALS.indexOf(input) !== -1) {
+      return true;
   }
 
   if (parts.length !== 2) {
-    _errorMsg  =  'Invalid Phone Number\n';
-    _errorMsg +=  'The prefix must be indicated with the - character\n';
-    _errorMsg +=  'Valid examples:\n';
-    _errorMsg +=  'Landlines:\n';
-    _errorMsg +=  '\t02-19838788, +3902-19838788, 003902-19838788\n';
-    _errorMsg +=  'Mobile phones:\n';
-    _errorMsg +=  '\t333-1111111, +39333-1111111, 0039333-1111111';
-    throw _errorMsg;
+      _errorMsg  =  'Invalid Phone Number\n';
+      _errorMsg +=  'The prefix must be indicated with the - character\n';
+      _errorMsg +=  'Valid examples:\n';
+      _errorMsg +=  'Landlines:\n';
+      _errorMsg +=  '\t02-19838788, +3902-19838788, 003902-19838788\n';
+      _errorMsg +=  'Mobile phones:\n';
+      _errorMsg +=  '\t333-1111111, +39333-1111111, 0039333-1111111';
+      throw _errorMsg;
   }
 
-  if (isContryC) {
-    startAt  = 4;
+  if (ISCONTRYC) {
+      startAt  = 4;
   }
-  if (intPrefix) {
-    startAt = 5;
+  if (INTPREFIX) {
+      startAt = 5;
   }
 
   type  = prefix.charAt(startAt - 1);
   zone  = prefix.charAt(startAt);
 
-  if (! (typeof number === 'number')) {
-    return false;
+  if (!typeof number === "number") {
+      return false;
   }
 
-  if ( intPrefix && (!isContryC) ) {
-    _errorMsg  =  'Invalid International prefix (';
-    _errorMsg +=  INTERNATIONAL_PRFX + ')';
-    _errorMsg += ' OR country code (+' + COUNTRY_CODE + ')';
-    throw _errorMsg;
+  if ( INTPREFIX && (!ISCONTRYC) ) {
+      _errorMsg  =  'Invalid International prefix (';
+      _errorMsg +=  INTERNATIONAL_PRFX + ')';
+      _errorMsg += ' OR country code (+' + COUNTRY_CODE + ')';
+      throw _errorMsg;
   }
 
-  if ( prefix.indexOf('+') !== -1 && (!isContryC) ) {
-    _errorMsg  = 'Invalid country code.\n';
-    _errorMsg += 'Italy Contry Code (+' + COUNTRY_CODE +')';
-    throw _errorMsg;
+  if ( prefix.indexOf('+') !== -1 && (!ISCONTRYC) ) {
+      _errorMsg  = 'Invalid country code.\n'
+      _errorMsg += 'Italy Contry Code (+' + COUNTRY_CODE +')';
+      throw _errorMsg;
   }
 
   /*
@@ -180,16 +178,16 @@ v.isPhoneNumber = function(input) {
   prefix   = prefix.substr(startAt, prefix.length);
 
   if (type === '0') { // landlines
-    if (!ZONES[zone]) return false; // non-existent zone
-    if (ZONES[zone].prefixes.indexOf(prefix) === -1) return false;
-    if (number.length < 6 || number.length > 10) return false;
+      if (!ZONES[zone]) return false; // non-existent zone
+      if (ZONES[zone].prefixes.indexOf(prefix) === -1) return false;
+      if (number.length < 6 || number.length > 10) return false;
 
   } else if (type === '3') {
-    // mobile phone
-    if ((prefix.length + number.length) !== 10) return false;
+      // mobile phone
+      if ((prefix.length + number.length) !== 10) return false;
   } else {
-    // non-valid type - 0 for landlines 3 for mobile phones
-    return false;
+      // non-valid type - 0 for landlines 3 for mobile phones
+      return false;
   }
 
   return true;
@@ -209,26 +207,27 @@ v.isPhoneNumber = function(input) {
  * @returns {string} The input parameter text with all symbols removed
  */
 
-v.withoutSymbols = ULYF.maybe(input => {
+v.withoutSymbols = (input) => {
   return TYPES.str(input).split('').map((item) => {
-    item = item.toLowerCase();
-    return ((_ALPHA.indexOf(item) === -1) && item !== ' ') ? '' : item;
+    const char = item.toLowerCase();
+    return ((_ALPHA.indexOf(char) === -1) && item !== ' ') ? '' : item;
   }).join('');
-});
+}
 
 /**
  * Checks if the input parameter text is a valid date.
  * For your purposes, a valid date is any string that can be turned into
  * a JavaScript Date Object.
  *
- * @param {string} or {date} input A value representing a valid Javascript
- *                                 date.
+ * @param   {string | Date}  input A string or a Date object
+ *
  *
  * @returns {boolean} True or False
  */
 
 v.isDate = (input) => {
-  const date = new Date(TYPES.str(input));
+  const customType = TYPES.allowedTypes('String', 'Date');
+  const date = new Date(customType(input));
   return !isNaN(date.getDate());
 };
 
@@ -247,11 +246,13 @@ v.isDate = (input) => {
  */
 
 v.isBeforeDate = (input, reference) => {
-  const d1 = new Date(TYPES.str(input));
-  const d2 = new Date(TYPES.str(reference));
+  const customType = TYPES.allowedTypes('String', 'Date');
+  const d1 = new Date(customType(input));
+  const d2 = new Date(customType(reference));
 
-  if (!this.isDate(d1)) throw 'Invalid Date';
-  if (!this.isDate(d2)) throw 'Invalid Reference Date';
+  if (!v.isDate(d1) || !v.isDate(d2)) {
+    throw 'Invalid Date';
+  }
 
   return d1 < d2;
 };
@@ -271,12 +272,13 @@ v.isBeforeDate = (input, reference) => {
  */
 
 v.isAfterDate = (input, reference) => {
+  const customType = TYPES.allowedTypes('String', 'Date');
+  const d1 = new Date(customType(input));
+  const d2 = new Date(customType(reference));
 
-  const d1 = new Date(TYPES.str(input));
-  const d2 = new Date(TYPES.str(reference));
-
-  if (!this.isDate(d1)) throw 'Invalid Date';
-  if (!this.isDate(d2)) throw 'Invalid Reference Date';
+  if (!v.isDate(d1) || !v.isDate(d2)) {
+    throw 'Invalid Date';
+  }
 
   return d1 > d2;
 };
@@ -294,12 +296,12 @@ v.isAfterDate = (input, reference) => {
  */
 
 v.isBeforeToday = (input) => {
-
-  const d1 = new Date(TYPES.str(input));
+  const customType = TYPES.allowedTypes('String', 'Date');
+  const d1 = new Date(customType(input));
   const d2 = new Date();
   let days;
 
-  if (!this.isDate(d1)) throw 'Invalid Date';
+  if (!v.isDate(d1)) throw 'Invalid Date';
 
   days = v.diffInDays(d1, d2);
 
@@ -319,12 +321,12 @@ v.isBeforeToday = (input) => {
  */
 
 v.isAfterToday = (input) => {
-
-  const d1 = new Date(TYPES.str(input));
+  const customType = TYPES.allowedTypes('String', 'Date');
+  const d1 = new Date(customType(input));
   const d2 = new Date();
   let days;
 
-  if (!this.isDate(d1)) throw 'Invalid Date';
+  if (!v.isDate(d1)) throw 'Invalid Date';
 
   days = v.diffInDays(d1, d2);
 
@@ -442,7 +444,7 @@ v.lacks = (input, words) => !v.contains.call(this, input, words);
  */
 
 v.isComposedOf = function(input, strings) {
-  let result = TYPES.arr(strings).map(item => item.toLowerCase())
+  let result = TYPES.arr(strings).map(item => item.toString().toLowerCase())
                   .reduce((prev, curr) => {
                     return prev.toLowerCase().split(curr).join('');
                   },  TYPES.str(input)).trim();
@@ -469,7 +471,7 @@ v.isComposedOf = function(input, strings) {
  * @returns {boolean} True or False
  */
 
-v.isLength = (input, n) => TYPES.str(input).length <= TYPES.num(n);
+v.isLength = (input, n) => TYPES.str(input).length <= TYPES.int(n);
 
 
 /**
@@ -491,7 +493,7 @@ v.isLength = (input, n) => TYPES.str(input).length <= TYPES.num(n);
  * @returns {boolean} True or False
  */
 
-v.isOfLength = (input, n) => TYPES.str(input).length >= TYPES.num(n);
+v.isOfLength = (input, n) => TYPES.str(input).length >= TYPES.int(n);
 
 
 /**
@@ -513,6 +515,11 @@ v.isOfLength = (input, n) => TYPES.str(input).length >= TYPES.num(n);
 
 v.countWords = (input) => {
   input = TYPES.str(input).replace(/[^a-zA-Z\d\s\-:]/g, '');
+
+  if (input.length === 0) {
+    return 0;
+  }
+
   return input.split('').map(function(item) {
     return (_ALPHA.indexOf(item.toLowerCase()) === -1) ? ' ' : item;
   }).join('').trim().split(' ').length;
@@ -528,7 +535,7 @@ v.countWords = (input) => {
  * @returns {boolean} True or False
  */
 
-v.lessWordsThan = (input, n) => v.countWords(input) <= n;
+v.lessWordsThan = (input, n) => v.countWords(input) <= TYPES.int(n);
 
 /**
  * Checks if the input parameter has a word count greater than or equal to
@@ -540,7 +547,7 @@ v.lessWordsThan = (input, n) => v.countWords(input) <= n;
  * @returns {boolean} True or False
  */
 
-v.moreWordsThan = (input, n) => v.countWords(input) >= n;
+v.moreWordsThan = (input, n) => v.countWords(input) >= TYPES.int(n);
 
 
 /**
@@ -549,15 +556,20 @@ v.moreWordsThan = (input, n) => v.countWords(input) >= n;
  * - input is greater than or equal to the floor parameter
  * - input is less than or equal to the ceil parameter.
  *
- * @param {value} input The value to analyze.
- * @param {integer} floor The lower threshold
- * @param {integer} ceil The upper threshold
+ * @param {Number | String } input The value to analyze.
+ * @param {Number | String} floor The lower threshold
+ * @param {Number | String} ceil The upper threshold
  *
  * @returns {boolean} True or False
  */
 
 v.isBetween = function(input, floor, ceil) {
-  return (TYPES.str(input) >= TYPES.str(floor) && input <= TYPES.str(ceil));
+  const customType = TYPES.allowedTypes('String', 'NUMBER');
+  input = customType(input);
+  floor = customType(floor);
+  ceil  = customType(ceil);
+
+  return (input >= floor && input <= ceil);
 };
 
 /**
@@ -566,7 +578,7 @@ v.isBetween = function(input, floor, ceil) {
  *
  * Unicode characters are intentionally disregarded.
  *
- * @param {string} input The value to analyze.
+ * @param {string | Integer} input The value to be analyzed.
  *
  * @example .isAlphanumeric("Hello.");
  *  // returns false
@@ -583,7 +595,8 @@ v.isBetween = function(input, floor, ceil) {
  */
 
 v.isAlphanumeric = function(input) {
-  return TYPES.str(input).split('').reduce((prev, curr) => {
+  const customType = TYPES.allowedTypes('String', 'INTEGER');
+  return customType(input).toString().split('').reduce((prev, curr) => {
     return (_ALPHA.indexOf(curr.toLowerCase()) === -1) ? false : prev;
   }, true);
 };
@@ -726,9 +739,10 @@ v.isHSL = (input) => {
   const values   = sanitized.split(',');
 
   if (values.length !== 3) return false;
-  if (!(v.isBetween(values[0].trim(), '0', '360'))) return false;
-  if (!(v.isBetween(values[1].trim(), '0', '1'))) return false;
-  if (!(v.isBetween(values[2].trim(), '0', '1'))) return false;
+
+  if (!(v.isBetween(values[0].trim(), 0, 360))) return false;
+  if (!(v.isBetween(values[1].trim(), 0, 1))) return false;
+  if (!(v.isBetween(values[2].trim(), 0, 1))) return false;
 
   return true;
 };
