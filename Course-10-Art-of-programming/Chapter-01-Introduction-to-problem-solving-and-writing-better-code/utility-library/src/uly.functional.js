@@ -22,6 +22,7 @@ const date = typeOf('Date');
 const obj = typeOf('Object');
 const arr = typeOf('Array');
 const sym = typeOf('Symbol');
+const regex = typeOf('RegExp');
 const HTMLNode = typeOf('HtmlNode');
 
 // Custom data type
@@ -37,6 +38,7 @@ export const types = {
   obj,
   arr,
   sym,
+  regex,
   HTMLNode,
   allowedTypes,
 };
@@ -177,6 +179,12 @@ f.forEachObject = (obj, fn) => {
 f.unless = (predicate, fn) => {
   if (!predicate) { fn(); }
 };
+
+// head :: Array -> Value
+f.head = (a) => arr(a)[0];
+
+// tail :: Array :: Integer -> Array
+f.tail = (a, begin = 1) => arr(a).slice(int(begin), a.length);
 
 f.sortBy = (property) => {
   return (a, b) => {
