@@ -4,6 +4,7 @@ import 'babel-polyfill';
 import u from '../src/uly.utilities';
 
 const assert = require('assert');
+const should = require('chai').should();
 
 
 describe('Utilities - U', () => {
@@ -333,6 +334,170 @@ describe('Utilities - U', () => {
     });
     it('should return an empty string when all of the parameters are empty', () => {
       assert.deepEqual(u.replaceAll('', '',  ''), '');
+    });
+  });
+
+  describe('.getRandomInt( max, min ) - Inclusive at the minimum', () => {
+    it('should throw an expection when the max parameter is not an INTEGER', () => {
+      assert.throws(
+        () => {
+          u.getRandomInt([]);
+          u.getRandomInt(true);
+          u.getRandomInt(123);
+          u.getRandomInt(undefined);
+          u.getRandomInt(null);
+        },
+        /Error: expected INTEGER but provided/
+        );
+    });
+    it('should throw an expection when the min parameter is not an INTEGER', () => {
+      assert.throws(
+        () => {
+          u.getRandomInt(4, []);
+          u.getRandomInt(4, true);
+          u.getRandomInt(4, 123);
+          u.getRandomInt(4, undefined);
+          u.getRandomInt(4, null);
+        },
+        /Error: expected INTEGER but provided/
+        );
+    });
+    it('should return a random integer from 0 to 10 (not included) by default', () => {
+      u.getRandomInt().should.be.within(0, 10);
+    });
+    it('should return a random integer from 0 to max (not included)', () => {
+      u.getRandomInt(5).should.be.within(0, 5);
+    });
+    it('should return a random integer from min to max', () => {
+      u.getRandomInt(5, 2).should.be.within(2, 5);
+    });
+  });
+
+  describe('.getIncRandomInt( max, min ) - Inclusive range', () => {
+    it('should throw an expection when the max parameter is not an INTEGER', () => {
+      assert.throws(
+        () => {
+          u.getIncRandomInt([]);
+          u.getIncRandomInt(true);
+          u.getIncRandomInt(123);
+          u.getIncRandomInt(undefined);
+          u.getIncRandomInt(null);
+        },
+        /Error: expected INTEGER but provided/
+        );
+    });
+    it('should throw an expection when the min parameter is not an INTEGER', () => {
+      assert.throws(
+        () => {
+          u.getIncRandomInt(4, []);
+          u.getIncRandomInt(4, true);
+          u.getIncRandomInt(4, 123);
+          u.getIncRandomInt(4, undefined);
+          u.getIncRandomInt(4, null);
+        },
+        /Error: expected INTEGER but provided/
+        );
+    });
+    it('should return a random integer from 0 to 10 (included) by default', () => {
+      u.getIncRandomInt().should.be.within(0, 10);
+    });
+    it('should return a random integer from 0 to max (included)', () => {
+      u.getIncRandomInt(1).should.be.within(0, 1);
+    });
+    it('should return a random integer from min to max', () => {
+      u.getIncRandomInt(5, 5).should.be.equal(5);
+    });
+  });
+
+  describe('.getCookie( name )', () => {
+    it('should throw an expection when the name parameter is not an STRING', () => {
+      assert.throws(
+        () => {
+          u.getCookie([]);
+          u.getCookie(true);
+          u.getCookie(123);
+          u.getCookie(undefined);
+          u.getCookie(null);
+        },
+        /Error: expected STRING but provided/
+        );
+    });
+    it('should return the value of the cookie if exists', () => {
+      const expires  = new Date();
+      const oneHour = 1000 * 60 * 60;
+      expires.setTime(expires.getTime() + oneHour);
+      document.cookie = 'test_the_cookie=cookie_value123;expires=' + expires.toUTCString();
+
+      u.getCookie('test_the_cookie').should.be.equal('cookie_value123');
+    });
+    it('should return undefined when the cookie does not exits', () => {
+      should.not.exist(u.getCookie('dskdslksdkldslksdlsdcmcm'));
+    });
+  });
+
+  describe('.getCookies( name )', () => {
+    it('should return an object', () => {
+      u.getCookies().should.be.an('object');
+    });
+    it('should return an object containing all cookies for the current domain', () => {
+      const expires  = new Date();
+      const oneHour = 1000 * 60 * 60;
+      expires.setTime(expires.getTime() + oneHour);
+      document.cookie = 'cookie_test1=cookie_value1;expires=' + expires.toUTCString();
+      document.cookie = 'cookie_test2=cookie_value2;expires=' + expires.toUTCString();
+
+      u.getCookies().should.include({
+        cookie_test1: 'cookie_value1',
+        cookie_test2: 'cookie_value2'
+      });
+    });
+    it('should return an object containing the name / value pair for a particular cookie', () => {
+      u.getCookies('cookie_test2').should.be.an('object').and.include({
+        cookie_test2: 'cookie_value2'
+      });
+    });
+  });
+
+  describe('.generateGUID()', () => {
+    it('should return a string', () => {
+      u.generateGUID().should.be.an('string');
+    });
+    it('should return ', () => {
+      const reg  = /(?:[a-z0-9]){8}(?:-(?:[a-z0-9]){4}){3}-(?:[a-z0-9]){12}/i;
+      u.generateGUID().should.match(reg);
+    });
+  });
+
+  describe('.getDayName( dayNumber )', () => {
+    it('should throw an expection when the dayNumber parameter is not an INTEGER', () => {
+      assert.throws(
+        () => {
+          u.getDayName();
+          u.getDayName([]);
+          u.getDayName(true);
+          u.getDayName(123);
+          u.getDayName(undefined);
+          u.getDayName(null);
+        },
+        /Error: expected INTEGER but provided/
+        );
+    });
+    it('should return a String', () => {
+      u.getDayName(0).should.be.an('string');
+    });
+    it('should return the name of the day when the provided value is in the range 0 and 6', () => {
+      u.getDayName(0).should.be.equal('Sunday');
+      u.getDayName(1).should.be.equal('Monday');
+      u.getDayName(2).should.be.equal('Tuesday');
+      u.getDayName(3).should.be.equal('Wednesday');
+      u.getDayName(4).should.be.equal('Thursday');
+      u.getDayName(5).should.be.equal('Friday');
+      u.getDayName(6).should.be.equal('Saturday');
+    });
+    it('should return the string unknown when the provided value isn\'t in the range 0 and 6', () => {
+      u.getDayName(7).should.be.equal('Unknown');
+      u.getDayName(8).should.be.equal('Unknown');
+      u.getDayName(100000).should.be.equal('Unknown');
     });
   });
 
