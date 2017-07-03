@@ -5,6 +5,11 @@ import ULYF from './uly.functional';
 'use strict';
 
 const u = {};
+const math = Math;
+const mathRound = math.round;
+const mathFloor = math.floor;
+const mathCeil = math.ceil;
+const mathRnd = math.random;
 
 /**
  * Checks if the provided parameter is an Array
@@ -77,13 +82,14 @@ u.isInt = num => u.isNumber(num) && (parseFloat(num) === parseInt(num, 10));
  */
 
 u.by = (list, n, callback) => {
-  // Check datatypes
   list = TYPES.arr(list);
-  callback = TYPES.func(callback);
+  callback = TYPES.fun(callback);
 
   if (ULYF.notExists(n)) {
     n = 1;
   }
+
+  n = TYPES.int(n);
 
   let len = list.length;
   let i;
@@ -190,14 +196,15 @@ u.shuffle = function(array) {
  *  // "lionesses"
  */
 
-u.pluralize = ULYF.maybe(function(n, word, pluralWord) {
+u.pluralize = function(n, word, pluralWord) {
+  n = TYPES.int(n);
+  word = TYPES.str(word);
 
-  if (pluralWord) return pluralWord;
-
-  if (n === 1) return word;
+  if (pluralWord) { return pluralWord };
+  if (n === 1) { return word; }
 
   return word + 's';
-});
+}
 
 
 /**
@@ -239,10 +246,13 @@ u.toDash = function(str) {
 
 u.toCamel = function(str) {
   let chars = TYPES.str(str).split('-');
+  const head = ULYF.head(chars).toLowerCase();
 
-  return chars.map(function(item) {
+  let remaining = ULYF.tail(chars).map(function(item) {
     return item.charAt(0).toUpperCase() + item.substr(1);
   }).join('');
+
+  return head + remaining;
 };
 
 /**
@@ -325,16 +335,28 @@ u.replaceAll = (text, search, replace) => TYPES.str(text)
 
 /**
  * Get a random integer
- * @param  {Number} [max]  The upper limit (defualt 10)
- * @param  {Number} [min]  The lower limit (default 0)
+ * @param  {Number} [max]  The upper limit (defualt 10 - not included)
+ * @param  {Number} [min]  The lower limit (default 0 - included)
  * @return {Number}      A random integer from min to max
  */
 
-u.getRandomInt = (max = 10, min = 0) => parseInt(Math.random() * TYPES.num(max) + TYPES.num(min), 10);
-
+u.getRandomInt = (max = 10, min = 0) => {
+  return mathFloor(mathRnd() * (TYPES.int(max) - TYPES.int(min))) + min;
+}
 
 /**
- * Retrieve the value of a particular cookie through its name or undefined
+ * Get a random integer (inclusive)
+ * @param  {Number} [max]  The upper limit (defualt 10 - included)
+ * @param  {Number} [min]  The lower limit (default 0 - included)
+ * @return {Number}      A random integer from min to max
+ */
+
+u.getIncRandomInt = (max = 10, min = 0) => {
+  return mathFloor(mathRnd() * (TYPES.int(max) - TYPES.int(min) + 1)) + min;
+}
+
+/**
+ * Retrieve the value of a particular cookie through its name
  * @param  {string}   name The cookie's name
  * @return {string || undefined}  Returns the value of the intended cookie
  *                                or undefined
@@ -401,7 +423,7 @@ u.generateGUID = () => `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4() + s4() + s
  */
 u.getDayName = (dayNumber) => {
   let dayName;
-  switch (TYPES.num(dayNumber)) {
+  switch (TYPES.int(dayNumber)) {
   case 0:
     dayName = 'Sunday';
     break;
