@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>toolup 🛠</title>
+    <!-- Mobile Specific Metas
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- FONT
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link rel="stylesheet"
+          href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700,300%7CRoboto:100,200,300,400,700">
+    <link href="https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:400,700"
+          rel="stylesheet">
+    <style>
+      body { font-family: Roboto, arial; }
+      #testTableHeader {
+        padding: 5px;
+        background-color: rgb(240, 248, 255);
+      }
+      td:nth-child(even) {
+        padding-left: 20px;
+      }
+      .title {
+        display: block;
+        text-transform: uppercase;
+        padding: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <table id="testTable">
+        <thead>
+          <th id="testTableHeader" colspan="2">Test Algorithms</th>
+        </thead>
+        <tbody>
+          <tr style="text-align: center">
+            <td><strong class="title">Reference</strong></td>
+            <td><strong class="title">Result</strong></td>
+          </tr>
+          <tr>
+            <td><span id="alg1"></span></td>
+            <td><span id="alg1Test"></span></td>
+          </tr>
+          <tr>
+            <td><span id="alg2"></span></td>
+            <td><span id="alg2Test"></span></td>
+          </tr>
+          <tr>
+            <td><span id="alg3"></span></td>
+            <td><span id="alg3Test"></span></td>
+          </tr>
+          <tr>
+            <td><span id="alg4"></span></td>
+            <td><span id="alg4Test"></span></td>
+          </tr>
+          <tr>
+            <td><span id="alg5"></span></td>
+            <td><span id="alg5Test"></span></td>
+          </tr>
+          <tr>
+            <td><span id="alg6"></span></td>
+            <td><span id="alg6Test"></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <script src="../build/build.js"></script>
+    <script>
+    (function() {
+      document.addEventListener('DOMContentLoaded', function() {
+        var $ = uly.DOM.$;
+        var expires = new Date();
+        var oneDay = 1000 * 60 * 60 * 24;
+
+        // TEST Alg 1
+        $('#alg1').textContent = 'uly.U.generateGUID';
+        $('#alg1Test').textContent = uly.U.generateGUID();
+
+        // TEST Alg 2
+        $('#alg2').textContent = 'uly.F.capitalize';
+        $('#alg2Test').textContent = uly.F.capitalize('hello world');
+
+        // TEST Alg 3
+        expires.setTime(expires.getTime() + oneDay);
+        document.cookie = 'cookie_test=my_cookie;expires=' + expires.toUTCString();
+        $('#alg3').textContent = 'uly.U.getCookies';
+        $('#alg3Test').textContent = JSON.stringify(uly.U.getCookies());
+
+        // TEST Alg 4
+        $('#alg4').textContent = 'uly.V.isEmailAddress';
+        $('#alg4Test').textContent = 'apple.com - ' + uly.V.isEmailAddress('apple.com');
+
+        // TEST Alg 5
+        $('#alg5').textContent = 'uly.V.isEmailAddress';
+        $('#alg5Test').textContent = 'test@bov.com - ' + uly.V.isEmailAddress('test@bov.com');
+
+        // TEST Alg 6
+        $('#alg6').textContent = 'uly.V.contains';
+        $('#alg6Test').textContent = 'Visiting new places. ["coconut"] - ' + uly.V.contains("Visiting new places.", ["coconut"]);
+      });
+    })();
+    </script>
+  </body>
+</html>
