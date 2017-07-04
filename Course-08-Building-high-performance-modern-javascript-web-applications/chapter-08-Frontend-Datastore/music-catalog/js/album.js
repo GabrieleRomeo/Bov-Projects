@@ -22,25 +22,46 @@ let albumDB = (function() {
      *
      ********************************************************************/
 
+     function createStatusLine(extraClass) {
+          let statusLine = document.createElement('DIV');
+
+          statusLine.setAttribute('class', 'statusLine');
+
+          if (extraClass) {
+              statusLine.classList.add(extraClass);
+          }
+
+          return statusLine;
+     }
+
+     function appendChild(child, parent) {
+        return (parent || document.body).appendChild(child);
+     }
+
+    function removeChild(child, parent) {
+        requestAnimationFrame(function() {
+            (parent || document.body).removeChild(child);
+        });
+    }
+
+    function innerHTML(target, html) {
+        requestAnimationFrame(function() {
+            target.innerHTML = html;
+        });
+    }
+
     function status(msg, extraClass) {
 
         let statusLine = document.querySelector('.statusLine');
 
         if (!statusLine) {
-            statusLine = document.createElement('DIV');
-            statusLine.setAttribute('class', 'statusLine');
-
-            if (extraClass) {
-                statusLine.classList.add(extraClass);
-            }
-
-            document.body.appendChild(statusLine);
+            statusLine = appendChild(createStatusLine(extraClass));
         }
 
         if (msg) {
-            statusLine.innerHTML = msg.toString();
+            innerHTML(statusLine, msg.toString());
         } else {
-            document.body.removeChild(statusLine);
+            removeChild(statusLine);
         }
 
     }
@@ -341,7 +362,6 @@ let albumDB = (function() {
         article.appendChild(body);
         article.appendChild(footer);
 
-
         fragment.appendChild(article);
 
         return fragment;
@@ -412,7 +432,9 @@ let albumDB = (function() {
         }
 
         // Append the intended view into the layout
-        layout.appendChild(fragment);
+        requestAnimationFrame(function() {
+            layout.appendChild(fragment);
+        });
 
         // Check to see if we have to show the 'show more' link
         document.querySelectorAll('.c-album__body').forEach(function(body) {
