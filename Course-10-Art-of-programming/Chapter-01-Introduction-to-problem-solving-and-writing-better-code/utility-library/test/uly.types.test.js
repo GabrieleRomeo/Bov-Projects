@@ -5,8 +5,11 @@ import { types as TYPES } from '../src/uly.functional';
 
 const assert = require('assert');
 
-
 describe('Types - F', () => {
+
+  before(function () {
+    this.jsdom = require('jsdom-global')()
+  });
 
   describe('str( x )', () => {
     it('should throw an expection when the provided parameter is not a String', () => {
@@ -218,7 +221,7 @@ describe('Types - F', () => {
         );
     });
     it('should pass when the provided parameter is an HTMLNode', () => {
-      const node = document.createElement('LABEL');
+      const node = document.createElement('DIV');
       assert.deepEqual(TYPES.HTMLNode(node), node);
     });
   });
