@@ -6,8 +6,11 @@ import u from '../src/uly.utilities';
 const assert = require('assert');
 const should = require('chai').should();
 
-
 describe('Utilities - U', () => {
+
+  before(function () {
+    this.jsdom = require('jsdom-global')()
+  })
 
   describe('by( list, n, callback )', () => {
     it('should throw an expection when the provided list is not an Array', () => {
@@ -427,7 +430,6 @@ describe('Utilities - U', () => {
       const oneHour = 1000 * 60 * 60;
       expires.setTime(expires.getTime() + oneHour);
       document.cookie = 'test_the_cookie=cookie_value123;expires=' + expires.toUTCString();
-
       u.getCookie('test_the_cookie').should.be.equal('cookie_value123');
     });
     it('should return undefined when the cookie does not exits', () => {
