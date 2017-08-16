@@ -30,7 +30,8 @@
     "test:mocha": "mocha --compilers js:babel-register --require babel-polyfill",
     "test:mocha:watch": "webpack-dev-server --hot --config webpack.mocha.js",
     "dev": "webpack-dev-server --port 3000 --inline --colors --watch --hot --progress",
-    "dev2": "WEBPACK_ENV=dev webpack --progress --colors --watch"
+    "dev2": "WEBPACK_ENV=dev webpack --progress --colors --watch",
+    "prod": "webpack -p --env=prod --progress"
   },
   "author": "Gabriele Romeo",
   "license": "ISC"
